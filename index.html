@@ -1387,6 +1387,12 @@
 .x-pile__stack { isolation: isolate; z-index: 0; }
 .x-pile:hover .x-pile__stack, .x-pile:focus-visible .x-pile__stack, .x-pile.is-hover .x-pile__stack { z-index: 1; }
 .x-pile__label, .x-hint { position: relative; z-index: 2; }
+/* Cards are always solid, so one card never shows another through it (they looked like they clipped through each other).
+   Depth comes from a shade on the cards further back instead; it lifts a little while the pile bursts */
+.x-pile__card { opacity: 1; }
+.x-pile__card::after { content: ""; position: absolute; inset: 0; border-radius: var(--kino-radius-poster); background: var(--kino-bg-canvas); pointer-events: none;
+  opacity: calc(var(--i) * .17); transition: opacity var(--kino-motion-base) var(--kino-ease); }
+.x-pile:hover .x-pile__card::after, .x-pile.is-hover .x-pile__card::after, .x-pile:focus-visible .x-pile__card::after { opacity: calc(var(--i) * .08); }
 /* While a pile bursts, its caption gets a soft backing so it still reads over a busy poster */
 .x-pile__label { padding: var(--kino-space-6) var(--kino-space-12); border-radius: 14px; transition: background-color var(--kino-motion-base) var(--kino-ease); }
 .x-pile:hover .x-pile__label, .x-pile.is-hover .x-pile__label, .x-pile:focus-visible .x-pile__label { background: color-mix(in srgb, var(--kino-bg-canvas) 80%, transparent);

@@ -1380,9 +1380,17 @@
 /* Vote: more room between the caption and the posters */
 .v-field { padding-top: var(--kino-space-40, 40px); }
 /* Explore piles fan out in every direction and burst outwards on hover; the top card stays put */
-.x-pile__card { transform: translate(var(--dx), var(--dy)) rotate(var(--r)); }
-.x-pile:hover .x-pile__card, .x-pile:focus-visible .x-pile__card, .x-pile.is-hover .x-pile__card { transform: translate(calc(var(--dx) * 3.4), calc(var(--dy) * 3.4)) rotate(calc(var(--r) * 2.2)); }
-.x-pile__card { transition: transform .45s cubic-bezier(.3, 1.35, .5, 1); }
+.x-pile__card { transform: translate(var(--dx, 0px), var(--dy, 0px)) rotate(var(--r, 0deg)); transition: transform .5s cubic-bezier(.3, 1.35, .5, 1) var(--bt, 0ms); }
+.x-pile:hover .x-pile__card, .x-pile:focus-visible .x-pile__card, .x-pile.is-hover .x-pile__card { transform: translate(var(--bx, 0px), var(--by, 0px)) rotate(var(--br, var(--r, 0deg))); }
+/* Captions, the hint and the filters always sit above the cards, even when a burst flies over or under them. Each stack keeps its
+   cards to itself; the pile you're on rises above its neighbours' cards, never above any words */
+.x-pile__stack { isolation: isolate; z-index: 0; }
+.x-pile:hover .x-pile__stack, .x-pile:focus-visible .x-pile__stack, .x-pile.is-hover .x-pile__stack { z-index: 1; }
+.x-pile__label, .x-hint { position: relative; z-index: 2; }
+/* While a pile bursts, its caption gets a soft backing so it still reads over a busy poster */
+.x-pile__label { padding: var(--kino-space-6) var(--kino-space-12); border-radius: 14px; transition: background-color var(--kino-motion-base) var(--kino-ease); }
+.x-pile:hover .x-pile__label, .x-pile.is-hover .x-pile__label, .x-pile:focus-visible .x-pile__label { background: color-mix(in srgb, var(--kino-bg-canvas) 80%, transparent);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
 /* An opened pile: All piles, its name and its count sit on one line */
 .x-open__head { align-items: center; }
 @container app (min-width: 900px) {
@@ -2142,10 +2150,17 @@ const KAPP = (() => {
       <div class="s-section"><div class="m-section-head"><h3>${PILES[1].title}</h3></div>${shelfOf(PILES[1])}</div>
       <div class="s-section"><div class="m-section-head"><h3>${PILES[2].title}</h3></div>${shelfOf(PILES[2])}</div></div>`;
     // Web adds friction on purpose: three piles to dig through. Filters re-deal them; picking one up spreads it into a grid.
-    const pile = p => { const films = rotate(sift(p.films, on, p), shift);
+    // Each pile is dealt its own way, seeded by the pile and the visit, so no two fan or burst alike (V.2.1 crit). The top card
+    // stays put on hover; the ones beneath fly out on their own paths, a little further than before.
+    const pileSeed = id => [...id].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, st.seed >>> 0);
+    // The cards beneath take one quarter of the circle each (in a shuffled order, with a little jitter), so every pile spreads all round
+    const card = (k, i, r, turn, quarter) => { if (!i) return `<span class="x-pile__card" style="--i:0;--r:${((r() - .5) * 3).toFixed(1)}deg">${poster(k, 'l')}</span>`;
+      const a = (turn + quarter[(i - 1) % 4] * 90 + (r() - .5) * 50) * Math.PI / 180, d = 6 + i * (4 + r() * 5), rot = (r() < .5 ? -1 : 1) * (1.5 + r() * 3) * Math.sqrt(i);
+      const ba = a + (r() - .5) * .7, bd = 40 + i * (18 + r() * 16) + r() * 30;
+      return `<span class="x-pile__card" style="--i:${i};--dx:${(d * Math.cos(a)).toFixed(1)}px;--dy:${(d * Math.sin(a)).toFixed(1)}px;--r:${rot.toFixed(1)}deg;--bx:${(bd * Math.cos(ba)).toFixed(1)}px;--by:${(bd * Math.sin(ba)).toFixed(1)}px;--br:${(rot * (1.8 + r() * 1.4)).toFixed(1)}deg;--bt:${(r() * 90).toFixed(0)}ms">${poster(k, 'l')}</span>`; };
+    const pile = p => { const films = rotate(sift(p.films, on, p), shift), r = rng(pileSeed(p.id)), turn = r() * 360, quarter = [0, 1, 2, 3].map(q => [r(), q]).sort((x, y) => x[0] - y[0]).map(([, q]) => q);
       return `<button class="x-pile" data-act="pile" data-p="${p.id}" aria-label="Open ${p.title}, ${nfilms(films.length)}" ${films.length ? '' : 'disabled'}>
-        <span class="x-pile__stack">${films.length ? films.slice(0, 5).map((k, i) => { const a = (i * 137.5 + 40) * Math.PI / 180, r = i * 7;
-          return `<span class="x-pile__card" style="--i:${i};--dx:${(r * Math.cos(a)).toFixed(1)}px;--dy:${(r * Math.sin(a)).toFixed(1)}px;--r:${(i % 2 ? -1 : 1) * i * 2.4}deg">${poster(k, 'l')}</span>`; }).join('') : '<span class="x-pile__empty"></span>'}</span>
+        <span class="x-pile__stack">${films.length ? films.slice(0, 5).map((k, i) => card(k, i, r, turn, quarter)).join('') : '<span class="x-pile__empty"></span>'}</span>
         <span class="x-pile__label"><b>${p.title}</b><span class="sub">${films.length ? nfilms(films.length) : 'Nothing matches'}</span></span></button>`; };
     const spread = p => { const films = rotate(sift(p.films, on, p), shift);
       return `<div class="x-open">
@@ -2631,6 +2646,6 @@ const KAPP = (() => {
   return { mount };
 })();
 </script>
-<script>KAPP.mount(document.getElementById('app'), /^#\//.test(location.hash) ? location.hash : '#/home', { hash: true, credit: true, webNav: 'rail' }); // the web revisit: you chose the left rail (2026-10-08)</script>
+<script>KAPP.mount(document.getElementById('app'), /^#\//.test(location.hash) ? location.hash : '#/home', { hash: true, credit: true, webNav: new URLSearchParams(location.search).get('nav') === 'top' ? 'top' : 'rail' }); // the left rail (your pick, 2026-10-08); ?nav=top shows the top bar, for an A/B with the founder</script>
 </body>
 </html>

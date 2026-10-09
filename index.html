@@ -118,6 +118,7 @@
   --kino-border-danger: var(--kino-crimson-300);
 
   --kino-signal-you: var(--kino-tomato-300);
+  --kino-signal-unread: var(--kino-cream-50); /* unread is cream, never Tomato: Tomato means you */
 
   --kino-effect-shadow-key: rgb(5 4 3 / .45);
   --kino-effect-shadow-ambient: rgb(5 4 3 / .60);
@@ -167,6 +168,7 @@
   --kino-border-danger: var(--kino-crimson-600);
 
   --kino-signal-you: var(--kino-tomato-650);
+  --kino-signal-unread: var(--kino-neutral-1000);
 
   --kino-effect-shadow-key: rgb(42 30 15 / .06);
   --kino-effect-shadow-ambient: rgb(42 30 15 / .09);
@@ -325,16 +327,16 @@
   background: var(--kino-bg-fill); border: 1px solid var(--kino-border-subtle); border-radius: var(--kino-radius-input); color: var(--kino-text-primary);
   transition: border-color var(--kino-motion-fast) var(--kino-ease), box-shadow var(--kino-motion-fast) var(--kino-ease), background-color var(--kino-motion-fast); }
 .k-field__control:hover { border-color: var(--kino-border-strong); }
-.k-field__control:focus-within, .k-field__control.is-focus { background: var(--kino-bg-surface); border-color: var(--kino-border-focus); box-shadow: 0 0 0 3px color-mix(in srgb, var(--kino-border-focus) 18%, transparent); }
+.k-field__control:focus-within, .k-field__control.is-focus { background: var(--kino-bg-surface); border-color: var(--kino-border-focus); } /* no glow: a grey edge and a darker background */
 /* Important fields (your take, next to a commit button) get a soft Tomato instead of grey */
-.k-field--signal .k-field__control:focus-within, .k-field--signal .k-field__control.is-focus { border-color: color-mix(in srgb, var(--kino-signal-you) 70%, var(--kino-border-strong)); box-shadow: 0 0 0 3px color-mix(in srgb, var(--kino-signal-you) 16%, transparent); }
+.k-field--signal .k-field__control:focus-within, .k-field--signal .k-field__control.is-focus { border-color: color-mix(in srgb, var(--kino-signal-you) 70%, var(--kino-border-strong)); }
 .k-field__control input, .k-field__control textarea { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: inherit; font: 400 15px/22px var(--kino-font-ui); padding: var(--kino-space-12) 0; resize: none; }
 .k-field__control textarea { min-height: 96px; }
 .k-field__control ::placeholder { color: var(--kino-text-secondary); opacity: 1; }
 .k-field__control .k-icon { --k-icon-size: var(--kino-size-icon-md); color: var(--kino-icon-secondary); }
 .k-field__help { display: flex; justify-content: space-between; gap: var(--kino-space-12); font: 400 13px/18px var(--kino-font-ui); color: var(--kino-text-secondary); }
 .k-field--error .k-field__control { border-color: var(--kino-border-danger); }
-.k-field--error .k-field__control:focus-within { box-shadow: 0 0 0 3px color-mix(in srgb, var(--kino-border-danger) 25%, transparent); }
+.k-field--error .k-field__control:focus-within { border-color: var(--kino-border-danger); }
 .k-field--error .k-field__help { color: var(--kino-text-danger); }
 .k-field--disabled .k-field__label, .k-field--disabled .k-field__control, .k-field--disabled .k-field__help { color: var(--kino-text-disabled); }
 .k-field--disabled .k-field__control { background: transparent; border-color: var(--kino-border-subtle); }
@@ -348,7 +350,7 @@
 .k-search input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: inherit; font: 400 15px/22px var(--kino-font-ui); }
 .k-search input::placeholder { color: var(--kino-text-secondary); }
 .k-search input::-webkit-search-cancel-button { display: none; }
-.k-search:focus-within, .k-search.is-focus { background: var(--kino-bg-surface); border-color: var(--kino-border-focus); box-shadow: 0 0 0 3px color-mix(in srgb, var(--kino-border-focus) 18%, transparent); }
+.k-search:focus-within, .k-search.is-focus { background: var(--kino-bg-surface); border-color: var(--kino-border-focus); }
 .k-search__clear { visibility: hidden; }
 .k-search.has-value .k-search__clear { visibility: visible; }
 
@@ -706,6 +708,11 @@
 .o-msplit__side { display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .o-msplit__side .k-score__num { font: 700 22px/26px var(--kino-font-display); letter-spacing: -.01em; }
 .o-msplit .o-mgap b { font-size: 64px; }
+
+/* ===== V.2 crit (2026-10-08) ===== */
+/* Common ground: titles and both scores centred under each poster */
+.o-mfilm { align-items: center; text-align: center; }
+.o-mfilm .pair { justify-content: center; }
 </style>
 <style>
 /* Kino prototype shell + screens. One layout, two platforms:
@@ -942,8 +949,6 @@
 /* Home: the greeting is the moment on iPhone too; the feed carries on with popular takes */
 .h-hero { gap: var(--kino-space-12); padding-top: var(--kino-space-8); }
 .h-hero .s-title { font: 800 56px/.95 var(--kino-font-display); letter-spacing: -.045em; }
-.h-popular > .sub { margin: -4px 0 4px; }
-.feed-item__follow { margin-left: auto; }
 
 /* Explore: iPhone keeps shelves; web gets piles you pick up */
 .x-shelves { display: flex; flex-direction: column; gap: var(--kino-space-24); }
@@ -1191,8 +1196,6 @@
   .h-feed { background: none; box-shadow: none; border-radius: 0; padding: 0; }
   .h-feed > .m-section-head { padding: 0 0 var(--kino-space-4); }
   .h-feed > .m-section-head h3 { font: 800 34px/40px var(--kino-font-display); letter-spacing: -.02em; }
-  .h-popular { margin-top: var(--kino-space-24); }
-  .h-popular > .sub { margin: 0 0 var(--kino-space-8); font-size: 15px; line-height: 22px; }
   .feed-item { padding: var(--kino-space-24) 0; gap: var(--kino-space-16); }
   .feed-item__who { font: 400 15px/20px var(--kino-font-ui); }
   .feed-item__who .k-avatar { --k-av: 32px; font-size: 12px; }
@@ -1254,7 +1257,7 @@
 /* Groups, leaving and deleting. iPhone rows swipe left to show two round actions; web rows show "…" on hover. */
 .g-item { position: relative; touch-action: pan-y; }
 .g-item > .g-row { position: relative; z-index: 1; background: var(--kino-bg-canvas); transition: transform var(--kino-motion-base) var(--kino-ease), background-color var(--kino-motion-fast); }
-.g-item > .g-row:hover { background: color-mix(in srgb, var(--kino-bg-fill) 55%, var(--kino-bg-canvas)); }
+.g-item > .g-row:hover, .g-item > .g-row.is-hover { background: color-mix(in srgb, var(--kino-bg-fill) 55%, var(--kino-bg-canvas)); }
 .g-item.is-open > .g-row { transform: translateX(-140px); }
 .g-acts { position: absolute; right: var(--kino-space-12); top: 0; bottom: 0; display: flex; align-items: center; gap: var(--kino-space-12); }
 .g-act { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 52px; padding: 0; border: 0; background: none; color: var(--kino-text-secondary); font: 500 12px/16px var(--kino-font-ui); cursor: pointer; }
@@ -1324,7 +1327,6 @@
 @keyframes k-ring { 15% { transform: rotate(-16deg); } 35% { transform: rotate(13deg); } 55% { transform: rotate(-8deg); } 75% { transform: rotate(4deg); } }
 .o-take__actions .is-on { color: var(--kino-text-primary); }
 .o-take__actions .is-on .k-icon { color: var(--kino-signal-you); } /* your like is Tomato: it's yours */
-.feed-item__follow.is-on { color: var(--kino-text-secondary); }
 /* Pressing a poster gives a little */
 .tile:active .k-poster, .v-film__poster:active .k-poster, .x-card:active .k-poster, .feed-item__poster:active .k-poster { transform: scale(.97); }
 .g-item > .g-row:active { background: var(--kino-bg-fill); }
@@ -1361,6 +1363,263 @@
 @media (hover: none) { .tile:hover .k-poster, .x-card:hover .k-poster, .v-film__poster:hover { transform: none; } .g-item > .g-row:hover { background: var(--kino-bg-canvas); } }
 .s-credit { text-align: center; max-width: 52ch; margin: 0 auto; padding-top: var(--kino-space-8); }
 @container app (min-width: 900px) { .app__page { padding-bottom: var(--kino-space-64); } .app__toast { bottom: 32px; } }
+
+/* ===== V.2 crit (2026-10-08): small fixes on mobile, shared with web ===== */
+/* Too close to call: quieter still */
+.r-tie { color: color-mix(in srgb, var(--kino-text-secondary) 82%, var(--kino-bg-canvas)); }
+/* Group rows: a rounded highlight, inset from the edges, so a swiped or pressed row reads as a soft card, never a square slab */
+.g-list { margin: 0 calc(var(--kino-space-8) * -1); }
+.g-item > .g-row { border-radius: var(--kino-radius-card); padding-left: var(--kino-space-16); }
+.g-row::after { left: calc(var(--kino-space-16) + 60px + var(--kino-space-16)); right: var(--kino-space-12); }
+.g-row__flag { left: 4px; }
+/* Opening a group: no spin. A quiet press on iPhone; on web, the bundle's dots breathe apart a little on hover */
+.m-cluster__dot { transition: transform .32s var(--kino-ease); }
+.g-row:active .m-cluster { transform: scale(.96); transition: transform .12s var(--kino-ease); }
+@media (hover: hover) { .g-row:hover .m-cluster__dot { transform: translate(calc(var(--ox) * 3px), calc(var(--oy) * 3px)); } }
+.g-row.is-hover .m-cluster__dot { transform: translate(calc(var(--ox) * 3px), calc(var(--oy) * 3px)); } /* the motion board's scripted hover */
+/* Vote: more room between the caption and the posters */
+.v-field { padding-top: var(--kino-space-40, 40px); }
+/* Explore piles fan out in every direction and burst outwards on hover; the top card stays put */
+.x-pile__card { transform: translate(var(--dx), var(--dy)) rotate(var(--r)); }
+.x-pile:hover .x-pile__card, .x-pile:focus-visible .x-pile__card, .x-pile.is-hover .x-pile__card { transform: translate(calc(var(--dx) * 3.4), calc(var(--dy) * 3.4)) rotate(calc(var(--r) * 2.2)); }
+.x-pile__card { transition: transform .45s cubic-bezier(.3, 1.35, .5, 1); }
+/* An opened pile: All piles, its name and its count sit on one line */
+.x-open__head { align-items: center; }
+@container app (min-width: 900px) {
+  .v-field { padding-top: var(--kino-space-48); }
+  .g-list { margin: 0; }
+  .g-item > .g-row { padding-left: var(--kino-space-24); }
+  .g-row::after { left: calc(var(--kino-space-24) + 90px + var(--kino-space-16)); }
+  .g-row__flag { left: 8px; }
+}
+
+/* ===== V.2 crit, part two (2026-10-08): a feed that doesn't end, and the bell ===== */
+/* The feed: one long river with no card around it (it never ends), on iPhone as on web. No "Popular on Kino" cut. */
+.h-feed { display: flex; flex-direction: column; }
+.h-feed > .m-section-head { padding-bottom: var(--kino-space-4); }
+.feed-item__who .feed-follow { margin-left: auto; }
+.feed-follow.is-on, .feed-save.is-on { color: var(--kino-text-secondary); }
+.feed-dots { display: inline-flex; align-items: center; vertical-align: middle; }
+.feed-dots .k-dot { width: 8px; height: 8px; box-shadow: 0 0 0 1.5px var(--kino-bg-canvas); }
+.feed-dots .k-dot + .k-dot { margin-left: -2px; }
+.feed-trailer .feed-item__who { gap: var(--kino-space-6); min-height: 24px; }
+/* A trailer: the still and a play button, nothing else on it */
+.feed-trailer__still { position: relative; display: block; width: 100%; aspect-ratio: 16 / 9; padding: 0; border: 0; border-radius: var(--kino-radius-card); overflow: hidden;
+  background: var(--kino-bg-fill); cursor: pointer; box-shadow: var(--kino-elevation-1); }
+.feed-trailer__still img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .8s var(--kino-ease); }
+.feed-trailer__still.is-playing img { transform: scale(1.03); }
+.feed-trailer__play { position: absolute; left: 50%; top: 50%; width: 52px; height: 52px; margin: -26px 0 0 -26px; border-radius: 50%; display: grid; place-items: center;
+  background: color-mix(in srgb, var(--kino-neutral-950) 55%, transparent); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); color: var(--kino-cream-50); --k-icon-size: 20px;
+  transition: transform var(--kino-motion-fast) var(--kino-ease), opacity var(--kino-motion-base) var(--kino-ease); }
+.feed-trailer__play .k-icon { margin-left: 2px; }
+.feed-trailer__still.is-playing .feed-trailer__play { opacity: 0; }
+.feed-trailer__still.is-playing:hover .feed-trailer__play, .feed-trailer__still.is-playing:focus-visible .feed-trailer__play { opacity: 1; }
+.feed-trailer__still.is-playing .feed-trailer__play .k-icon { margin-left: 0; }
+.feed-trailer__still:hover .feed-trailer__play { transform: scale(1.06); }
+.feed-trailer__still:active .feed-trailer__play { transform: scale(.94); }
+.feed-trailer__still:focus-visible { outline: 2px solid var(--kino-border-focus); outline-offset: 3px; }
+/* Playing: a thin line fills along the bottom. No running time: we don't know it, so we don't show one */
+.feed-trailer__bar { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--kino-cream-50); transform-origin: 0 50%; animation: t-play 45s linear forwards; }
+@keyframes t-play { from { transform: scaleX(0); } }
+.feed-trailer__meta { display: flex; align-items: center; justify-content: space-between; gap: var(--kino-space-12); }
+.feed-trailer__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; cursor: pointer; }
+.feed-trailer__meta .k-btn { margin-right: calc(var(--kino-space-12) * -1); flex: none; }
+/* Kino's pick: a film it hasn't shown you yet */
+.feed-src { flex: none; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; background: var(--kino-bg-fill); color: var(--kino-icon-secondary); --k-icon-size: 13px; }
+.feed-pick__guess { margin-top: 2px; }
+/* People to follow (iPhone), dealt in where friends run out */
+.feed-people { gap: var(--kino-space-12); }
+.feed-people .m-section-head { padding: 0; }
+.feed-people__row { padding-bottom: var(--kino-space-4); scroll-snap-type: x proximity; }
+.feed-person { width: 156px; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: var(--kino-space-20) var(--kino-space-12) var(--kino-space-12);
+  border-radius: var(--kino-radius-card); background: var(--kino-bg-surface); text-align: center; }
+.feed-person .k-avatar { margin-bottom: var(--kino-space-10, 10px); }
+.feed-person b { font: 600 15px/20px var(--kino-font-ui); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.feed-person .sub { display: inline-flex; align-items: center; gap: 5px; font: 400 12px/16px var(--kino-font-ui); }
+.feed-person .k-btn { width: 100%; margin-top: var(--kino-space-12); justify-content: center; }
+/* Loading the next page: three dots, waiting their turn */
+.feed-more { display: flex; justify-content: center; gap: 7px; padding: var(--kino-space-24) 0 var(--kino-space-8); }
+.feed-more span { width: 7px; height: 7px; border-radius: 50%; background: var(--kino-text-secondary); animation: f-wait 1.1s ease-in-out infinite; }
+.feed-more span:nth-child(2) { animation-delay: .14s; }
+.feed-more span:nth-child(3) { animation-delay: .28s; }
+@keyframes f-wait { 0%, 70%, 100% { opacity: .3; transform: none; } 30% { opacity: 1; transform: translateY(-3px); } }
+.feed-item.is-new { animation: k-rise .45s var(--kino-ease) backwards; animation-delay: calc(var(--n, 0) * 70ms); }
+@container app (min-width: 900px) { .feed-trailer__still, .feed-trailer__meta { max-width: 560px; } }
+/* A swiped group row keeps its rounded soft card while its actions are showing */
+.g-item.is-open > .g-row { background: color-mix(in srgb, var(--kino-bg-fill) 55%, var(--kino-bg-canvas)); }
+
+/* The bell: a cream dot while something's new (Tomato means you, so never Tomato here) */
+.n-bell { position: relative; }
+.n-bell__dot { position: absolute; top: 7px; right: 8px; width: 7px; height: 7px; border-radius: 50%; background: var(--kino-signal-unread); box-shadow: 0 0 0 2px var(--kino-bg-canvas); }
+/* Notifications: New, then Earlier. Each row: who (as their dot, or a bundle), what happened, and the film or a button */
+.n-page { gap: var(--kino-space-24); }
+.n-head { display: flex; align-items: center; justify-content: space-between; gap: var(--kino-space-12); }
+.n-sec { display: flex; flex-direction: column; }
+.n-sec > .m-section-head { padding-bottom: var(--kino-space-4); }
+.n-row { position: relative; display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; align-items: center; column-gap: var(--kino-space-12); padding: var(--kino-space-10, 10px) 0; min-height: 68px; }
+.n-row.tap { cursor: pointer; }
+.n-row__unread { position: absolute; left: -12px; top: 50%; width: 7px; height: 7px; margin-top: -3.5px; border-radius: 50%; background: var(--kino-signal-unread); }
+.n-row__lead { display: grid; place-items: center; }
+.n-row__lead .k-avatar { --k-av: 40px; font-size: 14px; }
+.n-row__body { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.n-row__text { font: 400 15px/20px var(--kino-font-ui); text-wrap: pretty; }
+.n-row__text b { font-weight: 600; }
+.n-row__quote { font: 400 14px/20px var(--kino-font-ui); color: var(--kino-text-primary); opacity: .82; }
+.n-row__sub { display: flex; align-items: center; gap: var(--kino-space-6); font: 400 13px/18px var(--kino-font-ui); color: var(--kino-text-secondary); }
+.n-row__sub .k-score__num { font: 600 13px/18px var(--kino-font-ui); }
+.n-row__sub .k-dot { width: 7px; height: 7px; }
+.n-row__end { display: flex; align-items: center; justify-content: flex-end; }
+.n-row.tap:hover .n-row__text { text-decoration: underline; text-decoration-color: var(--kino-border-strong); text-underline-offset: 3px; }
+/* The film, with whoever voted sitting on its bottom edge, the way votes do in the group */
+.n-thumb { position: relative; display: block; padding-bottom: 5px; }
+.n-thumb .k-poster { --k-pw: 32px; }
+.n-thumb__dots { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); display: flex; }
+.n-thumb__dots .k-dot { width: 10px; height: 10px; box-shadow: 0 0 0 2px var(--kino-bg-canvas); }
+.n-thumb__dots .k-dot + .k-dot { margin-left: -3px; }
+/* Web: the bell drops a panel from the bar */
+.app__bar-in { position: relative; }
+.n-pop { position: absolute; top: calc(100% - 6px); right: var(--kino-space-24); z-index: 8; width: 400px; max-height: 540px; display: flex; flex-direction: column;
+  background: var(--kino-bg-surface); border: 1px solid var(--kino-border-subtle); border-radius: var(--kino-radius-card); box-shadow: var(--kino-elevation-2); overflow: hidden; }
+.n-pop.is-fresh { animation: n-drop .22s var(--kino-ease); transform-origin: calc(100% - 64px) 0; }
+@keyframes n-drop { from { opacity: 0; transform: translateY(-6px) scale(.98); } }
+.n-pop__head { display: flex; align-items: center; justify-content: space-between; gap: var(--kino-space-8); min-height: 56px; padding: var(--kino-space-8) var(--kino-space-12) var(--kino-space-4) var(--kino-space-20); }
+.n-pop__head b { font: 600 17px/22px var(--kino-font-ui); }
+.n-pop__head .k-iconbtn:first-child { margin-left: calc(var(--kino-space-12) * -1); }
+.n-pop__head .k-iconbtn:first-child + b { margin-right: auto; }
+.n-pop__body { flex: 1; min-height: 0; overflow: auto; padding: 0 var(--kino-space-20) var(--kino-space-8); display: flex; flex-direction: column; gap: var(--kino-space-12); scrollbar-width: thin; }
+.n-pop .n-row { padding: var(--kino-space-8) 0; min-height: 60px; }
+.n-pop .n-row__text { font-size: 14px; line-height: 19px; }
+.n-pop .n-row__unread { left: -13px; }
+.n-pop__set { gap: 0; padding-bottom: var(--kino-space-12); }
+.n-pop__set > .sub { padding: var(--kino-space-4) 0 var(--kino-space-4); }
+.n-pop__all { flex: none; height: 44px; border-radius: 0; border-top: 1px solid var(--kino-border-subtle); color: var(--kino-text-secondary); }
+.n-pop__all:hover { color: var(--kino-text-primary); }
+@media (prefers-reduced-motion: reduce) { .feed-more span, .feed-item.is-new, .feed-trailer__bar, .n-pop.is-fresh { animation: none; } }
+
+/* ===== The web revisit (2026-10-08), on the nav choice sheet: apps mounted with webNav 'top' or 'rail' ===== */
+/* Learned from the original: a small, steady type scale (13 / 15 / 17), hierarchy from weight and grey rather than size,
+   hairline rows, small thumbnails, one bold thing per screen. Only .app--tight changes; V.2.1's web stays as it was. */
+.app__shell { flex: 1; min-height: 0; display: flex; }
+.app__shell > .app__scroll { flex: 1; min-width: 0; }
+.app__rail { display: none; }
+@container app (min-width: 900px) {
+  /* Option B: a fixed left rail. Where you can go, the one action, and you at the bottom */
+  .app__rail { position: relative; z-index: 6; flex: none; width: 232px; display: flex; flex-direction: column; gap: var(--kino-space-4);
+    padding: var(--kino-space-24) var(--kino-space-16) var(--kino-space-16); border-right: 1px solid var(--kino-border-subtle); background: var(--kino-bg-canvas); }
+  .app__rail .app__wm { align-self: flex-start; margin: 0 0 var(--kino-space-20) var(--kino-space-12); }
+  .app__rail-search { height: 38px; margin-bottom: var(--kino-space-12); }
+  .app__rail-search input { font-size: 14px; }
+  .app__rail-nav { display: flex; flex-direction: column; gap: 2px; }
+  .app__rail-item { position: relative; display: flex; align-items: center; gap: var(--kino-space-12); height: 40px; padding: 0 var(--kino-space-12); border: 0;
+    border-radius: 10px; background: none; color: var(--kino-text-secondary); font: 500 15px/20px var(--kino-font-ui); text-align: left; cursor: pointer; --k-icon-size: 20px;
+    transition: background-color var(--kino-motion-fast), color var(--kino-motion-fast); }
+  .app__rail-item:hover { color: var(--kino-text-primary); background: color-mix(in srgb, var(--kino-bg-fill) 55%, transparent); }
+  .app__rail-item[aria-current="page"] { color: var(--kino-text-primary); background: var(--kino-bg-fill); font-weight: 600; }
+  .app__rail-item .k-icon--on { display: none; }
+  .app__rail-item[aria-current="page"] .k-icon--on { display: inline-block; }
+  .app__rail-item[aria-current="page"] .k-icon--off { display: none; }
+  .app__rail-item:focus-visible, .app__rail-me:focus-visible { outline: 2px solid var(--kino-border-focus); outline-offset: 2px; }
+  .app__rail-item .n-bell__dot { top: 9px; left: 27px; right: auto; }
+  .app__rail-rank { margin-top: var(--kino-space-16); width: 100%; height: 40px; }
+  .app__rail-me { margin-top: auto; display: flex; align-items: center; gap: var(--kino-space-12); padding: var(--kino-space-8); border: 0; border-radius: 12px;
+    background: none; color: inherit; text-align: left; cursor: pointer; }
+  .app__rail-me:hover, .app__rail-me[aria-current="page"] { background: color-mix(in srgb, var(--kino-bg-fill) 55%, transparent); }
+  .app__rail-me .k-avatar { --k-av: 36px; font-size: 13px; }
+  .app__rail-me__text { display: flex; flex-direction: column; min-width: 0; }
+  .app__rail-me__text b { font: 600 15px/20px var(--kino-font-ui); }
+  .app__rail-me__text span { font: 400 13px/18px var(--kino-font-ui); color: var(--kino-text-secondary); }
+  .app__rail .n-pop { top: var(--kino-space-16); left: calc(100% + var(--kino-space-8)); right: auto; }
+  .app__rail .n-pop.is-fresh { transform-origin: 0 64px; }
+
+  /* Option A: the top bar, slimmer and quieter */
+  .app--tight .app__bar-in { height: 56px; max-width: 1240px; padding: 0 var(--kino-space-24); gap: var(--kino-space-20); }
+  .app--tight .app__wm { font-size: 24px; }
+  .app--tight .app__bar .k-search { height: 36px; max-width: 360px; }
+  .app--tight .app__bar .k-search input { font-size: 14px; }
+  .app--tight .app__nav .k-btn { height: 34px; font-size: 14px; }
+
+  /* Both: pages sit closer to the top, titles step down */
+  .app--tight .app__page { max-width: 1240px; padding: var(--kino-space-32) var(--kino-space-32) var(--kino-space-48); gap: var(--kino-space-24); }
+  .app--tight .s-title { font: 800 28px/34px var(--kino-font-display) !important; }
+
+  /* Home: two columns that each scroll on their own. The greeting heads the main one; the side one runs from the top */
+  .app--tight .h-split--two { grid-template-columns: minmax(0, 1fr) 320px !important; gap: var(--kino-space-48) !important; align-items: start; }
+  .app--tight .h-split--two > .h-main { display: flex; flex-direction: column; gap: var(--kino-space-24); min-width: 0; }
+  /* It sticks exactly where it starts (the page's top padding), so scrolling the feed never nudges it, and it can't slide sideways */
+  .app--tight .h-side { position: sticky; top: var(--kino-space-32); max-height: calc(var(--app-h, 100vh) - var(--kino-space-32)); overflow-x: hidden; overflow-y: auto;
+    overscroll-behavior: contain; scrollbar-width: none; gap: var(--kino-space-32); padding: 0 12px var(--kino-space-32) 0; margin: 0 -12px 0 0; box-sizing: border-box; }
+  /* The loader keeps a window's height below the feed, so the side column is never pushed up while the next page comes in */
+  .app--tight .feed-more { min-height: var(--app-h, 100vh); align-items: flex-start; }
+  .app--tight .app__page:has(> .h-split--two) { padding-bottom: 0; } /* so the column's bottom and the page's bottom meet */
+  .app--tight .h-side::-webkit-scrollbar { display: none; }
+  .app--tight .h-hero { padding: 0; gap: var(--kino-space-8); }
+  .app--tight .h-hero .s-title { font: 800 56px/1 var(--kino-font-display) !important; letter-spacing: -.04em; }
+  .app--tight .h-hero .s-sub { font: 400 15px/22px var(--kino-font-ui); }
+  /* The feed reads like the original's rows: a small poster, the take at reading size, everything on one text edge */
+  .app--tight .h-feed > .m-section-head { padding: var(--kino-space-8) 0 var(--kino-space-4); border-bottom: 1px solid var(--kino-border-subtle); }
+  .app--tight .h-feed > .m-section-head h3 { font: 700 22px/28px var(--kino-font-display); letter-spacing: -.01em; }
+  .app--tight .feed-item { padding: var(--kino-space-20) 0; gap: var(--kino-space-10, 10px); }
+  .app--tight .feed-item__who { font: 400 13px/18px var(--kino-font-ui); gap: var(--kino-space-8); }
+  .app--tight .feed-item__who .k-avatar { --k-av: 28px; font-size: 11px; }
+  .app--tight .feed-item__body { grid-template-columns: 72px minmax(0, 1fr); grid-template-areas: "poster film" "poster quote" "poster actions";
+    column-gap: var(--kino-space-16); row-gap: var(--kino-space-8); align-items: start; padding-left: 36px; }
+  .app--tight .feed-item__poster .k-poster { --k-pw: 72px; box-shadow: var(--kino-elevation-1); }
+  .app--tight .feed-item__title { font: 600 17px/22px var(--kino-font-ui); letter-spacing: -.005em; }
+  .app--tight .feed-item__film { gap: 2px; }
+  .app--tight .feed-item__film .k-score { margin-top: var(--kino-space-4); }
+  .app--tight .feed-item__film .k-score__num { font: 600 15px/20px var(--kino-font-ui); letter-spacing: 0; }
+  .app--tight .feed-item__film .k-score .k-dot { width: 8px; height: 8px; }
+  .app--tight .feed-item__quote { font: 400 15px/22px var(--kino-font-ui); letter-spacing: 0; max-width: 62ch; }
+  .app--tight .feed-item__quote::before, .app--tight .feed-item__quote::after { content: none; }
+  .app--tight .o-take__actions .k-btn { height: 30px; font-size: 13px; }
+  .app--tight .feed-dots, .app--tight .feed-src { width: 28px; justify-content: center; }
+  .app--tight .feed-src { height: 28px; }
+  .app--tight .feed-trailer__still, .app--tight .feed-trailer__meta { margin-left: 36px; width: calc(100% - 36px); max-width: 520px; }
+  .app--tight .feed-trailer .feed-item__title { font: 600 17px/22px var(--kino-font-ui); }
+  /* The side column: compact sections, small heads, people to follow at the bottom */
+  .app--tight .h-side .m-section-head h3 { font: 600 15px/20px var(--kino-font-ui); }
+  .app--tight .h-side .s-section { gap: var(--kino-space-12); }
+  .app--tight .h-side .g-status { padding: var(--kino-space-16); gap: var(--kino-space-12); }
+  .app--tight .h-side .g-status .kino-title-l { font: 600 15px/20px var(--kino-font-ui); }
+  .app--tight .h-side .g-status .sub { font-size: 13px; line-height: 18px; }
+  .app--tight .h-side .g-status .k-btn { height: 40px; font-size: 15px; }
+  .app--tight .h-side .h-grid { gap: var(--kino-space-12) var(--kino-space-8); }
+  .app--tight .h-rank .h-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .app--tight .h-rank .h-grid > :nth-child(n+4) { display: block; }
+  .h-people { display: flex; flex-direction: column; }
+  .h-person { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; align-items: center; column-gap: var(--kino-space-12); padding: var(--kino-space-8) 0; }
+  .h-person .k-avatar { --k-av: 36px; font-size: 13px; }
+  .h-person__body { display: flex; flex-direction: column; min-width: 0; }
+  .h-person__body b { font: 600 14px/20px var(--kino-font-ui); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .h-person__body .sub { display: inline-flex; align-items: center; gap: 5px; font: 400 12px/16px var(--kino-font-ui); white-space: nowrap; }
+  .h-person .k-btn { height: 30px; padding: 0 var(--kino-space-12); font-size: 13px; }
+  .h-person .k-btn .k-icon { display: none; }
+
+  /* Other pages, a first step down (the full pass follows the choice) */
+  .app--tight .x-pile__stack { width: 168px; }
+  .app--tight .s-profile-side .k-avatar--xxl { --k-av: 176px; font-size: 64px; }
+  .app--tight .s-profile-side .o-profile__name h2 { font-size: 36px; line-height: 40px; }
+  .app--tight .picked .picked__hero { font-size: 56px; line-height: 60px; }
+}
+/* iPhone with the web revisit on (the published prototype): Home keeps V.2.1's order. The greeting, then your group,
+   Rank what you watched and Recently released, then the feed */
+.h-split--two > .h-main { display: contents; }
+.h-split--two .h-hero { order: -2; }
+.h-side .s-credit { padding-top: 0; text-align: left; margin: 0; }
+/* Laptops under 1200px: the rail shrinks to icons (names show as tooltips) and the side column narrows */
+@container app (min-width: 900px) and (max-width: 1199px) {
+  .app__rail { width: 76px; padding: var(--kino-space-20) var(--kino-space-12) var(--kino-space-16); align-items: center; }
+  .app__rail .app__wm { font-size: 20px; margin: 0 0 var(--kino-space-16); align-self: center; }
+  .app__rail-search { display: none; }
+  .app__rail-nav { align-items: center; }
+  .app__rail-item { width: 48px; justify-content: center; padding: 0; }
+  .app__rail-item > span:not(.n-bell__dot) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .app__rail-item .n-bell__dot { left: 29px; }
+  .app__rail-rank { width: 48px; padding: 0; font-size: 0; gap: 0; }
+  .app__rail-me { padding: 6px; }
+  .app__rail-me__text { display: none; }
+  .app--tight .h-split--two { grid-template-columns: minmax(0, 1fr) 288px !important; gap: var(--kino-space-32) !important; }
+}
 </style>
 <script>/* your choice if you've made one, otherwise your phone's light or dark setting */
 try{const t=localStorage.getItem('kino-ds-theme')||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');document.documentElement.dataset.theme=t;}catch(e){}</script>
@@ -1411,6 +1670,8 @@ try{const t=localStorage.getItem('kino-ds-theme')||(matchMedia('(prefers-color-s
 <symbol id="chat-circle-text" viewBox="0 0 256 256"><path fill="currentColor" d="M172,108a12,12,0,0,1-12,12H96a12,12,0,0,1,0-24h64A12,12,0,0,1,172,108Zm-12,28H96a12,12,0,0,0,0,24h64a12,12,0,0,0,0-24Zm76-8A108,108,0,0,1,78.77,224.15L46.34,235A20,20,0,0,1,21,209.66l10.81-32.43A108,108,0,1,1,236,128Zm-24,0A84,84,0,1,0,55.27,170.06a12,12,0,0,1,1,9.81l-9.93,29.79,29.79-9.93a12.1,12.1,0,0,1,3.8-.62,12,12,0,0,1,6,1.62A84,84,0,0,0,212,128Z"/></symbol>
 <symbol id="fire" viewBox="0 0 256 256"><path fill="currentColor" d="M177.62,159.6a52,52,0,0,1-34,34,12.2,12.2,0,0,1-3.6.55,12,12,0,0,1-3.6-23.45,28,28,0,0,0,18.32-18.32,12,12,0,0,1,22.9,7.2ZM220,144a92,92,0,0,1-184,0c0-28.81,11.27-58.18,33.48-87.28a12,12,0,0,1,17.9-1.33L107.07,74.5,127,19.89a12,12,0,0,1,18.94-5.12C168.2,33.25,220,82.85,220,144Zm-24,0c0-41.71-30.61-78.39-52.52-99.29l-20.21,55.4a12,12,0,0,1-19.63,4.5L80.71,82.36C67,103.38,60,124.06,60,144a68,68,0,0,0,136,0Z"/></symbol>
 <symbol id="smiley" viewBox="0 0 256 256"><path fill="currentColor" d="M178.39,158c-11,19.06-29.39,30-50.39,30s-39.36-10.93-50.39-30a12,12,0,0,1,20.78-12c3.89,6.73,12.91,18,29.61,18s25.72-11.28,29.61-18a12,12,0,1,1,20.78,12ZM236,128A108,108,0,1,1,128,20,108.12,108.12,0,0,1,236,128Zm-24,0a84,84,0,1,0-84,84A84.09,84.09,0,0,0,212,128ZM92,124a16,16,0,1,0-16-16A16,16,0,0,0,92,124Zm72-32a16,16,0,1,0,16,16A16,16,0,0,0,164,92Z"/></symbol>
+<symbol id="play-fill" viewBox="0 0 256 256"><path fill="currentColor" d="M240,128a15.74,15.74,0,0,1-7.6,13.51L88.32,229.65a16,16,0,0,1-16.2.3A15.86,15.86,0,0,1,64,216.13V39.87a15.86,15.86,0,0,1,8.12-13.82,16,16,0,0,1,16.2.3L232.4,114.49A15.74,15.74,0,0,1,240,128Z"/></symbol>
+<symbol id="pause-fill" viewBox="0 0 256 256"><path fill="currentColor" d="M216,48V208a16,16,0,0,1-16,16H160a16,16,0,0,1-16-16V48a16,16,0,0,1,16-16h40A16,16,0,0,1,216,48ZM96,32H56A16,16,0,0,0,40,48V208a16,16,0,0,0,16,16H96a16,16,0,0,0,16-16V48A16,16,0,0,0,96,32Z"/></symbol>
 </svg>
 
 <div id="app"></div>
@@ -1454,7 +1715,10 @@ const KINO = (() => {
   const P = { you: { n: 'You', full: 'Dani Cho', i: 'DC', h: 'periwinkle' }, maya: { n: 'Maya', full: 'Maya Kim', i: 'MK', h: 'rose' }, jo: { n: 'Jo', full: 'Jo Okafor', i: 'JO', h: 'sky' },
     ari: { n: 'Ari', full: 'Ari Levin', i: 'AL', h: 'fern' }, sam: { n: 'Sam', full: 'Sam Rivera', i: 'SR', h: 'lilac' }, noor: { n: 'Noor', i: 'NA', h: 'amber' },
     theo: { n: 'Theo', i: 'TB', h: 'mint' }, lena: { n: 'Lena', i: 'LH', h: 'orchid' }, kai: { n: 'Kai', i: 'KW', h: 'citron' }, rui: { n: 'Rui', i: 'RS', h: 'lagoon' },
-    jules: { n: 'Jules', full: 'Jules Park', i: 'JP', h: 'mint', followers: '12.4k' }, omar: { n: 'Omar', full: 'Omar Haddad', i: 'OH', h: 'amber', followers: '8.1k' } };
+    jules: { n: 'Jules', full: 'Jules Park', i: 'JP', h: 'mint', followers: '12.4k' }, omar: { n: 'Omar', full: 'Omar Haddad', i: 'OH', h: 'amber', followers: '8.1k' },
+    // More people you don't follow yet, for the feed that doesn't end and People to follow
+    ines: { n: 'Inès', full: 'Inès Moreau', i: 'IM', h: 'orchid', followers: '5.3k' }, kofi: { n: 'Kofi', full: 'Kofi Mensah', i: 'KM', h: 'sky', followers: '21k' },
+    wren: { n: 'Wren', full: 'Wren Ellis', i: 'WE', h: 'citron', followers: '3.9k' } };
 
   const fmt = v => (v >= 10 ? '10.0' : v.toFixed(1));
   const hash = s => [...s].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7);
@@ -1490,7 +1754,7 @@ const KINO = (() => {
     else { const k = .78 * Math.PI / n, s = d * k / (1 + k), R = (d - s) / 2;
       dots = Array.from({ length: n }, (_, i) => { const a = -Math.PI / 2 + i * 2 * Math.PI / n; return [c + R * Math.cos(a), c + R * Math.sin(a), s]; }); }
     return `<span class="m-cluster" style="--d:${d}px" role="img" aria-label="${names(people)}">${people.map((p, i) => { const [x, y, s] = dots[i];
-      return `<span class="m-cluster__dot id-${P[p].h}" style="left:${(x - s / 2).toFixed(1)}px;top:${(y - s / 2).toFixed(1)}px;width:${s.toFixed(1)}px;height:${s.toFixed(1)}px;font-size:${Math.max(8, s * .36).toFixed(1)}px">${s >= 24 ? P[p].i : ''}</span>`; }).join('')}</span>`;
+      return `<span class="m-cluster__dot id-${P[p].h}" style="left:${(x - s / 2).toFixed(1)}px;top:${(y - s / 2).toFixed(1)}px;width:${s.toFixed(1)}px;height:${s.toFixed(1)}px;font-size:${Math.max(8, s * .36).toFixed(1)}px;--ox:${((x - c) / c).toFixed(2)};--oy:${((y - c) / c).toFixed(2)}">${s >= 24 ? P[p].i : ''}</span>`; }).join('')}</span>`;
   };
   const face = (name, size = 'lg') => { const [a1, a2, a3] = FACE[hash(name) % FACE.length], h = hash(name + 'x');
     return `<span class="k-avatar k-avatar--${size} m-art m-face" role="img" aria-label="${name}" style="--a1:${a1};--a2:${a2};--a3:${a3};--x1:${30 + h % 40}%;--y1:${20 + (h >> 3) % 25}%;--x2:${40 + (h >> 5) % 40}%;--y2:${70 + (h >> 7) % 25}%;--ang:${150 + (h >> 9) % 50}deg"></span>`; };
@@ -1557,7 +1821,7 @@ const KINO = (() => {
   function match(who = 'maya') {
     const m = MATCH[who], name = P[who].n, gap = Math.abs(m.split[1] - m.split[2]).toFixed(1);
     return `<div class="m-card o-match">
-      <div class="o-match__who"><span class="m-duo">${avatar(who)}${avatar('you', '', true)}</span><div class="kino-title-m">You and ${name}</div><div class="sub">From ${m.n} films you've both ranked</div></div>
+      <div class="o-match__who"><span class="m-duo">${avatar(who)}${avatar('you')}</span><div class="kino-title-m">You and ${name}</div><div class="sub">From ${m.n} films you've both ranked</div></div>
       <div class="m-match id-${P[who].h}" style="--pct:${m.pct}%"><div class="o-match__hero"><span class="o-match__pct" data-count="${m.pct}" data-unit="%">${m.pct}%</span><p class="o-match__line">${matchLine(m.pct)}</p></div><div class="m-match__track"><div class="m-match__fill"></div></div></div>
       <div class="o-taste__block"><span class="m-label">Common ground</span><div class="o-mgrid">${m.agree.map(([k, a, b]) => mfilm(k, who, a, b)).join('')}</div></div>
       <div class="o-taste__block"><span class="m-label">Friendly disagreement</span>
@@ -1651,9 +1915,45 @@ const KAPP = (() => {
     const pool = GREET[part].concat(GREET.any); return pool[st.greet % pool.length]; };
   const MY_TOTAL = 186;
   const RECENT = ['odyssey', 'spiderman', 'coyote', 'residentevil', 'toystory5', 'hailmary'];
-  // When Friends lately runs out, the feed keeps going with takes from popular people you don't follow yet
-  const POPULAR = [['jules', 'odyssey', 9.4, '1h', 'Big, strange and gorgeous. The best time I\'ve had in a cinema this year.'],
-    ['omar', 'spiderman', 8.8, '3h', 'Go in knowing as little as you can. Trust me on this one.']];
+  // Home's feed doesn't end. Friends' newest takes come first with trailers dealt in; then, with no cut, people you don't follow
+  // yet and films Kino hasn't shown you, a page at a time as you scroll. Trailers say only what's certain: no lengths, no dates.
+  const STILLS = { hailmary: 'trailer-hailmary.jpg', coyote: 'trailer-coyote.jpg', avatar3: 'trailer-avatar3.jpg' }; // the Infinity War still stays local: it isn't a new film
+  const FRIEND_TAKES = [['maya', 'interstellar', 9.3, '2h', 'Rewatched it on the biggest screen I could find. The docking scene still makes my palms sweat.'],
+    ['jo', 'budapest', 8.7, '5h', 'I want to check in and never check out.'], ['ari', 'deadpool', 7.9, 'Yesterday', ''],
+    ['sam', 'arrival', 9.4, 'Yesterday', 'The quietest alien film ever made, and somehow the most moving.'],
+    ['noor', 'spirited', 9.6, '2d', 'Every frame could hang on a wall. No-Face at the bathhouse is all of us at a buffet.'],
+    ['theo', 'inception', 8.6, '3d', 'Still arguing with my brother about the ending.'], ['lena', 'parasite', 9.5, '4d', '']];
+  const TRAILERS = [{ k: 'hailmary', who: ['maya', 'jo'], why: 'want to see it' }, { k: 'avatar3', who: ['sam', 'noor', 'kai'], why: 'want to see it' },
+    { k: 'coyote', who: ['ari'], why: 'saved it' }];
+  // [who, film, score, when, take, a friend who follows them]
+  const STRANGER_TAKES = [['jules', 'odyssey', 9.4, '1h', 'Big, strange and gorgeous. The best time I\'ve had in a cinema this year.', 'maya'],
+    ['omar', 'spiderman', 8.8, '3h', 'Go in knowing as little as you can. Trust me on this one.'], ['ines', 'darkknight', 9.7, '4h', ''],
+    ['kofi', 'residentevil', 7.4, '6h', 'Properly scary for an hour, then pure chaos. I had a great time.'],
+    ['wren', 'coyote', 8.2, '8h', 'A cartoon that knows exactly what it is. The whole cinema was howling.', 'ari'],
+    ['jules', 'hailmary', 9.1, 'Yesterday', 'Science has never felt this warm. I want a friend like that.', 'maya'],
+    ['ines', 'toystory5', 8.9, 'Yesterday', 'Brought tissues. Needed more tissues.', 'jo'],
+    ['omar', 'avatar3', 8.0, '2d', 'Unreal on a big screen. The story treads water, but wow.'],
+    ['kofi', 'endgame', 8.5, '2d', 'Three hours that go by in about forty minutes.'], ['wren', 'raccoon', 5.9, '3d', 'Fun if you grew up with the games. Otherwise, skip it.'],
+    ['jules', 'avengers', 7.6, '3d', ''], ['omar', 'infinitywar', 8.7, '4d', 'The ending still lands like a punch.']];
+  // Films Kino hasn't shown you yet, with its guess at your score
+  const KINO_PICKS = [{ k: 'toystory5', why: 'Your groups love a crowd-pleaser', guess: 8.1 }, { k: 'spiderman', why: 'People you follow can\'t stop talking about it', guess: 8.0 },
+    { k: 'avatar3', why: 'Because you loved Dune', guess: 8.4 }, { k: 'hailmary', why: 'Because you loved Arrival', guess: 8.9 }];
+  const TO_FOLLOW = [['jules', 'maya'], ['ines', 'jo'], ['kofi'], ['wren', 'ari'], ['omar']];
+  // The bell: what friends did that involves you, newest first. People show up as their dots; a vote sits on the poster's edge,
+  // the way it does in the group. Unread rows carry a cream dot, never Tomato (Tomato means you).
+  const NOTES = [
+    { id: 'n1', fresh: true, p: 'jo', when: '12m', text: '<b>Jo</b> nudged you to vote', sub: 'Thursday film club', go: '#/group/thursday', btn: 'Vote' },
+    { id: 'n2', fresh: true, p: 'maya', when: '1h', text: '<b>Maya</b> voted for Project Hail Mary', sub: 'Thursday film club', go: '#/group/thursday', k: 'hailmary', on: ['maya'] },
+    { id: 'n3', fresh: true, p: 'jules', when: '3h', text: '<b>Jules Park</b> started following you', sub: 'Followed by Maya', follow: true },
+    { id: 'n4', fresh: true, p: 'ari', when: '5h', text: '<b>Ari</b> ranked Dune', s: 9.1, go: '#/film/dune', k: 'dune' },
+    { id: 'n5', p: 'maya', when: 'Yesterday', text: '<b>Maya</b> liked your take on Arrival', go: '#/film/arrival', k: 'arrival' },
+    { id: 'n6', p: 'sam', when: '2d', text: '<b>Sam</b> replied to your take on Parasite', quote: 'The stairs. Every single time.', go: '#/film/parasite', k: 'parasite' },
+    { id: 'n7', group: 'scifi', when: 'Sep 20', text: 'It\'s settled. <b>Sci-fi Saturdays</b> is watching Inception', go: '#/groups', k: 'inception', on: ['jo', 'you', 'ari'] },
+    { id: 'n8', ps: ['theo', 'lena', 'kai'], when: 'Sep 14', text: '<b>Theo, Lena and Kai</b> liked your take on Spirited Away', go: '#/film/spirited', k: 'spirited' },
+    { id: 'n9', p: 'noor', when: 'Sep 12', text: '<b>Noor</b> started following you', follow: true },
+  ];
+  const NSET = [['picks', 'users-three', 'Group picks', 'Votes, nudges and settled picks. Muted groups stay quiet'], ['ranks', 'film-slate', 'Friends\' rankings', 'When a friend ranks a film'],
+    ['likes', 'heart', 'Likes and replies', 'On your takes'], ['follows', 'user-plus', 'New followers', 'When someone follows you']];
   const BUCKETS = {
     loved: { label: 'Loved it', icon: 'heart', range: [8.5, 9.7], vs: ['budapest', 'parasite', 'arrival'] },
     fine: { label: 'It was fine', icon: 'smiley', range: [6.0, 8.2], vs: ['endgame', 'avengers', 'darkknight'] },
@@ -1710,6 +2010,91 @@ const KAPP = (() => {
   const shelf = keys => `<div class="m-shelf">${keys.map(k => `<div>${tile(k)}</div>`).join('')}</div>`;
   const rotate = (arr, n) => arr.slice(n % arr.length).concat(arr.slice(0, n % arr.length));
 
+  // The published prototype's credit. The feed never ends, so it sits where it can be reached: the end of the web side column, and your profile.
+  const credit = st => (st.credit ? '<p class="sub s-credit">Kino is a design prototype. Film posters and trailer stills belong to their studios and appear here for a non-commercial design study.</p>' : '');
+
+  /* ---------- the feed that doesn't end ---------- */
+  const dots = people => `<span class="feed-dots">${people.map(p => `<span class="k-dot ${p === 'you' ? '' : 'id-' + P[p].h}"></span>`).join('')}</span>`;
+  // Friends start out followed; people you don't know yet start with Follow
+  const following = (st, p) => st.followed[p] ?? !P[p].followers;
+  const followBtn = (st, p, cls = 'k-btn--ghost', off = 'Follow') => { const on = following(st, p);
+    return `<button class="k-btn ${on ? 'k-btn--ghost' : cls} k-btn--sm feed-follow${on ? ' is-on' : ''}${fx(st, 'follow-' + p)}" data-act="follow" data-p="${p}">${ic(on ? 'check' : 'user-plus')}${on ? 'Following' : off}</button>`; };
+  // A take: who, then the film and their score, then what they said. On web the poster grows and the take reads like a quote.
+  // Someone you don't follow yet comes with Follow, and with a friend who follows them when there is one.
+  function takeItem(st, [p, k, s, t, txt, via], stranger) {
+    const who = stranger ? `<span><b>${P[p].n}</b> · ${via ? `Followed by ${P[via].n}` : `${P[p].followers} followers`} · ${t}</span>${followBtn(st, p)}` : `<span><b>${P[p].n}</b> · ${t}</span>`;
+    return `<div class="feed-item${stranger ? ' feed-stranger' : ''}"><div class="feed-item__who">${avatar(p, 'sm')}${who}</div>
+        <div class="feed-item__body"><button class="feed-item__poster" data-go="#/film/${k}" aria-label="${F[k][0]}">${poster(k, 's')}</button>
+          <div class="feed-item__film" data-go="#/film/${k}"><span class="feed-item__title">${F[k][0]}</span><span class="sub">${F[k][1]} · ${F[k][2]}</span>${score(p, s)}</div>
+          ${txt ? `<p class="o-take__text feed-item__quote">${txt}</p>` : ''}
+          <div class="o-take__actions"><button class="k-btn k-btn--ghost k-btn--sm${st.liked[p + k] ? ' is-on' : ''}${fx(st, 'like-' + p + k)}" data-act="like" data-key="${p + k}">${ic(st.liked[p + k] ? 'heart-fill' : 'heart')}${st.liked[p + k] ? 'Liked' : 'Like'}</button><button class="k-btn k-btn--ghost k-btn--sm">${ic('chat-circle')}Reply</button>${MY[k] == null && st.ranked[k] == null ? `<button class="k-btn k-btn--ghost k-btn--sm" data-rank="${k}">${ic('plus')}Rank it</button>` : ''}</div></div></div>`;
+  }
+  // A trailer: the still, a play button and nothing else on it. Above, the friends who want to see it, as their dots.
+  function trailerItem(st, { k, who, why }) {
+    const on = st.playing === k;
+    return `<div class="feed-item feed-trailer"><div class="feed-item__who">${dots(who)}<span><b>${names(who)}</b> ${why}</span></div>
+        <button class="feed-trailer__still${on ? ' is-playing' : ''}" data-act="play" data-k="${k}" aria-label="${on ? 'Pause' : 'Play'} the trailer for ${F[k][0]}">
+          <img src="stills/${STILLS[k]}" alt="" decoding="async"><span class="feed-trailer__play">${ic(on ? 'pause-fill' : 'play-fill')}</span>${on ? '<span class="feed-trailer__bar"></span>' : ''}</button>
+        <div class="feed-trailer__meta"><div class="feed-trailer__text" data-go="#/film/${k}"><span class="feed-item__title">${F[k][0]}</span><span class="sub">Trailer · ${F[k][1]} · ${F[k][2]}</span></div>
+          <button class="k-btn k-btn--ghost k-btn--sm feed-save${st.saved[k] ? ' is-on' : ''}${fx(st, 'save-' + k)}" data-act="fsave" data-k="${k}">${ic(st.saved[k] ? 'bookmark-simple-fill' : 'bookmark-simple')}${st.saved[k] ? 'Saved' : 'Save'}</button></div></div>`;
+  }
+  // A film Kino hasn't shown you yet, with its guess at your score
+  const pickItem = (st, { k, why, guess }) => `<div class="feed-item feed-pick"><div class="feed-item__who"><span class="feed-src" aria-hidden="true">${ic('ticket')}</span><span><b>Kino's pick</b> · ${why}</span></div>
+      <div class="feed-item__body"><button class="feed-item__poster" data-go="#/film/${k}" aria-label="${F[k][0]}">${poster(k, 's')}</button>
+        <div class="feed-item__film" data-go="#/film/${k}"><span class="feed-item__title">${F[k][0]}</span><span class="sub">${F[k][1]} · ${F[k][2]}</span><span class="sub feed-pick__guess">Kino thinks you'll land around ${fmt(guess)}</span></div>
+        <div class="o-take__actions"><button class="k-btn k-btn--ghost k-btn--sm${st.saved[k] ? ' is-on' : ''}${fx(st, 'save-' + k)}" data-act="fsave" data-k="${k}">${ic(st.saved[k] ? 'bookmark-simple-fill' : 'bookmark-simple')}${st.saved[k] ? 'Saved' : 'Save'}</button>${st.ranked[k] == null ? `<button class="k-btn k-btn--ghost k-btn--sm" data-rank="${k}">${ic('plus')}Rank it</button>` : ''}</div></div></div>`;
+  // iPhone: one row of people to follow where friends run out. On web they'll live in the side column.
+  const peopleItem = st => `<div class="feed-item feed-people narrow-only"><div class="m-section-head"><h3>People to follow</h3></div>
+      <div class="hscroll feed-people__row" data-keep="people">${TO_FOLLOW.map(([p, via]) => `<div class="feed-person">${avatar(p, 'lg')}<b>${P[p].full}</b><span class="sub">${via ? `${dots([via])}Followed by ${P[via].n}` : `${P[p].followers} followers`}</span>${followBtn(st, p, 'k-btn--secondary')}</div>`).join('')}</div></div>`;
+  // Page 0 is friends, newest first, with two trailers dealt in. Every page after it is people you don't follow yet, a film Kino
+  // hasn't shown you and, every other page, a trailer, never doubling a film within a page. Past the written takes, the same films
+  // come back as plain rankings from other people, so the feed never runs dry.
+  function feedPage(n) {
+    if (n === 0) { const f = FRIEND_TAKES.map(x => ({ t: 'take', x })); f.splice(1, 0, { t: 'trailer', x: TRAILERS[0] }); f.splice(5, 0, { t: 'trailer', x: TRAILERS[1] }); return f; }
+    const L = STRANGER_TAKES.length, out = [];
+    for (let j = 0; j < 4; j++) { const i = (n - 1) * 4 + j, x = STRANGER_TAKES[i % L], lap = Math.floor(i / L);
+      out.push({ t: 'stranger', x: lap ? [TO_FOLLOW[(i + lap) % TO_FOLLOW.length][0], x[1], Math.round(Math.min(9.8, Math.max(4.5, x[2] + ((i * 7) % 9 - 4) / 10)) * 10) / 10, `${lap * 4 + 3}d`, ''] : x }); }
+    const on = new Set(out.map(o => o.x[1])), pick = KINO_PICKS.map((_, j) => KINO_PICKS[(n - 1 + j) % KINO_PICKS.length]).find(r => !on.has(r.k));
+    if (pick) { out.splice(2, 0, { t: 'pick', x: pick }); on.add(pick.k); }
+    const tr = TRAILERS.map((_, j) => TRAILERS[(n + 1 + j) % TRAILERS.length]).find(x => !on.has(x.k));
+    if (tr && n % 2) out.splice(4, 0, { t: 'trailer', x: tr });
+    if (n === 1) out.unshift({ t: 'people' });
+    return out;
+  }
+  const feedHtml = (st, n, fresh) => feedPage(n).map((it, j) => {
+    const html = it.t === 'take' ? takeItem(st, it.x) : it.t === 'stranger' ? takeItem(st, it.x, true) : it.t === 'trailer' ? trailerItem(st, it.x) : it.t === 'pick' ? pickItem(st, it.x) : peopleItem(st);
+    return fresh ? html.replace('<div class="feed-item', `<div style="--n:${j}" class="feed-item is-new`) : html; }).join('');
+
+  /* ---------- the bell ---------- */
+  const unreadNotes = st => NOTES.filter(n => n.fresh && !st.read[n.id]).length;
+  const bellBtn = (st, attrs) => `<button class="k-iconbtn k-iconbtn--ghost k-iconbtn--sm n-bell" ${attrs} aria-label="Notifications${st.notesSeen ? '' : `, ${unreadNotes(st)} new`}">${ic('bell')}${st.notesSeen ? '' : '<span class="n-bell__dot"></span>'}</button>`;
+  function noteRow(st, n) {
+    const g = n.group && GROUPS.find(x => x.id === n.group), unread = n.fresh && !st.read[n.id];
+    const lead = g ? cluster(g.who, 40) : n.ps ? cluster(n.ps, 40) : avatar(n.p);
+    const end = n.btn ? `<button class="k-btn k-btn--secondary k-btn--sm" data-go="${n.go}" data-note="${n.id}">${n.btn}</button>`
+      : n.follow ? followBtn(st, n.p, 'k-btn--secondary', 'Follow back')
+      : n.k ? `<span class="n-thumb">${poster(n.k, 'xs')}${n.on ? `<span class="n-thumb__dots">${n.on.map(p => `<span class="k-dot ${p === 'you' ? '' : 'id-' + P[p].h}"></span>`).join('')}</span>` : ''}</span>` : '';
+    return `<div class="n-row${unread ? ' is-new' : ''}${n.go ? ' tap' : ''}" ${n.go ? `data-go="${n.go}" data-note="${n.id}"` : ''}>${unread ? '<span class="n-row__unread" role="img" aria-label="New"></span>' : ''}
+        <span class="n-row__lead">${lead}</span>
+        <span class="n-row__body"><span class="n-row__text">${n.text}</span>${n.quote ? `<span class="n-row__quote">\u201C${n.quote}\u201D</span>` : ''}
+          <span class="n-row__sub">${n.s != null ? score(n.p, n.s) + '<span aria-hidden="true">·</span>' : ''}<span>${[n.sub, n.when].filter(Boolean).join(' · ')}</span></span></span>
+        <span class="n-row__end">${end}</span></div>`;
+  }
+  const noteList = st => `<div class="n-sec"><div class="m-section-head"><h3>New</h3></div>${NOTES.filter(n => n.fresh).map(n => noteRow(st, n)).join('')}</div>
+      <div class="n-sec"><div class="m-section-head"><h3>Earlier</h3></div>${NOTES.filter(n => !n.fresh).map(n => noteRow(st, n)).join('')}</div>`;
+  const nswitch = (st, [id, icon, label, sub]) => `<div class="e-row">${ic(icon)}<span class="e-row__body"><b>${label}</b><span class="sub">${sub}</span></span>
+      <button class="k-switch" role="switch" aria-checked="${!!st.nprefs[id]}" aria-label="${label}" data-act="nset" data-t="${id}"><span></span></button></div>`;
+  // Web: the bell drops a panel from the bar; the gear slides its settings in, in the same panel
+  function bellPop(st) {
+    const set = st.bell === 'settings', dir = st.bellFx === 'fwd' || st.bellFx === 'back' ? ' s-panel--' + st.bellFx : '';
+    return `<div class="n-pop${st.bellFx === 'open' ? ' is-fresh' : ''}" role="dialog" aria-label="${set ? 'Notification settings' : 'Notifications'}">
+      ${set ? `<div class="n-pop__head"><button class="k-iconbtn k-iconbtn--ghost k-iconbtn--sm" data-act="bell-list" aria-label="Back to notifications">${ic('caret-left')}</button><b>Notification settings</b></div>
+          <div class="n-pop__body n-pop__set${dir}"><span class="sub">Tell me about</span>${NSET.map(x => nswitch(st, x)).join('')}</div>`
+        : `<div class="n-pop__head"><b>Notifications</b>${iconbtn('gear-six', 'Notification settings', 'data-act="bell-set"')}</div>
+          <div class="n-pop__body${dir}">${noteList(st)}</div>
+          <button class="k-btn k-btn--ghost k-btn--block n-pop__all" data-go="#/notifications">See all</button>`}</div>`;
+  }
+
   /* ---------- screens ---------- */
   function home(st) {
     const g = GROUPS[0], waiting = !st.myVote;
@@ -1720,21 +2105,22 @@ const KAPP = (() => {
     const toRank = `<div class="s-section h-rank"><div class="m-section-head"><h3>Rank what you watched</h3></div>
       <div class="m-shelf h-grid">${['interstellar', 'odyssey', 'coyote', 'residentevil'].map(k => `<div>${rankTile(k)}</div>`).join('')}</div></div>`;
     const recent = `<div class="s-section h-recent"><div class="m-section-head"><h3>Recently released</h3><button class="k-btn k-btn--ghost k-btn--sm">See all</button></div><div class="m-shelf h-grid">${RECENT.map(k => `<div>${tile(k)}</div>`).join('')}</div></div>`;
-    // A take: who, then the film and their score, then what they said. On web the poster grows and the take reads like a quote.
-    const item = ([p, k, s, t, txt], pop) => `
-      <div class="feed-item"><div class="feed-item__who">${avatar(p, 'sm')}<span><b>${P[p].n}</b>${pop ? ` · ${P[p].followers} followers` : ''} · ${t}</span>${pop ? `<button class="k-btn k-btn--ghost k-btn--sm feed-item__follow${st.followed[p] ? ' is-on' : ''}${fx(st, 'follow-' + p)}" data-act="follow" data-p="${p}">${ic(st.followed[p] ? 'check' : 'user-plus')}${st.followed[p] ? 'Following' : 'Follow'}</button>` : ''}</div>
-        <div class="feed-item__body"><button class="feed-item__poster" data-go="#/film/${k}" aria-label="${F[k][0]}">${poster(k, 's')}</button>
-          <div class="feed-item__film" data-go="#/film/${k}"><span class="feed-item__title">${F[k][0]}</span><span class="sub">${F[k][1]} · ${F[k][2]}</span>${score(p, s)}</div>
-          ${txt ? `<p class="o-take__text feed-item__quote">${txt}</p>` : ''}
-          <div class="o-take__actions"><button class="k-btn k-btn--ghost k-btn--sm${st.liked[p + k] ? ' is-on' : ''}${fx(st, 'like-' + p + k)}" data-act="like" data-key="${p + k}">${ic(st.liked[p + k] ? 'heart-fill' : 'heart')}${st.liked[p + k] ? 'Liked' : 'Like'}</button><button class="k-btn k-btn--ghost k-btn--sm">${ic('chat-circle')}Reply</button>${MY[k] == null ? `<button class="k-btn k-btn--ghost k-btn--sm" data-rank="${k}">${ic('plus')}Rank it</button>` : ''}</div></div></div>`;
-    const feed = `<div class="m-card m-card--flush h-feed"><div class="m-section-head"><h3>Friends lately</h3></div>
-      ${[['maya', 'interstellar', 9.3, '2h', 'Rewatched it on the biggest screen I could find. The docking scene still makes my palms sweat.'], ['jo', 'budapest', 8.7, '5h', 'I want to check in and never check out.'], ['ari', 'deadpool', 7.9, 'Yesterday', '']].map(x => item(x)).join('')}</div>`;
-    const popular = `<div class="m-card m-card--flush h-feed h-popular"><div class="m-section-head"><h3>Popular on Kino</h3></div><p class="sub">You're all caught up with friends. Here are takes from people you don't follow yet.</p>
-      ${POPULAR.map(x => item(x, true)).join('')}</div>`;
-    return `<div class="h-top narrow-only"><span class="s-wm">kino<i></i></span>${iconbtn('bell', 'Notifications')}</div>
-      <div class="s-head h-hero"><h1 class="s-title">${greeting(st)}</h1><p class="s-sub">One group pick needs you, and four films are waiting for a score.</p></div>
-      <div class="s-split h-split"><div>${feed}${popular}</div><aside>${st.removed.thursday ? '' : status}${toRank}${recent}</aside></div>
-      ${st.credit ? '<p class="sub s-credit">Kino is a design prototype. Film posters belong to their studios and appear here for a non-commercial design study.</p>' : ''}`;
+    // One feed, no cut: it loads the next page as you near the end (see watchFeed)
+    const feed = `<div class="h-feed"><div class="m-section-head"><h3>Lately</h3></div>${Array.from({ length: st.feedPages }, (_, n) => feedHtml(st, n)).join('')}
+      <div class="feed-more" role="status" aria-label="Loading more"><span></span><span></span><span></span></div></div>`;
+    const top = `<div class="h-top narrow-only"><span class="s-wm">kino<i></i></span>${bellBtn(st, 'data-go="#/notifications"')}</div>`;
+    const hero = `<div class="s-head h-hero"><h1 class="s-title">${greeting(st)}</h1><p class="s-sub">One group pick needs you, and four films are waiting for a score.</p></div>`;
+    // The web revisit (the nav choice sheet): the greeting heads the main column, and the side column runs from the top and
+    // scrolls on its own, ending with people to follow. Coming soon waits for films whose dates are certain.
+    if (st.webNav) {
+      const people = `<div class="wide-only"><div class="s-section h-people"><div class="m-section-head"><h3>People to follow</h3></div>
+        ${TO_FOLLOW.map(([p, via]) => `<div class="h-person">${avatar(p)}<span class="h-person__body"><b>${P[p].full}</b><span class="sub">${via ? `${dots([via])}Followed by ${P[via].n}` : `${P[p].followers} followers`}</span></span>${followBtn(st, p, 'k-btn--secondary')}</div>`).join('')}</div></div>`;
+      return `${top}<div class="s-split h-split h-split--two"><div class="h-main">${hero}${feed}</div>
+        <aside class="h-side" data-keep="side">${st.removed.thursday ? '' : status}${toRank}${recent}${people}<div class="wide-only">${credit(st)}</div></aside></div>`;
+    }
+    return `${top}${hero}
+      <div class="s-split h-split"><div>${feed}</div><aside>${st.removed.thursday ? '' : status}${toRank}${recent}</aside></div>
+      ${credit(st)}`;
   }
 
   function explore(st) {
@@ -1758,7 +2144,8 @@ const KAPP = (() => {
     // Web adds friction on purpose: three piles to dig through. Filters re-deal them; picking one up spreads it into a grid.
     const pile = p => { const films = rotate(sift(p.films, on, p), shift);
       return `<button class="x-pile" data-act="pile" data-p="${p.id}" aria-label="Open ${p.title}, ${nfilms(films.length)}" ${films.length ? '' : 'disabled'}>
-        <span class="x-pile__stack">${films.length ? films.slice(0, 5).map((k, i) => `<span class="x-pile__card" style="--i:${i}">${poster(k, 'l')}</span>`).join('') : '<span class="x-pile__empty"></span>'}</span>
+        <span class="x-pile__stack">${films.length ? films.slice(0, 5).map((k, i) => { const a = (i * 137.5 + 40) * Math.PI / 180, r = i * 7;
+          return `<span class="x-pile__card" style="--i:${i};--dx:${(r * Math.cos(a)).toFixed(1)}px;--dy:${(r * Math.sin(a)).toFixed(1)}px;--r:${(i % 2 ? -1 : 1) * i * 2.4}deg">${poster(k, 'l')}</span>`; }).join('') : '<span class="x-pile__empty"></span>'}</span>
         <span class="x-pile__label"><b>${p.title}</b><span class="sub">${films.length ? nfilms(films.length) : 'Nothing matches'}</span></span></button>`; };
     const spread = p => { const films = rotate(sift(p.films, on, p), shift);
       return `<div class="x-open">
@@ -1805,8 +2192,8 @@ const KAPP = (() => {
     FIELD.forEach((pieces, band) => {
       const mixed = pieces.map(x => [r(), x]).sort((a, b) => a[0] - b[0]).map(([, x]) => x), step = 360 / mixed.length, off = r() * 360;
       mixed.forEach((x, i) => { const person = !!P[x];
-        out.push({ x, person, wide: band === 1, a: off + i * step + (r() - .5) * step * .7, d: band ? 1.06 + r() * .24 : (person ? .52 : .6) + r() * .36,
-          s: person ? 26 + r() * 10 : 38 + r() * 14, dur: 150 + r() * 170, bob: 4 + r() * 4, bd: -r() * 6 }); });
+        out.push({ x, person, wide: band === 1, a: off + i * step + (r() - .5) * step * .36, d: band ? 1.1 + r() * .16 : (person ? .58 : .64) + r() * .26,
+          s: person ? 28 + r() * 6 : 40 + r() * 10, dur: 180 + r() * 80, bob: 5 + r() * 3, bd: -r() * 6 }); });
     });
     // Two friends start right on a film, so the overlap is there at first look; slightly different speeds pull them apart over time
     const films = out.filter(o => !o.person && !o.wide), apart = (o, f) => Math.abs(((o.a - f.a) % 360 + 540) % 360 - 180);
@@ -1945,7 +2332,7 @@ const KAPP = (() => {
         <div>${taste('you', { top: list.slice(0, 3).map(([k]) => k) })}
           <div class="m-card m-card--flush me-rank"><div class="m-section-head"><h3>Your rankings</h3><button class="k-btn k-btn--ghost k-btn--sm" data-go="#/me/ranked">All ${total}</button></div><span class="sub">Your top 3 are above</span>
           ${list.slice(3, 9).map(([k, s], i) => rankRow(k, s, i + 4)).join('')}
-        </div></div></div>`;
+        </div>${credit(st)}</div></div>`;
   }
   const rankRow = (k, s, n) => `<div class="o-rank__row tap" data-go="#/film/${k}"><span class="o-rank__num">${n}</span>${poster(k, 'xs')}<div class="o-rank__body"><span class="o-rank__title">${F[k][0]}</span><span class="m-film-row__meta">${F[k][1]} · ${F[k][2]}</span></div><div class="o-cols"><span class="o-col">${score('you', s)}</span></div></div>`;
 
@@ -1983,6 +2370,18 @@ const KAPP = (() => {
       </div>`;
   }
 
+  // Notifications (pushed from the bell on iPhone; "See all" from the web panel). The gear opens the settings.
+  function notifications(st) {
+    const gear = iconbtn('gear-six', 'Notification settings', 'data-go="#/notifications/settings"');
+    return `${topbar('', { back: true, end: gear })}
+      <div class="s-narrow n-page"><div class="n-head"><h1 class="s-title">Notifications</h1><span class="wide-only">${gear}</span></div>${noteList(st)}</div>`;
+  }
+  function notifSettings(st) {
+    return `${topbar('Notification settings', { back: true })}
+      <div class="s-narrow e-form"><div class="wide-only"><h1 class="s-title">Notification settings</h1></div>
+        <div class="e-group"><span class="m-label">Tell me about</span>${NSET.map(x => nswitch(st, x)).join('')}</div></div>`;
+  }
+
   /* ---------- rank flow (sheet) ---------- */
   function myListWith(st) { return Object.entries(Object.assign({}, MY, st.ranked)).sort((a, b) => b[1] - a[1]); }
   function rankSheet(st) {
@@ -2012,6 +2411,19 @@ const KAPP = (() => {
   }
 
   /* ---------- shell ---------- */
+  // The web revisit's left rail (option B on the nav choice sheet): the wordmark, search, where you can go, the one action,
+  // and you at the bottom, like the original's
+  const RAIL = [['Home', 'house', '#/home'], ['Explore', 'magnifying-glass', '#/explore'], ['Groups', 'users-three', '#/groups'], ['My films', 'film-slate', '#/me/ranked']];
+  function railNav(st, sec) {
+    const here = h => (h === '#/me/ranked' ? st.route === h : sec === h), me = st.route.startsWith('#/me') && st.route !== '#/me/ranked'; // a friend's profile isn't you
+    return `<nav class="app__rail" aria-label="Kino"><button class="app__wm" data-go="#/home">kino<i></i></button>
+      <label class="k-search app__rail-search">${ic('magnifying-glass')}<input type="search" placeholder="Search" aria-label="Search films, friends, lists"></label>
+      <div class="app__rail-nav">${RAIL.map(([l, n, h]) => `<button class="app__rail-item" data-go="${h}" title="${l}" ${here(h) ? 'aria-current="page"' : ''}>${ic(n, 'k-icon--off')}${ic(n + '-fill', 'k-icon--on')}<span>${l}</span></button>`).join('')}
+        <button class="app__rail-item n-bell" data-act="bell" title="Notifications" aria-expanded="${!!st.bell}" aria-label="Notifications${st.notesSeen ? '' : `, ${unreadNotes(st)} new`}">${ic('bell')}<span>Notifications</span>${st.notesSeen ? '' : '<span class="n-bell__dot"></span>'}</button></div>
+      <button class="k-btn k-btn--primary k-btn--sm app__rail-rank" data-rank="interstellar" title="Rank a film">${ic('plus')}Rank a film</button>
+      <button class="app__rail-me" data-go="#/me" title="Your profile" ${me ? 'aria-current="page"' : ''}>${avatar('you')}<span class="app__rail-me__text"><b>Dani Cho</b><span>@dani.watches</span></span></button>
+      ${st.bell ? bellPop(st) : ''}</nav>`;
+  }
   const NAV = [['Home', 'house', '#/home'], ['Explore', 'magnifying-glass', '#/explore'], ['Rank', 'film-slate', 'rank'], ['Groups', 'users-three', '#/groups'], ['Profile', 'user', '#/me']];
   function route(st) {
     const [, a, b, c] = st.route.split('/');
@@ -2021,10 +2433,11 @@ const KAPP = (() => {
     if (a === 'group') return c === 'picked' || st.locked ? picked(st) : vote(st);
     if (a === 'profile') return profile(st);
     if (a === 'me') return b === 'edit' ? editProfile(st) : b === 'ranked' ? allRanked(st) : me(st);
+    if (a === 'notifications') return b === 'settings' ? notifSettings(st) : notifications(st);
     return home(st);
   }
   const section = r => r.startsWith('#/explore') || r.startsWith('#/film') ? '#/explore' : r.startsWith('#/group') ? '#/groups' : r.startsWith('#/me') || r.startsWith('#/profile') ? '#/me' : '#/home';
-  const calm = () => window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const calm = () => !!window.__noanim || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches); // renders (shoot.py) set __noanim
 
   /* ---------- motion: every action answers with movement (first pass, 2026-10-08) ----------
      FLIP: anything marked data-flip glides from where it was before an in-place re-render (your vote dot travelling to a new poster,
@@ -2078,31 +2491,52 @@ const KAPP = (() => {
   function mount(root, start = '#/home', opts = {}) {
     const st = Object.assign({ route: start, hist: [], sheet: null, myVote: null, locked: false, ranked: {}, saved: {}, ptab: 0, chips: {}, pchips: {}, pile: null,
       rfilter: 'all', rq: '', prefs: { loc: true, habit: false }, greet: greetSeed++, seed: Math.floor(Math.random() * 1e9),
-      removed: {}, muted: {}, swiped: null, gsheet: null, toast: null, liked: {}, followed: {}, credit: !!opts.credit }, opts.state || {});
+      removed: {}, muted: {}, swiped: null, gsheet: null, toast: null, liked: {}, followed: {}, credit: !!opts.credit,
+      feedPages: 1, playing: null, bell: null, notesSeen: false, read: {}, nprefs: { picks: true, ranks: true, likes: true, follows: false },
+      webNav: opts.webNav || null }, opts.state || {}); // webNav 'top' or 'rail': the web revisit's two options; unset is V.2.1's web
     root.classList.add('app'); root.classList.toggle('app--device', !!opts.device); // a board frame draws its own status bar
     // A new screen pushes in (or pops back, or fades for a tab). Taps that change something in place re-render without the page
     // animation, and what moved glides to its new place.
     function render(keepScroll) {
       const sc = root.querySelector('.app__scroll'), top = keepScroll && sc ? sc.scrollTop : 0, before = keepScroll ? measure(root) : null;
+      // Inner scrollers (the web side column, the people row) keep their place through an in-place re-render
+      const kept = keepScroll ? [...root.querySelectorAll('[data-keep]')].map(el => [el.dataset.keep, el.scrollTop, el.scrollLeft]) : [];
+      const rail = st.webNav === 'rail';
+      root.classList.toggle('app--tight', !!st.webNav); root.classList.toggle('app--rail', rail);
       const enter = keepScroll ? 'app__page--still' : 'app__page--' + (st.nav || 'tab'); st.nav = null;
       const sec = section(st.route);
       root.innerHTML = `${opts.device ? `<div class="app__status"><span>9:41</span><span></span></div>` : ''}
-        <header class="app__bar"><div class="app__bar-in"><button class="app__wm" data-go="#/home">kino<i></i></button>
+        ${rail ? '' : `<header class="app__bar"><div class="app__bar-in"><button class="app__wm" data-go="#/home">kino<i></i></button>
           <label class="k-search">${ic('magnifying-glass')}<input type="search" placeholder="Search films, friends, lists" aria-label="Search"></label>
           <nav class="app__nav">${NAV.filter(n => n[2] !== 'rank' && n[2] !== '#/me').map(([l, , h]) => `<button class="k-btn k-btn--ghost k-btn--sm" data-go="${h}" ${sec === h ? 'aria-current="page"' : ''}>${l}</button>`).join('')}
             <button class="k-btn k-btn--primary k-btn--sm" data-rank="interstellar" style="margin-left:8px">${ic('plus')}Rank a film</button>
-            ${iconbtn('bell', 'Notifications')}
-            <button data-go="#/me" style="background:none;border:0;padding:0;cursor:pointer" aria-label="Your profile"><span class="k-avatar k-avatar--sm id-periwinkle">DC<span class="k-avatar__you"></span></span></button></nav></div></header>
-        <div class="app__scroll"><div class="app__page ${enter}">${route(st)}</div></div>
+            ${bellBtn(st, `data-act="bell" aria-expanded="${!!st.bell}"`)}
+            <button data-go="#/me" style="background:none;border:0;padding:0;cursor:pointer" aria-label="Your profile"><span class="k-avatar k-avatar--sm id-periwinkle">DC<span class="k-avatar__you"></span></span></button></nav>
+          ${st.bell ? bellPop(st) : ''}</div></header>`}
+        <div class="app__shell">${rail ? railNav(st, sec) : ''}<div class="app__scroll"><div class="app__page ${enter}">${route(st)}</div></div></div>
         <nav class="app__tabs"><div class="k-tabbar" role="tablist">${NAV.map(([l, n, h]) => `<button class="k-tab" role="tab" aria-selected="${sec === h}" ${h === 'rank' ? 'data-rank="interstellar"' : `data-go="${h}"`}>${ic(n, 'k-icon--off')}${ic(n + '-fill', 'k-icon--on')}${l}<span class="k-tab__dot"></span></button>`).join('')}</div></nav>
         ${st.sheet ? rankSheet(st) : ''}${st.gsheet ? groupSheet(st) : ''}
         ${st.toast ? `<div class="app__toast" role="status"><span>${st.toast.text}</span><button class="k-btn k-btn--ghost k-btn--sm" data-act="undo">Undo</button></div>` : ''}`;
       const nsc = root.querySelector('.app__scroll'); nsc.scrollTop = top;
+      kept.forEach(([k, t, l]) => { const el = root.querySelector(`[data-keep="${k}"]`); if (el) { el.scrollTop = t; el.scrollLeft = l; } });
+      root.style.setProperty('--app-h', nsc.clientHeight + 'px'); // the web side column is as tall as the window
       nsc.addEventListener('scroll', () => root.querySelectorAll('.s-sticky').forEach(s => s.classList.toggle('is-stuck', s.getBoundingClientRect().top <= nsc.getBoundingClientRect().top + 1 && nsc.scrollTop > 0)), { passive: true });
       if (opts.hash) history.replaceState(null, '', st.route);
       glide(root, before); reveal(root);
       root.querySelectorAll('.r-result [data-count]:not(.is-counted)').forEach(countUp);
-      st.fx = null; st.tabDir = null; if (st.sheet) { st.sheet.fresh = false; st.sheet.dir = null; }
+      st.fx = null; st.tabDir = null; st.bellFx = null; if (st.sheet) { st.sheet.fresh = false; st.sheet.dir = null; }
+      watchFeed();
+    }
+    // The feed doesn't end: near the bottom, the three dots wait a beat and the next page deals in underneath. Each render
+    // checks its own scroller, so a re-render mid-load can't leave the feed stuck.
+    function watchFeed() {
+      const sc = root.querySelector('.app__scroll'), more = root.querySelector('.feed-more'); if (!more) return;
+      let busy = false;
+      const k = () => root.getBoundingClientRect().width / root.offsetWidth || 1; // boards scale frames down
+      const near = () => more.isConnected && (more.getBoundingClientRect().top - sc.getBoundingClientRect().bottom) / k() < 600;
+      const check = () => { if (busy || st.feedPages >= 40 || !near()) return; busy = true;
+        setTimeout(() => { if (!more.isConnected) return; more.insertAdjacentHTML('beforebegin', feedHtml(st, st.feedPages++, !calm())); busy = false; check(); }, calm() ? 0 : 650); };
+      sc.addEventListener('scroll', check, { passive: true }); check();
     }
     // Swap just part of the screen (filters and what they filter), so the header and everything else stay put
     function patch(sels) {
@@ -2123,11 +2557,16 @@ const KAPP = (() => {
       st.swiped = d.dx < -60 ? d.it.dataset.gid : null;
       root.querySelectorAll('.g-item[data-gid]').forEach(i => { const on = i.dataset.gid === st.swiped; i.classList.toggle('is-open', on); i.querySelectorAll('.g-act').forEach(b => b.tabIndex = on ? 0 : -1); }); };
     root.addEventListener('pointerup', endDrag); root.addEventListener('pointercancel', endDrag);
+    // The web bell's panel closes on Escape or a click anywhere else
+    root.addEventListener('keydown', e => { if (e.key === 'Escape' && st.bell) { st.bell = null; render(true); root.querySelector('.n-bell')?.focus(); } });
     root.addEventListener('click', e => {
+      if (st.bell && !e.target.closest('.n-pop, .n-bell')) { st.bell = null; root.querySelector('.n-pop')?.remove(); root.querySelector('.n-bell')?.setAttribute('aria-expanded', 'false'); }
       const t = e.target.closest('[data-go],[data-rank],[data-act]'); if (!t || !root.contains(t)) return;
       if ((t.dataset.act === 'overlay' || t.dataset.act === 'goverlay') && e.target !== t) return;
       if (swiped) { swiped = false; return; } // the click that ends a swipe doesn't open the group
-      if (t.dataset.go) { st.nav = t.closest('.app__tabs, .app__nav, .app__wm') ? 'tab' : 'fwd'; go(t.dataset.go); return; }
+      if (t.dataset.go) { if (t.dataset.note) st.read[t.dataset.note] = true; if (t.dataset.go.startsWith('#/notifications')) st.notesSeen = true;
+        const pop = st.bell; st.bell = null; if (t.dataset.go === st.route) { if (pop) render(true); return; }
+        st.nav = t.closest('.app__tabs, .app__nav, .app__wm, .app__rail') ? 'tab' : 'fwd'; go(t.dataset.go); return; }
       if (t.dataset.rank) { st.sheet = { k: t.dataset.rank, step: 0, i: 0, wins: 0, fresh: true }; render(true); return; }
       const a = t.dataset.act, r = st.sheet;
       if (a === 'back') { st.nav = 'back'; if (st.hist.length) { st.route = st.hist.pop(); st.ptab = 0; st.pile = null; render(); } else go('#/home'); }
@@ -2145,11 +2584,7 @@ const KAPP = (() => {
         if (row && !calm()) row.animate([{ height: row.offsetHeight + 'px', opacity: 1 }, { height: '0px', opacity: 0 }], { duration: 280, easing: 'cubic-bezier(.2,.7,.2,1)' }).onfinish = done; else done(); }
       else if (a === 'undo') { delete st.removed[st.toast.undo]; st.toast = null; clearTimeout(toastTimer); render(true); }
       else if (a === 'group' && st.swiped) { st.swiped = null; root.querySelectorAll('.g-item.is-open').forEach(i => i.classList.remove('is-open')); }
-      else if (a === 'group') { // spin the group's dots, then open it
-        const c = t.querySelector('.m-cluster'), to = t.dataset.to;
-        if (!c || calm()) { if (to) go(to); return; }
-        if (c.classList.contains('is-spin')) return;
-        c.classList.add('is-spin'); setTimeout(() => { c.classList.remove('is-spin'); if (to) go(to); }, 520); }
+      else if (a === 'group') { if (t.dataset.to) { st.nav = 'fwd'; go(t.dataset.to); } } // no spin: a quiet press, then the group pushes in
       else if (a === 'close' || a === 'overlay' || a === 'done') dismiss(root, () => { st.sheet = null; render(true); });
       else if (a === 'bucket') { r.bucket = t.dataset.b; r.step = 1; r.i = 0; r.wins = 0; r.dir = 'fwd'; render(true); }
       else if (a === 'pick') { if (r.busy) return; r.busy = true; // the poster you picked steps forward, the other steps back, then the next pair slides in
@@ -2173,9 +2608,16 @@ const KAPP = (() => {
       else if (a === 'save') { const k = st.route.split('/')[2]; st.saved[k] = !st.saved[k]; st.fx = 'save'; render(true); }
       else if (a === 'ptab') { const i = +t.dataset.i; if (i === st.ptab) return; st.tabDir = i > st.ptab ? 'fwd' : 'back'; st.ptab = i; render(true); }
       else if (a === 'like') { const k = t.dataset.key; st.liked[k] = !st.liked[k]; st.fx = 'like-' + k; render(true); }
-      else if (a === 'follow') { const p2 = t.dataset.p; st.followed[p2] = !st.followed[p2]; st.fx = 'follow-' + p2; render(true); }
+      else if (a === 'follow') { const p2 = t.dataset.p; st.followed[p2] = !following(st, p2); st.fx = 'follow-' + p2; render(true); }
+      else if (a === 'fsave') { const k = t.dataset.k; st.saved[k] = !st.saved[k]; st.fx = 'save-' + k; render(true); }
+      else if (a === 'play') { const k = t.dataset.k; st.playing = st.playing === k ? null : k; render(true); }
+      else if (a === 'bell') { st.bell = st.bell ? null : 'list'; st.notesSeen = true; st.bellFx = st.bell && 'open'; render(true); }
+      else if (a === 'bell-set') { st.bell = 'settings'; st.bellFx = 'fwd'; render(true); }
+      else if (a === 'bell-list') { st.bell = 'list'; st.bellFx = 'back'; render(true); }
+      else if (a === 'nset') { const on = st.nprefs[t.dataset.t] = !st.nprefs[t.dataset.t]; t.setAttribute('aria-checked', on); } // in place, so the switch slides
     });
     render();
+    if (window.ResizeObserver) new ResizeObserver(() => { const sc = root.querySelector('.app__scroll'); if (sc) root.style.setProperty('--app-h', sc.clientHeight + 'px'); }).observe(root);
     // Boards can open a frame part-way down a screen (e.g. straight to "Where to watch")
     if (opts.scrollTo) {
       const jump = () => { const sc = root.querySelector('.app__scroll'), el = root.querySelector(opts.scrollTo); if (!sc || !el) return;
@@ -2189,6 +2631,6 @@ const KAPP = (() => {
   return { mount };
 })();
 </script>
-<script>KAPP.mount(document.getElementById('app'), /^#\//.test(location.hash) ? location.hash : '#/home', { hash: true, credit: true });</script>
+<script>KAPP.mount(document.getElementById('app'), /^#\//.test(location.hash) ? location.hash : '#/home', { hash: true, credit: true, webNav: 'rail' }); // the web revisit: you chose the left rail (2026-10-08)</script>
 </body>
 </html>

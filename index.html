@@ -232,7 +232,7 @@
 /* ---------- Dot ---------- */
 .k-dot { display: inline-block; flex: none; width: 8px; height: 8px; border-radius: var(--kino-radius-pill); background: var(--kino-id, var(--kino-signal-you)); }
 .k-dot--lg { width: 12px; height: 12px; }
-.k-dot--empty { background: transparent; box-shadow: inset 0 0 0 1.5px var(--kino-border-strong); }
+.k-dot--empty { background: transparent; border: 1.5px solid var(--kino-border-strong); box-sizing: border-box; } /* a border, not an inset shadow: survives Figma captures */
 
 /* ---------- Avatar ---------- */
 .k-avatar { --k-av: 40px; position: relative; flex: none; width: var(--k-av); height: var(--k-av); border-radius: var(--kino-radius-pill);
@@ -713,6 +713,9 @@
 /* Common ground: titles and both scores centred under each poster */
 .o-mfilm { align-items: center; text-align: center; }
 .o-mfilm .pair { justify-content: center; }
+
+/* V.2.1 crit (2026-10-09): each part of Taste is its own clearly separate section */
+.o-taste > .o-taste__block { padding-top: var(--kino-space-24); border-top: 1px solid var(--kino-border-subtle); }
 </style>
 <style>
 /* Kino prototype shell + screens. One layout, two platforms:
@@ -982,9 +985,8 @@
   transition: background-color var(--kino-motion-fast); }
 .g-row::after { content: ""; position: absolute; left: calc(var(--kino-space-24) + 60px + var(--kino-space-16)); right: 0; bottom: 0; height: 1px; background: var(--kino-border-subtle); }
 .g-row:last-child::after { display: none; }
-.g-row:hover { background: color-mix(in srgb, var(--kino-bg-fill) 55%, transparent); }
+.g-row:hover { background: var(--kino-bg-surface); }
 .g-row:focus-visible { outline: 2px solid var(--kino-border-focus); outline-offset: -2px; }
-.g-row__flag { position: absolute; left: 8px; top: 50%; width: 8px; height: 8px; margin-top: -4px; border-radius: 50%; background: var(--kino-signal-you); }
 .g-row__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .g-row__title { font: 600 17px/22px var(--kino-font-ui); letter-spacing: -.005em; }
 .g-row__sub { font: 400 15px/20px var(--kino-font-ui); color: var(--kino-text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -1257,7 +1259,7 @@
 /* Groups, leaving and deleting. iPhone rows swipe left to show two round actions; web rows show "…" on hover. */
 .g-item { position: relative; touch-action: pan-y; }
 .g-item > .g-row { position: relative; z-index: 1; background: var(--kino-bg-canvas); transition: transform var(--kino-motion-base) var(--kino-ease), background-color var(--kino-motion-fast); }
-.g-item > .g-row:hover, .g-item > .g-row.is-hover { background: color-mix(in srgb, var(--kino-bg-fill) 55%, var(--kino-bg-canvas)); }
+.g-item > .g-row:hover, .g-item > .g-row.is-hover { background: var(--kino-bg-surface); } /* a plain token (not color-mix), so captures keep it opaque */
 .g-item.is-open > .g-row { transform: translateX(-140px); }
 .g-acts { position: absolute; right: var(--kino-space-12); top: 0; bottom: 0; display: flex; align-items: center; gap: var(--kino-space-12); }
 .g-act { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 52px; padding: 0; border: 0; background: none; color: var(--kino-text-secondary); font: 500 12px/16px var(--kino-font-ui); cursor: pointer; }
@@ -1371,7 +1373,6 @@
 .g-list { margin: 0 calc(var(--kino-space-8) * -1); }
 .g-item > .g-row { border-radius: var(--kino-radius-card); padding-left: var(--kino-space-16); }
 .g-row::after { left: calc(var(--kino-space-16) + 60px + var(--kino-space-16)); right: var(--kino-space-12); }
-.g-row__flag { left: 4px; }
 /* Opening a group: no spin. A quiet press on iPhone; on web, the bundle's dots breathe apart a little on hover */
 .m-cluster__dot { transition: transform .32s var(--kino-ease); }
 .g-row:active .m-cluster { transform: scale(.96); transition: transform .12s var(--kino-ease); }
@@ -1404,7 +1405,6 @@
   .g-list { margin: 0; }
   .g-item > .g-row { padding-left: var(--kino-space-24); }
   .g-row::after { left: calc(var(--kino-space-24) + 90px + var(--kino-space-16)); }
-  .g-row__flag { left: 8px; }
 }
 
 /* ===== V.2 crit, part two (2026-10-08): a feed that doesn't end, and the bell ===== */
@@ -1460,7 +1460,7 @@
 .feed-item.is-new { animation: k-rise .45s var(--kino-ease) backwards; animation-delay: calc(var(--n, 0) * 70ms); }
 @container app (min-width: 900px) { .feed-trailer__still, .feed-trailer__meta { max-width: 560px; } }
 /* A swiped group row keeps its rounded soft card while its actions are showing */
-.g-item.is-open > .g-row { background: color-mix(in srgb, var(--kino-bg-fill) 55%, var(--kino-bg-canvas)); }
+.g-item.is-open > .g-row { background: var(--kino-bg-surface); }
 
 /* The bell: a cream dot while something's new (Tomato means you, so never Tomato here) */
 .n-bell { position: relative; }
@@ -1472,7 +1472,6 @@
 .n-sec > .m-section-head { padding-bottom: var(--kino-space-4); }
 .n-row { position: relative; display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; align-items: center; column-gap: var(--kino-space-12); padding: var(--kino-space-10, 10px) 0; min-height: 68px; }
 .n-row.tap { cursor: pointer; }
-.n-row__unread { position: absolute; left: -12px; top: 50%; width: 7px; height: 7px; margin-top: -3.5px; border-radius: 50%; background: var(--kino-signal-unread); }
 .n-row__lead { display: grid; place-items: center; }
 .n-row__lead .k-avatar { --k-av: 40px; font-size: 14px; }
 .n-row__body { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
@@ -1503,7 +1502,6 @@
 .n-pop__body { flex: 1; min-height: 0; overflow: auto; padding: 0 var(--kino-space-20) var(--kino-space-8); display: flex; flex-direction: column; gap: var(--kino-space-12); scrollbar-width: thin; }
 .n-pop .n-row { padding: var(--kino-space-8) 0; min-height: 60px; }
 .n-pop .n-row__text { font-size: 14px; line-height: 19px; }
-.n-pop .n-row__unread { left: -13px; }
 .n-pop__set { gap: 0; padding-bottom: var(--kino-space-12); }
 .n-pop__set > .sub { padding: var(--kino-space-4) 0 var(--kino-space-4); }
 .n-pop__all { flex: none; height: 44px; border-radius: 0; border-top: 1px solid var(--kino-border-subtle); color: var(--kino-text-secondary); }
@@ -1633,6 +1631,82 @@
   .app__rail-me { padding: 6px; }
   .app__rail-me__text { display: none; }
   .app--tight .h-split--two { grid-template-columns: minmax(0, 1fr) 288px !important; gap: var(--kino-space-32) !important; }
+}
+
+/* ===== V.2.1 crit, applied (2026-10-09) ===== */
+/* iPhone: a little more room from the screen edges everywhere (20 instead of 16) */
+.app { --page-x: 20px; }
+@container app (max-width: 899px) {
+  .app__page { padding-left: var(--page-x); padding-right: var(--page-x); }
+  .s-sticky { margin: 0 calc(var(--page-x) * -1); padding-left: var(--page-x); padding-right: var(--page-x); }
+  .hscroll { margin: 0 calc(var(--page-x) * -1); padding: 0 var(--page-x); }
+  .m-shelf { --shelf-pad: var(--page-x); }
+}
+/* Notifications: what's new carries a cream dot just off the avatar's top right; no "New" label */
+.n-row__lead { position: relative; }
+.n-row__new { position: absolute; left: calc(85.36% + 2px); top: calc(14.64% - 2px); transform: translateY(-100%); width: 9px; height: 9px; border-radius: 50%;
+  background: var(--kino-signal-unread); box-shadow: 0 0 0 2px var(--kino-bg-canvas); }
+.n-pop .n-row__new { box-shadow: 0 0 0 2px var(--kino-bg-surface); }
+/* Groups: your turn is a Tomato dot on the bundle's top right, like a notification */
+.g-bundle { position: relative; display: block; line-height: 0; }
+.g-bundle__turn { position: absolute; left: calc(85.36% + 2px); top: calc(14.64% - 2px); transform: translateY(-100%); width: 10px; height: 10px; border-radius: 50%;
+  background: var(--kino-signal-you); box-shadow: 0 0 0 2px var(--kino-bg-canvas); }
+/* Rank what you watched: one to three films large and centred */
+.h-rank__few { display: flex; justify-content: center; gap: var(--kino-space-12); padding: var(--kino-space-4) 0 var(--kino-space-8); }
+.h-rank__few > .tile { flex: 0 1 104px; min-width: 0; }
+.h-rank__few[data-n="1"] > .tile { flex-basis: 152px; }
+.h-rank__few[data-n="2"] > .tile { flex-basis: 132px; }
+.h-rank__few .k-poster { --k-pw: 100%; box-shadow: var(--kino-elevation-2); }
+/* Explore piles: each card beneath fades into the pile (darkest where it meets the stack, itself at the far edge), so it looks like it's
+   emerging; the fade lifts a little while the pile bursts. The top card is never shaded */
+.x-pile__card::after { opacity: 1; background: linear-gradient(var(--ga, 0deg), color-mix(in srgb, var(--kino-bg-canvas) calc(34% + var(--i) * 8%), transparent) 0%, transparent 78%); }
+.x-pile:hover .x-pile__card::after, .x-pile.is-hover .x-pile__card::after, .x-pile:focus-visible .x-pile__card::after { opacity: .5; }
+.x-pile__card:first-child::after { display: none; }
+@container app (min-width: 900px) {
+  /* Rank what you watched in the side column: four or more scroll sideways, so it never reads like the grid below */
+  .app--tight .h-rank__row { display: flex !important; overflow-x: auto; gap: var(--kino-space-8); scroll-snap-type: x proximity; scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(90deg, #000 82%, transparent); mask-image: linear-gradient(90deg, #000 82%, transparent); }
+  .app--tight .h-rank__row::-webkit-scrollbar { display: none; }
+  .app--tight .h-rank__row > * { flex: none; width: 84px; scroll-snap-align: start; }
+  /* Explore: the title, search and filters are glass, like the captions, so cards fade under them instead of clipping; no empty scroll */
+  .app--tight .app__scroll:has(.x-piles) { overflow: hidden; }
+  .app--tight .app__page:has(> .x-zone) > .s-head, .app--tight .app__page:has(> .x-zone) > .s-sticky {
+    margin-left: calc(var(--kino-space-32) * -1); margin-right: calc(var(--kino-space-32) * -1); padding-left: var(--kino-space-32); padding-right: var(--kino-space-32);
+    background: color-mix(in srgb, var(--kino-bg-canvas) 74%, transparent); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+  .app--tight .app__page:has(> .x-zone) > .s-head { position: relative; z-index: 3; margin-top: calc(var(--kino-space-32) * -1); padding-top: var(--kino-space-32);
+    margin-bottom: calc(var(--kino-space-24) * -1); padding-bottom: var(--kino-space-24); }
+  .app--tight .app__page:has(> .x-zone) > .s-sticky { padding-bottom: var(--kino-space-12); }
+  .app--tight .app__page:has(> .x-zone) > .s-sticky::after { content: ""; position: absolute; left: 0; right: 0; top: 100%; height: 44px; pointer-events: none;
+    background: linear-gradient(color-mix(in srgb, var(--kino-bg-canvas) 74%, transparent), transparent); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+    -webkit-mask-image: linear-gradient(#000, transparent); mask-image: linear-gradient(#000, transparent); }
+  /* Profiles: Ranks most wraps and centres (iPhone keeps its sideways scroll); Share and options sit clear of the match pill */
+  .app--tight .o-genres { margin: 0; overflow: visible; }
+  .app--tight .o-genres__in { width: auto; flex-wrap: wrap; justify-content: center; row-gap: var(--kino-space-8); padding: 0; }
+  .app--tight .s-profile-tools { top: var(--kino-space-8); right: var(--kino-space-8); }
+  .app--tight .s-profile-side .o-profile { padding-top: 56px; }
+}
+
+/* ===== Quick fix (2026-10-09): while you rank, the film is the priority ===== */
+/* The first step's poster is the hero: big on iPhone, capped on wider screens */
+.r-body--feel .r-q .k-poster { --k-pw: clamp(152px, 46cqi, 232px); box-shadow: var(--kino-elevation-2); margin-bottom: var(--kino-space-12); }
+/* Head-to-head: the two cards use the width; on a tablet they stop growing at a sensible size */
+.r-body--vs { padding-left: var(--kino-space-16); padding-right: var(--kino-space-16); }
+.r-versus { gap: var(--kino-space-10, 10px); width: 100%; max-width: 600px; margin: 0 auto; }
+.r-option { padding: var(--kino-space-4); }
+.r-option .k-poster { box-shadow: var(--kino-elevation-1); }
+/* The result leads with the film you ranked, beside its big score, so Save stays on screen; neighbours get a little more poster */
+.r-result { flex-direction: row; justify-content: center; align-items: center; gap: var(--kino-space-20); text-align: left; }
+.r-result__poster .k-poster { --k-pw: 88px; box-shadow: var(--kino-elevation-2); }
+.r-result__text { display: flex; flex-direction: column; align-items: flex-start; gap: var(--kino-space-6); min-width: 0; }
+.r-neighbours .k-poster { --k-pw: 44px; }
+.r-body--result .k-field textarea { min-height: 64px !important; }
+@container app (min-width: 900px) {
+  /* The web sheet is a 560 modal: the hero is a little smaller, and the result stays on one screen */
+  .r-body--feel .r-q .k-poster { --k-pw: 200px; }
+  .r-result__poster .k-poster { --k-pw: 84px; }
+  .r-neighbours .k-poster { --k-pw: 32px; }
+  .r-body--result { gap: var(--kino-space-16); }
+  .r-body--result .k-field textarea { min-height: 52px !important; }
 }
 </style>
 <script>/* your choice if you've made one, otherwise your phone's light or dark setting */
@@ -1773,7 +1847,8 @@ const KINO = (() => {
   const face = (name, size = 'lg') => { const [a1, a2, a3] = FACE[hash(name) % FACE.length], h = hash(name + 'x');
     return `<span class="k-avatar k-avatar--${size} m-art m-face" role="img" aria-label="${name}" style="--a1:${a1};--a2:${a2};--a3:${a3};--x1:${30 + h % 40}%;--y1:${20 + (h >> 3) % 25}%;--x2:${40 + (h >> 5) % 40}%;--y2:${70 + (h >> 7) % 25}%;--ang:${150 + (h >> 9) % 50}deg"></span>`; };
   const head = (title, action) => `<div class="m-section-head"><h3>${title}</h3>${action ? `<button class="k-btn k-btn--ghost k-btn--sm">${action}</button>` : ''}</div>`;
-  const colsHead = (...whos) => `<div class="o-cols o-cols--head">${whos.map(w => w === 'group' ? `<span class="o-col">Group</span>` : `<span class="o-col"><span class="k-dot ${w === 'you' ? '' : 'id-' + P[w].h}"></span>${P[w].n}</span>`).join('')}</div>`;
+  // Column heads are just names (V.2.1 crit): the scores under them already carry each person's dot
+  const colsHead = (...whos) => `<div class="o-cols o-cols--head">${whos.map(w => `<span class="o-col">${w === 'group' ? 'Group' : P[w].n}</span>`).join('')}</div>`;
 
   /* 1 · Profile header: centred, the avatar is the hero. On a friend's profile, your match with them sits just off the avatar's
      top right, in Tomato because it's yours. Your own profile needs no marker. Long names step down a size; nothing else ever shrinks. */
@@ -1831,7 +1906,8 @@ const KINO = (() => {
     : p >= 40 ? 'Different favourites, great debates. You each bring something new'
     : 'Opposite tastes make the best recommendations. Trade a favourite and see who converts';
   const pairRow = (k, who, a, b) => `<div class="o-pairrow">${poster(k, 'xs')}<div class="o-pairrow__main"><span class="o-pairrow__title">${F[k][0]}</span><span class="pair">${score(who, a, { name: true })}${score('you', b, { name: true })}</span></div></div>`;
-  const mfilm = (k, who, a, b, big) => `<div class="o-mfilm ${big ? 'o-mfilm--big' : ''}">${poster(k, 'm')}<span class="o-mfilm__title">${F[k][0]}</span><span class="pair">${score(who, a, { name: true })}${score('you', b, { name: true })}</span></div>`;
+  // Compared scores carry no names (V.2.1 crit: a long name would break the pair). Their dots say whose is whose: theirs, then yours.
+  const mfilm = (k, who, a, b, big) => `<div class="o-mfilm ${big ? 'o-mfilm--big' : ''}">${poster(k, 'm')}<span class="o-mfilm__title">${F[k][0]}</span><span class="pair">${score(who, a)}${score('you', b)}</span></div>`;
   function match(who = 'maya') {
     const m = MATCH[who], name = P[who].n, gap = Math.abs(m.split[1] - m.split[2]).toFixed(1);
     return `<div class="m-card o-match">
@@ -1840,9 +1916,9 @@ const KINO = (() => {
       <div class="o-taste__block"><span class="m-label">Common ground</span><div class="o-mgrid">${m.agree.map(([k, a, b]) => mfilm(k, who, a, b)).join('')}</div></div>
       <div class="o-taste__block"><span class="m-label">Friendly disagreement</span>
         <div class="o-msplit">${poster(m.split[0], 'm')}<span class="o-mfilm__title">${F[m.split[0]][0]}</span>
-          <div class="o-msplit__scores"><span class="o-msplit__side">${score(who, m.split[1])}<span class="sub">${name}</span></span>
+          <div class="o-msplit__scores"><span class="o-msplit__side">${score(who, m.split[1])}</span>
             <span class="o-mgap"><b>${gap}</b><span>apart</span></span>
-            <span class="o-msplit__side">${score('you', m.split[2])}<span class="sub">You</span></span></div></div></div>
+            <span class="o-msplit__side">${score('you', m.split[2])}</span></div></div></div>
       <button class="k-btn k-btn--accent k-btn--block">${ic('popcorn')}Start a group pick with ${name}</button>
     </div>`;
   }
@@ -2088,13 +2164,14 @@ const KAPP = (() => {
     const end = n.btn ? `<button class="k-btn k-btn--secondary k-btn--sm" data-go="${n.go}" data-note="${n.id}">${n.btn}</button>`
       : n.follow ? followBtn(st, n.p, 'k-btn--secondary', 'Follow back')
       : n.k ? `<span class="n-thumb">${poster(n.k, 'xs')}${n.on ? `<span class="n-thumb__dots">${n.on.map(p => `<span class="k-dot ${p === 'you' ? '' : 'id-' + P[p].h}"></span>`).join('')}</span>` : ''}</span>` : '';
-    return `<div class="n-row${unread ? ' is-new' : ''}${n.go ? ' tap' : ''}" ${n.go ? `data-go="${n.go}" data-note="${n.id}"` : ''}>${unread ? '<span class="n-row__unread" role="img" aria-label="New"></span>' : ''}
-        <span class="n-row__lead">${lead}</span>
+    // What's new carries a cream dot just off the avatar's top right, where the dot language puts markers (V.2.1 crit)
+    return `<div class="n-row${unread ? ' is-new' : ''}${n.go ? ' tap' : ''}" ${n.go ? `data-go="${n.go}" data-note="${n.id}"` : ''}>
+        <span class="n-row__lead">${lead}${unread ? '<span class="n-row__new" role="img" aria-label="New"></span>' : ''}</span>
         <span class="n-row__body"><span class="n-row__text">${n.text}</span>${n.quote ? `<span class="n-row__quote">\u201C${n.quote}\u201D</span>` : ''}
           <span class="n-row__sub">${n.s != null ? score(n.p, n.s) + '<span aria-hidden="true">·</span>' : ''}<span>${[n.sub, n.when].filter(Boolean).join(' · ')}</span></span></span>
         <span class="n-row__end">${end}</span></div>`;
   }
-  const noteList = st => `<div class="n-sec"><div class="m-section-head"><h3>New</h3></div>${NOTES.filter(n => n.fresh).map(n => noteRow(st, n)).join('')}</div>
+  const noteList = st => `<div class="n-sec">${NOTES.filter(n => n.fresh).map(n => noteRow(st, n)).join('')}</div>
       <div class="n-sec"><div class="m-section-head"><h3>Earlier</h3></div>${NOTES.filter(n => !n.fresh).map(n => noteRow(st, n)).join('')}</div>`;
   const nswitch = (st, [id, icon, label, sub]) => `<div class="e-row">${ic(icon)}<span class="e-row__body"><b>${label}</b><span class="sub">${sub}</span></span>
       <button class="k-switch" role="switch" aria-checked="${!!st.nprefs[id]}" aria-label="${label}" data-act="nset" data-t="${id}"><span></span></button></div>`;
@@ -2113,11 +2190,16 @@ const KAPP = (() => {
   function home(st) {
     const g = GROUPS[0], waiting = !st.myVote;
     const status = `<div class="m-card g-status">
-      <div class="g-status__top"><div><div class="kino-title-l">${g.name}</div><div class="sub">${g.when} · ${waiting ? '3 of 4 voted. Waiting on you' : 'Everyone\'s in'}</div></div>${stack(g.who, 'sm', 4)}</div>
+      <div class="g-status__top"><div><div class="kino-title-l">${g.name}</div><div class="sub">${g.when}</div><div class="sub">${waiting ? '3 of 4 voted. Waiting on you' : 'Everyone\'s in'}</div></div>${stack(g.who, 'sm', 4)}</div>
       <div class="g-status__posters">${CANDS.map(c => `<button class="tile" data-go="#/group/thursday" aria-label="${F[c.k][0]}">${poster(c.k, 'm')}</button>`).join('')}</div>
       <button class="k-btn k-btn--accent k-btn--block" data-go="#/group/thursday">${ic('popcorn')}${waiting ? 'Vote for Friday' : 'See the pick'}</button></div>`;
-    const toRank = `<div class="s-section h-rank"><div class="m-section-head"><h3>Rank what you watched</h3></div>
-      <div class="m-shelf h-grid">${['interstellar', 'odyssey', 'coyote', 'residentevil'].map(k => `<div>${rankTile(k)}</div>`).join('')}</div></div>`;
+    // Rank what you watched shows only when there's something to rank, and grows with it (V.2.1 crit): one to three films sit large
+    // and centred; four or more become a row that scrolls sideways, so it never reads like the Recently released grid below it.
+    const watched = (st.toRank || ['interstellar', 'odyssey', 'coyote', 'residentevil']).filter(k => st.ranked[k] == null);
+    const rankHead = `<div class="m-section-head"><h3>Rank what you watched</h3>${watched.length > 3 ? `<span class="sub">${watched.length} films</span>` : ''}</div>`;
+    const toRank = !watched.length ? '' : watched.length <= 3
+      ? `<div class="s-section h-rank h-rank--few">${rankHead}<div class="h-rank__few" data-n="${watched.length}">${watched.map(k => rankTile(k)).join('')}</div></div>`
+      : `<div class="s-section h-rank">${rankHead}<div class="m-shelf h-grid h-rank__row">${watched.map(k => `<div>${rankTile(k)}</div>`).join('')}</div></div>`;
     const recent = `<div class="s-section h-recent"><div class="m-section-head"><h3>Recently released</h3><button class="k-btn k-btn--ghost k-btn--sm">See all</button></div><div class="m-shelf h-grid">${RECENT.map(k => `<div>${tile(k)}</div>`).join('')}</div></div>`;
     // One feed, no cut: it loads the next page as you near the end (see watchFeed)
     const feed = `<div class="h-feed"><div class="m-section-head"><h3>Lately</h3></div>${Array.from({ length: st.feedPages }, (_, n) => feedHtml(st, n)).join('')}
@@ -2159,14 +2241,17 @@ const KAPP = (() => {
     // Each pile is dealt its own way, seeded by the pile and the visit, so no two fan or burst alike (V.2.1 crit). The top card
     // stays put on hover; the ones beneath fly out on their own paths, a little further than before.
     const pileSeed = id => [...id].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, st.seed >>> 0);
-    // The cards beneath take one quarter of the circle each (in a shuffled order, with a little jitter), so every pile spreads all round
-    const card = (k, i, r, turn, quarter) => { if (!i) return `<span class="x-pile__card" style="--i:0;--r:${((r() - .5) * 3).toFixed(1)}deg">${poster(k, 'l')}</span>`;
-      const a = (turn + quarter[(i - 1) % 4] * 90 + (r() - .5) * 50) * Math.PI / 180, d = 6 + i * (4 + r() * 5), rot = (r() < .5 ? -1 : 1) * (1.5 + r() * 3) * Math.sqrt(i);
-      const ba = a + (r() - .5) * .7, bd = 40 + i * (18 + r() * 16) + r() * 30;
-      return `<span class="x-pile__card" style="--i:${i};--dx:${(d * Math.cos(a)).toFixed(1)}px;--dy:${(d * Math.sin(a)).toFixed(1)}px;--r:${rot.toFixed(1)}deg;--bx:${(bd * Math.cos(ba)).toFixed(1)}px;--by:${(bd * Math.sin(ba)).toFixed(1)}px;--br:${(rot * (1.8 + r() * 1.4)).toFixed(1)}deg;--bt:${(r() * 90).toFixed(0)}ms">${poster(k, 'l')}</span>`; };
-    const pile = p => { const films = rotate(sift(p.films, on, p), shift), r = rng(pileSeed(p.id)), turn = r() * 360, quarter = [0, 1, 2, 3].map(q => [r(), q]).sort((x, y) => x[0] - y[0]).map(([, q]) => q);
-      return `<button class="x-pile" data-act="pile" data-p="${p.id}" aria-label="Open ${p.title}, ${nfilms(films.length)}" ${films.length ? '' : 'disabled'}>
-        <span class="x-pile__stack">${films.length ? films.slice(0, 5).map((k, i) => card(k, i, r, turn, quarter)).join('') : '<span class="x-pile__empty"></span>'}</span>
+    // Seven cards a pile (V.2.1 crit: fuller, less wild). The six beneath take one sixth of the circle each, in a shuffled order with a
+    // little jitter, so every pile spreads evenly but none alike. Bursts travel less sideways than up and down, so a card never covers
+    // the next pile. Each card fades towards the pile (--ga points away from it), so it looks like it's emerging from the stack.
+    const card = (k, i, r, turn, slots) => { if (!i) return `<span class="x-pile__card" style="--i:0;--r:${((r() - .5) * 3).toFixed(1)}deg">${poster(k, 'l')}</span>`;
+      const a = (turn + slots[(i - 1) % 6] * 60 + (r() - .5) * 24) * Math.PI / 180, d = 4 + i * (3 + r() * 2), rot = (r() < .5 ? -1 : 1) * (1.2 + r() * 2) * Math.sqrt(i);
+      const dx = d * Math.cos(a), dy = d * Math.sin(a), ba = a + (r() - .5) * .3, bd = 38 + i * (15 + r() * 6);
+      const ga = Math.atan2(dx, -dy) * 180 / Math.PI - rot;
+      return `<span class="x-pile__card" style="--i:${i};--dx:${dx.toFixed(1)}px;--dy:${dy.toFixed(1)}px;--r:${rot.toFixed(1)}deg;--bx:${(bd * Math.cos(ba) * .72).toFixed(1)}px;--by:${(bd * Math.sin(ba)).toFixed(1)}px;--br:${(rot * (1.6 + r() * .8)).toFixed(1)}deg;--bt:${(r() * 80).toFixed(0)}ms;--ga:${ga.toFixed(0)}deg">${poster(k, 'l')}</span>`; };
+    const pile = p => { const films = rotate(sift(p.films, on, p), shift), r = rng(pileSeed(p.id)), turn = r() * 360, slots = [0, 1, 2, 3, 4, 5].map(q => [r(), q]).sort((x, y) => x[0] - y[0]).map(([, q]) => q);
+      return `<button class="x-pile${st.hoverPile === p.id ? ' is-hover' : ''}" data-act="pile" data-p="${p.id}" aria-label="Open ${p.title}, ${nfilms(films.length)}" ${films.length ? '' : 'disabled'}>
+        <span class="x-pile__stack">${films.length ? films.slice(0, 7).map((k, i) => card(k, i, r, turn, slots)).join('') : '<span class="x-pile__empty"></span>'}</span>
         <span class="x-pile__label"><b>${p.title}</b><span class="sub">${films.length ? nfilms(films.length) : 'Nothing matches'}</span></span></button>`; };
     const spread = p => { const films = rotate(sift(p.films, on, p), shift);
       return `<div class="x-open">
@@ -2203,24 +2288,21 @@ const KAPP = (() => {
       </div>`;
   }
 
-  // No groups yet: friends and films scattered around a big "+" dot, laid out afresh on each visit. Every piece drifts at its own slow
-  // speed, so pieces pass and overlap now and then. Friends always ride on top; films sit a step back, slightly faded. No rings.
+  // No groups yet: friends and films take turns around the "+" in one even ring (V.2.1 crit: nothing ever sits on top of anything,
+  // no big gaps, always roughly a circle). The ring turns slowly as one; each piece bobs a little. Laid out afresh each visit.
   const FIELD = [['maya', 'jo', 'ari', 'sam', 'noor', 'toystory5', 'spirited', 'interstellar', 'budapest', 'hailmary'],
     ['theo', 'kai', 'lena', 'rui', 'arrival', 'parasite', 'coyote', 'dune']]; // the second, wider scatter shows on web only
   const rng = seed => () => (seed = (seed * 1664525 + 1013904223) >>> 0) / 2 ** 32;
   function field(seed) {
-    const r = rng(seed), out = [];
+    const r = rng(seed), out = [], shuffle = a => a.map(x => [r(), x]).sort((p, q) => p[0] - q[0]).map(([, x]) => x);
     FIELD.forEach((pieces, band) => {
-      const mixed = pieces.map(x => [r(), x]).sort((a, b) => a[0] - b[0]).map(([, x]) => x), step = 360 / mixed.length, off = r() * 360;
-      mixed.forEach((x, i) => { const person = !!P[x];
-        out.push({ x, person, wide: band === 1, a: off + i * step + (r() - .5) * step * .36, d: band ? 1.1 + r() * .16 : (person ? .58 : .64) + r() * .26,
-          s: person ? 28 + r() * 6 : 40 + r() * 10, dur: 180 + r() * 80, bob: 5 + r() * 3, bd: -r() * 6 }); });
+      const people = shuffle(pieces.filter(x => P[x])), films = shuffle(pieces.filter(x => !P[x])), ring = [];
+      while (people.length || films.length) { if (people.length) ring.push(people.shift()); if (films.length) ring.push(films.shift()); }
+      const step = 360 / ring.length, off = r() * 360;
+      ring.forEach((x, i) => { const person = !!P[x];
+        out.push({ x, person, wide: band === 1, a: off + i * step + (r() - .5) * step * .14, d: band ? 1.14 : (person ? .66 : .7) + (r() - .5) * .03,
+          s: person ? 30 + r() * 2 : 42 + r() * 4, dur: band ? 320 : 260, bob: 5 + r() * 3, bd: -r() * 6 }); });
     });
-    // Two friends start right on a film, so the overlap is there at first look; slightly different speeds pull them apart over time
-    const films = out.filter(o => !o.person && !o.wide), apart = (o, f) => Math.abs(((o.a - f.a) % 360 + 540) % 360 - 180);
-    out.filter(o => o.person && !o.wide).slice(0, 2).forEach(o => { // each snaps to the nearest free film, so no big gap opens up
-      const f = films.filter(x => !x.taken).sort((x, y) => apart(o, x) - apart(o, y))[0]; f.taken = true;
-      o.a = f.a + 8; o.d = Math.min(.98, f.d + .06); o.dur = f.dur * 1.15; });
     return out;
   }
   const fieldItem = o => `<span class="g-field__item ${o.person ? 'is-person' : 'is-film'} ${o.wide ? 'wide-only' : ''}" style="--a:${o.a.toFixed(1)}deg;--d:${o.d.toFixed(3)};--s:${o.s.toFixed(0)}px;--dur:${o.dur.toFixed(0)}s;--bob:${o.bob.toFixed(1)}s;--bd:${o.bd.toFixed(1)}s">
@@ -2240,7 +2322,7 @@ const KAPP = (() => {
         </div>`;
     }
     // Quiet rows, like Messages: a bundle of the members' dots, the name, one line of what's happening.
-    // A Tomato dot at the edge means it's your turn. Tapping spins the bundle, then opens the group.
+    // A Tomato dot on the bundle's top right means it's your turn, like a notification. Tapping gives a little, then opens the group.
     // On iPhone, swipe a row left for Mute and Leave (Delete, if you started it). On web, "…" on a row opens the same options.
     const item = g => {
       const live = g.id === 'thursday', mine = g.by === 'you', open = st.swiped === g.id, tab = open ? '' : 'tabindex="-1"';
@@ -2250,8 +2332,8 @@ const KAPP = (() => {
       return `<div class="g-item ${open ? 'is-open' : ''}" data-gid="${g.id}">
         <span class="g-acts narrow-only"><button class="g-act" data-act="gmute" data-gid="${g.id}" ${tab}><span class="g-act__dot">${ic('bell')}</span>${st.muted[g.id] ? 'Unmute' : 'Mute'}</button>
           <button class="g-act g-act--danger" data-act="gask" data-gid="${g.id}" data-step="${mine ? 'delete' : 'leave'}" ${tab}><span class="g-act__dot">${ic('x')}</span>${mine ? 'Delete' : 'Leave'}</button></span>
-        <button class="g-row ${live ? 'is-live' : ''}" data-act="group" data-to="${to}" aria-label="${g.name}, ${members(g.who)}">${live ? '<span class="g-row__flag" aria-hidden="true"></span>' : ''}
-          ${cluster(g.who, 60)}<span class="g-row__text"><span class="g-row__title">${g.name}</span><span class="g-row__sub">${st.muted[g.id] ? 'Muted · ' : ''}${sub}</span></span><span class="g-row__when">${when}</span></button>
+        <button class="g-row ${live ? 'is-live' : ''}" data-act="group" data-to="${to}" aria-label="${g.name}, ${members(g.who)}${live ? ', waiting on you' : ''}">
+          <span class="g-bundle">${cluster(g.who, 60)}${live ? '<span class="g-bundle__turn" aria-hidden="true"></span>' : ''}</span><span class="g-row__text"><span class="g-row__title">${g.name}</span><span class="g-row__sub">${st.muted[g.id] ? 'Muted · ' : ''}${sub}</span></span><span class="g-row__when">${when}</span></button>
         <span class="wide-only"><button class="k-iconbtn k-iconbtn--ghost k-iconbtn--sm g-more" data-act="gmenu" data-gid="${g.id}" aria-label="Options for ${g.name}">${ic('dots-three')}</button></span></div>`; };
     return `${top}${head}
       <div class="g-list">${GROUPS.filter(g => !st.removed[g.id]).map(item).join('')}
@@ -2420,8 +2502,9 @@ const KAPP = (() => {
       const s = st.ranked[k], list = myListWith(st), i = list.findIndex(([kk]) => kk === k), around = list.slice(Math.max(0, i - 1), i + 2);
       const fr = (X[k] || {}).friends || [];
       const closest = fr.slice().sort((a, b2) => Math.abs(a[1] - s) - Math.abs(b2[1] - s))[0];
-      body = `<div class="r-result"><span class="r-result__label">Ranked</span><span class="k-score k-score--hero"><span class="k-dot"></span><span class="k-score__num" data-count="${s}" data-from="${b.range[0]}">${fmt(s)}</span></span>
-          <h2 class="kino-display-m" style="margin-top:4px">${F[k][0]} is your #${i + 1}</h2>${closest ? `<p class="s-sub">Closest to ${P[closest[0]].n}, who gave it ${fmt(closest[1])}</p>` : ''}</div>
+      // The film you just ranked leads the result (quick fix, 2026-10-09: the cards are the priority while you rank)
+      body = `<div class="r-result"><span class="r-result__poster">${poster(k, 'm')}</span><div class="r-result__text"><span class="r-result__label">Ranked</span><span class="k-score k-score--hero"><span class="k-dot"></span><span class="k-score__num" data-count="${s}" data-from="${b.range[0]}">${fmt(s)}</span></span>
+          <h2 class="kino-display-m" style="margin-top:4px">${F[k][0]} is your #${i + 1}</h2>${closest ? `<p class="s-sub">Closest to ${P[closest[0]].n}, who gave it ${fmt(closest[1])}</p>` : ''}</div></div>
         <div class="m-card m-card--flush r-neighbours">${around.map(([kk, ss]) => `<div class="o-rank__row ${kk === k ? 'o-rank__row--me' : ''}"><span class="o-rank__num">${list.findIndex(([x]) => x === kk) + 1}</span>${poster(kk, 'xs')}<div class="o-rank__body"><span class="m-film-row__title">${F[kk][0]}</span></div>${score('you', ss)}</div>`).join('')}</div>
         <label class="k-field k-field--signal"><span class="k-field__label">Add a take?</span><span class="k-field__control"><textarea placeholder="A line or two is plenty" style="min-height:80px"></textarea></span><span class="k-field__help">Spoilers are hidden by default.</span></label>
         <button class="k-btn k-btn--accent k-btn--block r-save" data-act="done">${ic('check')}Save to my rankings</button>`;
@@ -2514,7 +2597,7 @@ const KAPP = (() => {
       rfilter: 'all', rq: '', prefs: { loc: true, habit: false }, greet: greetSeed++, seed: Math.floor(Math.random() * 1e9),
       removed: {}, muted: {}, swiped: null, gsheet: null, toast: null, liked: {}, followed: {}, credit: !!opts.credit,
       feedPages: 1, playing: null, bell: null, notesSeen: false, read: {}, nprefs: { picks: true, ranks: true, likes: true, follows: false },
-      webNav: opts.webNav || null }, opts.state || {}); // webNav 'top' or 'rail': the web revisit's two options; unset is V.2.1's web
+      webNav: opts.webNav === undefined ? 'rail' : opts.webNav || null }, opts.state || {}); // the web: 'rail' (your pick, the default), 'top', or false for V.2.1's web
     root.classList.add('app'); root.classList.toggle('app--device', !!opts.device); // a board frame draws its own status bar
     // A new screen pushes in (or pops back, or fades for a tab). Taps that change something in place re-render without the page
     // animation, and what moved glides to its new place.

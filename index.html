@@ -1708,6 +1708,13 @@
   .r-body--result { gap: var(--kino-space-16); }
   .r-body--result .k-field textarea { min-height: 52px !important; }
 }
+
+/* V.2.1, passed crit (2026-10-10): the match card's group pick never spills out of its pill. On the web it takes the small size,
+   like Follow and Compare, so "with Maya" fits with room; a name that still won't fit is dropped (fitLabels in app.js) */
+.o-match__go > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@container app (min-width: 900px) {
+  .app--tight .o-match__go { --k-icon-size: var(--kino-size-icon-sm); height: var(--kino-size-control-sm); padding: 0 var(--kino-space-16); gap: var(--kino-space-6); font: 500 13px/16px var(--kino-font-ui); }
+}
 </style>
 <script>/* your choice if you've made one, otherwise your phone's light or dark setting */
 try{const t=localStorage.getItem('kino-ds-theme')||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');document.documentElement.dataset.theme=t;}catch(e){}</script>
@@ -1919,7 +1926,7 @@ const KINO = (() => {
           <div class="o-msplit__scores"><span class="o-msplit__side">${score(who, m.split[1])}</span>
             <span class="o-mgap"><b>${gap}</b><span>apart</span></span>
             <span class="o-msplit__side">${score('you', m.split[2])}</span></div></div></div>
-      <button class="k-btn k-btn--accent k-btn--block">${ic('popcorn')}Start a group pick with ${name}</button>
+      <button class="k-btn k-btn--accent k-btn--block o-match__go" data-short="Start a group pick">${ic('popcorn')}<span data-full="Start a group pick with ${name}">Start a group pick with ${name}</span></button>
     </div>`;
   }
 
@@ -2300,7 +2307,9 @@ const KAPP = (() => {
       while (people.length || films.length) { if (people.length) ring.push(people.shift()); if (films.length) ring.push(films.shift()); }
       const step = 360 / ring.length, off = r() * 360;
       ring.forEach((x, i) => { const person = !!P[x];
-        out.push({ x, person, wide: band === 1, a: off + i * step + (r() - .5) * step * .14, d: band ? 1.14 : (person ? .66 : .7) + (r() - .5) * .03,
+        // The web's outer ring sits closer (V.2.1, passed crit; was 1.14 for everyone): its people at 1.02 and its films at 1.10,
+        // the nearest each can come at web size without ever touching an inner piece, whatever the angle
+        out.push({ x, person, wide: band === 1, a: off + i * step + (r() - .5) * step * .14, d: band ? (person ? 1.02 : 1.1) : (person ? .66 : .7) + (r() - .5) * .03,
           s: person ? 30 + r() * 2 : 42 + r() * 4, dur: band ? 320 : 260, bob: 5 + r() * 3, bd: -r() * 6 }); });
     });
     return out;
@@ -2584,6 +2593,18 @@ const KAPP = (() => {
       e.target.classList.add('is-seen'); e.target.querySelectorAll('[data-count]').forEach(countUp); }), { root: root.querySelector('.app__scroll'), threshold: .35 });
     cards.forEach(c => io.observe(c));
   }
+  // A button whose label carries a name drops the name when the button can't hold it with its padding
+  // ("Start a group pick with Maya" → "Start a group pick"). Re-checked whenever the button changes size.
+  function fitLabel(btn) {
+    const label = btn.querySelector('[data-full]'); if (!label || !btn.clientWidth) return;
+    label.textContent = label.dataset.full;
+    const cs = getComputedStyle(btn), icon = btn.querySelector('.k-icon');
+    const room = btn.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    const need = label.scrollWidth + (icon ? parseFloat(getComputedStyle(icon).width) + (parseFloat(cs.columnGap) || 0) : 0);
+    if (need > room + .5) label.textContent = btn.dataset.short;
+  }
+  const fitWatch = window.ResizeObserver ? new ResizeObserver(es => es.forEach(e => fitLabel(e.target))) : null;
+  function fitLabels(root) { if (fitWatch) fitWatch.disconnect(); root.querySelectorAll('[data-short]').forEach(b => { fitLabel(b); if (fitWatch) fitWatch.observe(b); }); }
   // Sheets slide away instead of vanishing
   function dismiss(root, done) {
     const ov = root.querySelector('.app__overlay'), sh = ov && ov.querySelector('.app__sheet');
@@ -2626,7 +2647,7 @@ const KAPP = (() => {
       root.style.setProperty('--app-h', nsc.clientHeight + 'px'); // the web side column is as tall as the window
       nsc.addEventListener('scroll', () => root.querySelectorAll('.s-sticky').forEach(s => s.classList.toggle('is-stuck', s.getBoundingClientRect().top <= nsc.getBoundingClientRect().top + 1 && nsc.scrollTop > 0)), { passive: true });
       if (opts.hash) history.replaceState(null, '', st.route);
-      glide(root, before); reveal(root);
+      glide(root, before); reveal(root); fitLabels(root);
       root.querySelectorAll('.r-result [data-count]:not(.is-counted)').forEach(countUp);
       st.fx = null; st.tabDir = null; st.bellFx = null; if (st.sheet) { st.sheet.fresh = false; st.sheet.dir = null; }
       watchFeed();

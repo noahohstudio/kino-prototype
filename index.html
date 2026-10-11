@@ -1983,8 +1983,9 @@ button.st-row { cursor: pointer; } button.st-row:hover .st-row__name { text-deco
    The badge reading (.app--score-badge, the default since your note): their dot grows into a circle that carries the number.
    The number reading: a big Bricolage number with their dot. Either way the colour is who scored it, never how good the score is.
    Toned down a little after your first look, and the take's words stop short of the score's column so the two never meet. */
-.t-score { flex: none; display: inline-flex; align-items: flex-start; gap: 5px; color: var(--kino-text-primary); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.t-score .k-dot { width: 9px; height: 9px; margin-top: 3px; }
+/* The friend's dot sits centre-left of the number, like every score dot (dots are only ever centre-left or, as markers, top right) */
+.t-score { flex: none; display: inline-flex; align-items: center; gap: 5px; color: var(--kino-text-primary); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.t-score .k-dot { width: 9px; height: 9px; }
 .t-score__n { font: 700 var(--t-score, 44px)/.74 var(--kino-font-display); letter-spacing: -.045em; padding-top: 1px; }
 .app--score-badge .t-score { width: 48px; height: 48px; justify-content: center; align-items: center; border-radius: 50%; background: var(--kino-id, var(--kino-signal-you)); color: var(--kino-text-on-identity); }
 .app--score-badge .t-score:not([class*="id-"]) { color: var(--kino-text-on-accent); }

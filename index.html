@@ -2445,6 +2445,116 @@ button.st-row { cursor: pointer; } button.st-row:hover .st-row__name { text-deco
 .br-ask__acts button { height: 32px; padding: 0 16px; border-radius: 16px; border: 1px solid rgb(255 255 255 / .22); background: none; color: #8ab4f8; font: 500 13px/1 var(--kino-font-ui); cursor: pointer; }
 .br-ask__acts button.is-main { background: #8ab4f8; border-color: #8ab4f8; color: #202124; }
 @container app (min-width: 900px) { .ios-dim { background: transparent !important; } }
+
+/* ===== The web tightening pass (2026-10-11): Groups, profiles, the film page and the vote, read like Home and the original ===== */
+/* The web revisit's rules, carried to the rest of the web: a small, steady type scale (13 / 15 / 17), hierarchy from weight and
+   grey rather than size, hairline rows instead of boxes, small thumbnails, one bold thing per screen. Only .app--tight changes. */
+@container app (min-width: 900px) {
+  /* Groups: compact rows like the feed's. Names at 17 in Geist, bundles at 48, still two columns; your turn stays the Tomato dot */
+  .app--tight .g-item > .g-row { grid-template-columns: 52px minmax(0, 1fr) auto; column-gap: var(--kino-space-16); padding: var(--kino-space-16) var(--kino-space-12); }
+  .app--tight .g-row::after { left: calc(var(--kino-space-12) + 52px + var(--kino-space-16)); right: var(--kino-space-12); }
+  .app--tight .g-row .m-cluster { zoom: .8; }
+  .app--tight .g-row__title { font: 600 17px/22px var(--kino-font-ui); letter-spacing: -.005em; }
+  .app--tight .g-row__sub { font: 400 13px/18px var(--kino-font-ui); }
+  .app--tight .g-new { width: 48px; height: 48px; --k-icon-size: 20px; }
+
+  /* The vote: captions close to their posters, and a quieter tally (smaller faces, a 40px Lock the pick) */
+  .app--tight .v-field--edge .v-film__title { margin-top: 22px; min-height: 20px; }
+  .app--tight .v-voter .k-avatar { --k-av: 32px; font-size: 12px; }
+  .app--tight .v-tally > .k-btn--block { height: 40px; min-width: 200px; font-size: 15px; }
+  .app--tight .v-voter.pf-link { font: 400 13px/18px var(--kino-font-ui); color: var(--kino-text-secondary); }
+
+  /* It's settled: the big header stays the one bold thing; the film's name steps down, the poster isn't zoomed, and the second
+     row of actions takes the small size, like Follow and Compare */
+  .app--tight .picked .p-stage { zoom: 1; }
+  .app--tight .picked .p-stage .k-poster { --k-pw: 264px; }
+  .app--tight .picked .picked__title { font: 700 22px/28px var(--kino-font-display); letter-spacing: -.01em; }
+  .app--tight .picked__actions > .k-btn { height: 44px; font-size: 15px; }
+  .app--tight .picked__row .k-btn { --k-icon-size: var(--kino-size-icon-sm); height: var(--kino-size-control-sm); padding: 0 var(--kino-space-16); gap: var(--kino-space-6); font: 500 13px/16px var(--kino-font-ui); }
+
+  /* Profiles: the person on the left is the bold thing. The tabs' content is open canvas with hairlines, like Home's feed, not
+     boxed cards; Taste and the match sit side by side with a hairline between them, and their big numbers step down a size */
+  .app--tight .s-split[data-profile] .s-panel .m-card, .app--tight .s-split[data-profile] > div > .m-card { background: none; box-shadow: none; border-radius: 0; padding: 0; }
+  .app--tight .s-split[data-profile] .s-panel--2 { gap: 0; }
+  .app--tight .s-split[data-profile] .s-panel.s-panel--2 > .m-card { padding: var(--kino-space-8) var(--kino-space-24); }
+  .app--tight .s-split[data-profile] .s-panel.s-panel--2 > .m-card:first-child { padding-left: 0; }
+  .app--tight .s-split[data-profile] .s-panel.s-panel--2 > .m-card:last-child { padding-right: 0; border-left: 1px solid var(--kino-border-subtle); }
+  .app--tight .s-split[data-profile] .o-top3__n { font-size: 36px; }
+  .app--tight .s-split[data-profile] .o-top3__item--1 .o-top3__n { font-size: 56px; }
+  .app--tight .s-split[data-profile] .o-taste__line { font-size: 20px; line-height: 26px; }
+  .app--tight .s-split[data-profile] .o-match .o-match__pct { font-size: 64px; }
+  .app--tight .s-split[data-profile] .o-mfilm { width: 96px; }
+  .app--tight .s-split[data-profile] .o-mfilm__title { font: 600 13px/18px var(--kino-font-ui); }
+  .app--tight .s-split[data-profile] .o-msplit .k-poster { --k-pw: 112px; }
+  .app--tight .s-split[data-profile] .o-msplit .o-mfilm__title { font: 600 15px/20px var(--kino-font-ui); }
+  .app--tight .s-split[data-profile] .o-msplit__side .k-score__num { font: 600 17px/22px var(--kino-font-ui); letter-spacing: 0; }
+  .app--tight .s-split[data-profile] .o-msplit .o-mgap b { font-size: 40px; }
+  .app--tight .s-split[data-profile] .o-rank__row--top .o-rank__num { font: 600 15px/20px var(--kino-font-ui); }
+
+  /* The film page: a smaller poster (240) and less empty backdrop above it; friends and where to watch are open hairline lists,
+     not boxes, with 32px faces and marks; the cast's faces at 56 */
+  .app--tight .s-film { grid-template-columns: 240px minmax(0, 1fr) !important; }
+  .app--tight .s-film--back { padding-top: 160px; }
+  .app--tight .s-film--back > .s-film__main { padding-top: 124px; } /* the info starts where the backdrop fades out; the poster still rises into it */
+  .app--tight .s-film__main .m-card--flush { background: none; box-shadow: none; border-radius: 0; padding: 0; }
+  .app--tight .s-film__main .m-card--flush > .m-section-head { padding: 0 0 var(--kino-space-4); }
+  .app--tight .s-film__main .m-person + .m-person { border-top: 1px solid var(--kino-border-subtle); }
+  .app--tight .s-film__main .m-person .k-avatar { --k-av: 32px; font-size: 12px; }
+  .app--tight .s-film__main .m-person .k-score__num { font: 600 15px/20px var(--kino-font-ui); }
+  .app--tight .s-film__main .wtw__mark { width: 32px; height: 32px; font-size: 12px; }
+  .app--tight .s-film__main .cast .k-avatar { --k-av: 56px; }
+}
+/* Laptops under 1200px (the compact rail): a friend's Taste and the match stack in one column, so neither gets squeezed */
+@container app (min-width: 900px) and (max-width: 1199px) {
+  .app--tight .s-split[data-profile] .s-panel.s-panel--2 { grid-template-columns: minmax(0, 1fr) !important; }
+  .app--tight .s-split[data-profile] .s-panel.s-panel--2 > .m-card { padding: var(--kino-space-24) 0 0; }
+  .app--tight .s-split[data-profile] .s-panel.s-panel--2 > .m-card:first-child { padding-top: var(--kino-space-8); }
+  .app--tight .s-split[data-profile] .s-panel.s-panel--2 > .m-card:last-child { border-left: 0; border-top: 1px solid var(--kino-border-subtle); margin-top: var(--kino-space-24); }
+}
+
+/* ===== Interactions, round 1 (2026-10-11): live for the workshop (kino-interact-1); the defaults are my picks =====
+   1 Opening things: what you tapped travels to its place on the next screen (st.openStyle travel), the screen grows out of it (zoom), or the usual push.
+   2 Hovering a poster on the web: friends' scores in a card beside it, never on it (st.hoverStyle beside), or a small pill just under it (under).
+   3 Back online: the line slips away and your hollow dot fills (st.onlineStyle land), flies in from the line first (travel), or just updates (quiet).
+   4 Lists: a pile deals its films out as it opens (st.listOpen deal); Edit fans every pile open so you can see what's in it (st.listEdit fan).
+   5 Fun: tap kino and the crowd gathers again; double-tap a take to like it; a friend's match counts up; the crowd pops once when a pick locks. */
+.app__page--open { animation: k-fade .34s var(--kino-ease) both; }
+.ot-ghost { position: absolute; z-index: 60; pointer-events: none; transform-origin: 0 0; }
+.ot-ghost > .k-poster { --k-pw: 100% !important; width: 100% !important; height: 100%; box-shadow: var(--kino-elevation-2); }
+.ot-ghost > .k-avatar { width: 100% !important; height: 100% !important; }
+.ot-dot { position: absolute; z-index: 60; pointer-events: none; border-radius: 50%; background: var(--kino-signal-you); transform-origin: 0 0; }
+.ot-crowd { position: absolute; z-index: 60; pointer-events: none; width: 8px; height: 8px; }
+.ot-heart { position: absolute; z-index: 60; pointer-events: none; line-height: 0; color: var(--kino-signal-you); --k-icon-size: 56px; }
+/* 2 · Hover previews (web only): a floating card or pill, drawn above the screen so a side column can't clip it */
+.hv { position: absolute; z-index: 40; pointer-events: none; opacity: 0; transition: opacity .16s var(--kino-ease), transform .2s var(--kino-ease); }
+.hv--beside { width: 220px; box-sizing: border-box; display: flex; flex-direction: column; gap: 2px; padding: var(--kino-space-12) var(--kino-space-16);
+  border-radius: var(--kino-radius-card); background: var(--kino-bg-surface); border: 1px solid var(--kino-border-subtle); box-shadow: var(--kino-elevation-2); }
+.hv--beside[data-side="right"] { transform: translateX(-6px); }
+.hv--beside[data-side="left"] { transform: translateX(6px); }
+.hv.is-on { opacity: 1; transform: none; }
+.hv__t { font: 600 15px/20px var(--kino-font-ui); color: var(--kino-text-primary); }
+.hv__m { font: 400 13px/18px var(--kino-font-ui); color: var(--kino-text-secondary); }
+.hv__rows { display: flex; flex-direction: column; gap: var(--kino-space-6); margin: var(--kino-space-10, 10px) 0 var(--kino-space-8); padding-top: var(--kino-space-10, 10px); border-top: 1px solid var(--kino-border-subtle); }
+.hv__row { display: flex; align-items: center; gap: var(--kino-space-8); font: 400 13px/18px var(--kino-font-ui); color: var(--kino-text-secondary); }
+.hv__row .k-score { min-width: 44px; }
+.hv__avg { font: 400 12px/16px var(--kino-font-ui); color: var(--kino-text-secondary); }
+.hv--under { display: flex; align-items: center; gap: var(--kino-space-6); height: 28px; padding: 0 var(--kino-space-10, 10px) 0 var(--kino-space-8); border-radius: var(--kino-radius-pill); white-space: nowrap;
+  background: var(--kino-bg-surface); border: 1px solid var(--kino-border-subtle); box-shadow: var(--kino-elevation-2); font: 600 13px/1 var(--kino-font-ui); color: var(--kino-text-primary); transform: translate(-50%, -4px); }
+.hv--under.is-on { transform: translate(-50%, 0); }
+.hv--under > span:only-child { font-weight: 400; color: var(--kino-text-secondary); padding-left: var(--kino-space-2, 2px); }
+/* 3 · Back online: Try again sits at the end of the offline line */
+.st-off__go { flex: none; margin: -6px -8px -6px auto; }
+/* 4 · Edit fans every pile open (and folds them when you're done) */
+@keyframes ls-fan { from { transform: translateX(calc(-50% + var(--x))) translateY(var(--y)) rotate(var(--r)); } }
+@keyframes ls-fold { from { transform: translateX(calc(-50% + var(--hx))) translateY(var(--hy)) rotate(var(--hr)); } }
+.app--ls-fan .ls-grid.is-editing .ls-pile { opacity: 1; }
+.app--ls-fan .ls-grid.is-editing .ls-pile > span:nth-child(n+2) { transform: translateX(calc(-50% + var(--hx))) translateY(var(--hy)) rotate(var(--hr)); }
+.app--ls-fan .ls-grid.is-fanning .ls-pile > span:nth-child(n+2) { animation: ls-fan .44s cubic-bezier(.3, 1.35, .5, 1) both; animation-delay: calc(var(--i) * 30ms); }
+.app--ls-fan .ls-grid.is-folding .ls-pile > span:nth-child(n+2) { animation: ls-fold .32s var(--kino-ease) both; }
+/* 5 · The wordmark on Home is a button now: tap it and the crowd gathers again */
+button.s-wm { background: none; border: 0; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.app--calm .app__page--open, .app--calm .ls-grid .ls-pile > span { animation: none !important; }
+@media (prefers-reduced-motion: reduce) { .app__page--open, .ls-grid .ls-pile > span { animation: none !important; } .hv { transition: none; } }
 </style>
 <script>/* your choice if you've made one, otherwise your phone's light or dark setting */
 try{const t=localStorage.getItem('kino-ds-theme')||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');document.documentElement.dataset.theme=t;}catch(e){}</script>
@@ -3053,7 +3163,7 @@ const KAPP = (() => {
     const feed = st.err === 'feed' ? `<div class="h-feed"><div class="m-section-head"><h3>Lately</h3></div>${errCard('your feed')}</div>`
       : `<div class="h-feed"><div class="m-section-head"><h3>Lately</h3></div>${Array.from({ length: st.feedPages }, (_, n) => feedHtml(st, n)).join('')}
       <div class="feed-more">${loader(st, 'md', null, 'Loading more')}</div></div>`;
-    const top = `<div class="h-top narrow-only"><span class="s-wm">kino<i></i></span>${bellBtn(st, 'data-go="#/notifications"')}</div>`;
+    const top = `<div class="h-top narrow-only"><button class="s-wm" data-act="gather" aria-label="Kino">kino<i></i></button>${bellBtn(st, 'data-go="#/notifications"')}</div>`;
     const hero = `${st.pull ? pullZone(st) : ''}${offLine(st)}<div class="s-head h-hero"><h1 class="s-title">${greeting(st)}</h1><p class="s-sub">One group pick needs you, and four films are waiting for a score.</p></div>${catchUp(st)}`;
     // The web revisit (the nav choice sheet): the greeting heads the main column, and the side column runs from the top and
     // scrolls on its own, ending with people to follow. Coming soon waits for films whose dates are certain.
@@ -3728,7 +3838,7 @@ const KAPP = (() => {
     return `<div class="dy-head"><span class="sub">${all.length} lists${edit ? ' · tap one to change it' : ''}</span><span class="ls-tools">
         <button class="k-btn k-btn--${edit ? 'primary' : 'ghost'} k-btn--sm" data-act="lsedit" aria-pressed="${edit}">${edit ? 'Done' : `${ic('pencil-simple')}Edit`}</button>
         <button class="k-btn k-btn--secondary k-btn--sm" data-act="lsnew">${ic('plus')}New list</button></span></div>
-      <div class="ls-grid${edit ? ' is-editing' : ''}">${all.map(l => `<div class="ls-item"><button class="ls-card" ${edit ? `data-act="lsopt" data-l="${l.id}"` : `data-go="#/list/${l.id}"`} data-list="${l.id}">${cover(l)}<b>${l.name}</b><span>${nfilms(l.films.length)} · ${l.note}</span></button>
+      <div class="ls-grid${edit ? ' is-editing' : ''}${st.fx === 'ls-fan' ? ' is-fanning' : st.fx === 'ls-fold' ? ' is-folding' : ''}">${all.map(l => `<div class="ls-item"><button class="ls-card" ${edit ? `data-act="lsopt" data-l="${l.id}"` : `data-go="#/list/${l.id}"`} data-list="${l.id}">${cover(l)}<b>${l.name}</b><span>${nfilms(l.films.length)} · ${l.note}</span></button>
         ${edit ? `<button class="ls-opt" data-act="lsopt" data-l="${l.id}" aria-label="Change ${l.name}">${ic('dots-three')}</button>` : ''}</div>`).join('')}</div>`;
   }
   function listPage(st, id) {
@@ -3885,7 +3995,7 @@ const KAPP = (() => {
         ${TO_FOLLOW.slice(0, 4).map(([q, via]) => `<div class="e-row pp-row">${avatar(q)}<span class="e-row__body"><b>${P[q].full}</b><span class="sub">${via ? `Followed by ${P[via].n}` : `${P[q].followers} followers`}</span></span>${followBtn(st, q)}</div>`).join('')}
         <button class="k-btn k-btn--secondary k-btn--block" data-go="#/invites">${ic('link-simple')}Invite friends</button></section>`;
     const recentNew = `<div class="s-section h-recent"><div class="m-section-head"><h3>Recently released</h3></div><div class="m-shelf h-grid">${RECENT.map(k => `<div>${tile(k)}</div>`).join('')}</div></div>`;
-    const topNew = `<div class="h-top narrow-only"><span class="s-wm">kino<i></i></span>${bellBtn(st, 'data-go="#/notifications"')}</div>`;
+    const topNew = `<div class="h-top narrow-only"><button class="s-wm" data-act="gather" aria-label="Kino">kino<i></i></button>${bellBtn(st, 'data-go="#/notifications"')}</div>`;
     // On iPhone the intro ends and Kino keeps going (your note): trailers and takes from people you don't follow yet, a page at a
     // time, like Home's feed. The web's two columns already fill the screen.
     const more = `<div class="h-feed fu-more narrow-only"><div class="m-section-head"><h3>Around Kino</h3></div>${Array.from({ length: st.feedPages }, (_, n) => feedHtml(st, n + 1, false, true)).join('')}
@@ -3979,7 +4089,7 @@ const KAPP = (() => {
   // 6 · Offline: one quiet line under the top (worth the room, your note); what you saw stays, and anything you do waits as a
   // hollow dot, like your vote, until you're back. A slow connection on a page that has loaded uses the same line (round 2, Noah's
   // pick: a very visible indicator); with nothing loaded yet it's the smaller line over the shapes (slowLine).
-  const offLine = st => (st.offline ? `<div class="st-off" role="status"><span class="k-dot k-dot--empty"></span><span><b>You're offline.</b> Kino will catch up when you're back.</span></div>`
+  const offLine = st => (st.offline ? `<div class="st-off" role="status"><span class="k-dot k-dot--empty"></span><span><b>You're offline.</b> Kino will catch up when you're back.</span><button class="k-btn k-btn--ghost k-btn--sm st-off__go" data-act="online">Try again</button></div>`
     : st.slow ? `<div class="st-off" role="status">${loader(st, 'sm', null, 'Loading', 'span')}<span><b>Slow connection.</b> Showing what you saw last.</span></div>` : '');
 
   /* ---------- round 2, passed (2026-10-10): only Noah's picks are left ----------
@@ -4125,7 +4235,7 @@ const KAPP = (() => {
     el.classList.add('is-counted'); if (calm()) return;
     const to = +el.dataset.count, from = +(el.dataset.from || 0), pct = el.dataset.unit === '%', t0 = performance.now(), dur = 900;
     const show = v => { el.textContent = pct ? Math.round(v) + '%' : fmt(v); };
-    const tick = now => { const p = Math.min(1, (now - t0) / dur); show(from + (to - from) * (1 - Math.pow(1 - p, 3))); if (p < 1) requestAnimationFrame(tick); };
+    const tick = now => { const p = Math.max(0, Math.min(1, (now - t0) / dur)); show(from + (to - from) * (1 - Math.pow(1 - p, 3))); if (p < 1) requestAnimationFrame(tick); };
     show(from); requestAnimationFrame(tick);
   }
   // The taste match counts up and its bar fills the first time it scrolls into view
@@ -4166,6 +4276,8 @@ const KAPP = (() => {
       newUser: null, tsheet: null, talk: [], talkDraft: '', textSize: 'default',
       rpick: null, pickStyle: 'shelves', afterRank: 'stay', gnew: null, gjoin: null, gnewStyle: 'who', newGroups: [], diaryStyle: 'list', logged: [], logsheet: null,
       listStyle: 'pile', lists: null, lsnew: null, peopleStyle: 'page', pplTab: 'friends', pq: '', ppsheet: null, thread: null, threadStyle: 'sheet', myReplies: {}, drafts: {}, openThread: null,
+      // Interactions, round 1 (2026-10-11), live for the workshop; the defaults are my picks
+      openStyle: 'travel', hoverStyle: 'beside', onlineStyle: 'land', listOpen: 'deal', listEdit: 'fan', fun: { gather: true, dbl: true, pill: true, pop: true }, openFrom: null, landing: null,
       theme: (() => { try { return (opts.hash && localStorage.getItem('kino-ds-theme')) || 'device'; } catch (e) { return 'device'; } })(),
       webNav: opts.webNav === undefined ? 'rail' : opts.webNav || null }, opts.state || {}); // the web: 'rail' (your pick, the default), 'top', or false for V.2.1's web
     root.classList.add('app'); root.classList.toggle('app--device', !!opts.device); // a board frame draws its own status bar
@@ -4202,6 +4314,7 @@ const KAPP = (() => {
       glide(root, before); reveal(root); fitLabels(root);
       if (st.splash && st.splash.t == null && !st.splash.timer) st.splash.timer = setTimeout(() => { st.splash = null; root.querySelector('.sp')?.remove(); }, calm() ? 0 : 2450);
       root.querySelectorAll('.r-result [data-count]:not(.is-counted), .ob-pct [data-count]:not(.is-counted)').forEach(countUp);
+      afterRender(st.fx, keepScroll);
       st.fx = null; st.tabDir = null; st.bellFx = null; if (st.sheet) { st.sheet.fresh = false; st.sheet.dir = null; }
       if (st.ysheet) st.ysheet.fresh = false; if (st.setsheet) st.setsheet.fresh = false; if (st.ymenu) st.ymenu = 'open';
       ['rpick', 'gnew', 'gjoin', 'logsheet', 'lsnew', 'lsopt', 'ppsheet', 'thread', 'fmenu', 'fsheet', 'tsheet'].forEach(x => { if (st[x]) st[x].fresh = false; });
@@ -4224,6 +4337,110 @@ const KAPP = (() => {
       sels.forEach(s => { const a = root.querySelector('.app__page ' + s), b = next.querySelector(s); if (a && b) a.replaceWith(b); });
     }
     function go(r) { if (r === st.route) return; st.hist.push(st.route); st.route = r; st.ptab = 0; st.pile = null; render(); }
+
+    /* ---------- interactions, round 1 (2026-10-11): live for the workshop ----------
+       st.openStyle 'travel' | 'push' | 'zoom' · st.hoverStyle 'beside' | 'under' | 'none' (web) · st.onlineStyle 'land' | 'travel' | 'quiet'
+       st.listOpen 'deal' | 'push' · st.listEdit 'fan' | 'still' · st.fun { gather, dbl, pill, pop } */
+    const local = r => { const R = root.getBoundingClientRect(), s = R.width / root.offsetWidth || 1; return { x: (r.left - R.left) / s, y: (r.top - R.top) / s, w: r.width / s, h: r.height / s }; };
+    // 1 · Opening things: what you tapped (a poster, a face, a list's pile) travels to its place on the next screen
+    function openFrom(t) {
+      const to = t.dataset.go, kind = /^#\/film\//.test(to) ? 'film' : /^#\/profile\//.test(to) ? 'person' : /^#\/list\//.test(to) ? 'list' : null;
+      if (!kind || to === st.route || calm() || (kind === 'list' ? st.listOpen === 'push' : st.openStyle === 'push')) return false;
+      const box = t.closest('.feed-item, .tile, .x-card, .mf-tile, .ls-card, .n-row, .e-row, .h-person, .o-rank__row') || t;
+      const near = sel => t.querySelector(sel) || box.querySelector(`[data-go="${to}"] ${sel}`); // only ever the face or poster of what you opened
+      const src = kind === 'person' ? near('.k-avatar') : kind === 'list' ? t.querySelector('.ls-pile') : near('.k-poster');
+      const rect = src && src.getBoundingClientRect(); if (!rect || !rect.width) return false;
+      st.openFrom = { kind, rect, html: src.outerHTML, style: kind === 'list' ? 'deal' : st.openStyle };
+      st.nav = st.openFrom.style === 'zoom' ? 'still' : 'open'; go(to); return true;
+    }
+    function landOpen() {
+      const o = st.openFrom; st.openFrom = null; const from = local(o.rect), page = root.querySelector('.app__page');
+      if (o.style === 'zoom') { const pg = local(page.getBoundingClientRect()); // the new screen grows out of what you tapped
+        page.style.transformOrigin = `${from.x + from.w / 2 - pg.x}px ${from.y + from.h / 2 - pg.y}px`;
+        page.animate([{ opacity: 0, transform: 'scale(.86)' }, { opacity: 1, transform: 'none' }], { duration: 400, easing: EASE }); return; }
+      if (o.style === 'deal') { const cx = from.x + from.w / 2, cy = from.y + from.h / 2;
+        root.querySelectorAll('.mf-grid > *').forEach((el, i) => { const r = local(el.getBoundingClientRect()), rot = ((i * 37) % 17) - 8;
+          el.animate([{ opacity: 0, transform: `translate(${cx - r.x - r.w / 2}px, ${cy - r.y - r.h / 2}px) scale(.5) rotate(${rot}deg)` }, { opacity: 1, transform: 'none' }],
+            { duration: 560, delay: 80 + i * 45, easing: SPRING, fill: 'backwards' }); });
+        return; }
+      const target = o.kind === 'film' ? root.querySelector('.s-film__hero .k-poster') : root.querySelector('.o-profile .k-avatar'); if (!target) return;
+      const to = local(target.getBoundingClientRect()), g = document.createElement('div');
+      g.className = 'ot-ghost'; g.innerHTML = o.html; Object.assign(g.style, { left: from.x + 'px', top: from.y + 'px', width: from.w + 'px', height: from.h + 'px' });
+      root.appendChild(g); target.style.visibility = 'hidden';
+      g.animate([{ transform: 'none' }, { transform: `translate(${to.x - from.x}px, ${to.y - from.y}px) scale(${to.w / from.w}, ${to.h / from.h})` }],
+        { duration: 500, easing: 'cubic-bezier(.3,.8,.25,1)', fill: 'forwards' }).onfinish = () => { target.style.visibility = ''; g.remove(); };
+    }
+    // 2 · Hovering a poster on the web: friends' dots and scores beside it, never on it ('beside'), or tucked under its edge ('under')
+    let hoverOn = null;
+    const friendsOn = k => { const x = X[k] || {}; if (x.friends) return x.friends.map(f => [f[0], f[1]]);
+      const who = (PILES[0].who || {})[k] || [], ranked = q => ((KINO.PEOPLE[q] || {}).rankings || []).find(r => r[0] === k);
+      return who.map(q => [q, ranked(q) ? ranked(q)[1] : null]); };
+    function hideHover() { root.querySelectorAll('.hv').forEach(h => h.remove()); hoverOn = null; }
+    function showHover(tile, k) {
+      hideHover(); hoverOn = tile; const r = local((tile.querySelector('.k-poster') || tile).getBoundingClientRect()), fr = friendsOn(k), scored = fr.filter(f => f[1] != null);
+      const avg = scored.length ? scored.reduce((a, f) => a + f[1], 0) / scored.length : null, el = document.createElement('div');
+      el.className = 'hv hv--' + st.hoverStyle; el.setAttribute('aria-hidden', 'true');
+      if (st.hoverStyle === 'under') el.innerHTML = fr.length ? `${whodots(fr.map(f => f[0]))}${avg != null ? `<b>${fmt(avg)}</b>` : ''}` : '<span>No friends yet</span>';
+      else el.innerHTML = `<b class="hv__t">${F[k][0]}</b><span class="hv__m">${F[k][1]} · ${F[k][2]}</span>${scored.length
+        ? `<span class="hv__rows">${scored.slice(0, 3).map(([q, sc]) => `<span class="hv__row">${score(q, sc)}<span>${P[q].n}</span></span>`).join('')}</span><span class="hv__avg">Friends · average ${fmt(avg)}</span>`
+        : fr.length ? `<span class="hv__rows"><span class="hv__row">${whodots(fr.map(f => f[0]))}<span>Loved by ${names(fr.map(f => f[0]))}</span></span></span>` : '<span class="hv__m">No friends have ranked it yet</span>'}`;
+      root.appendChild(el);
+      if (st.hoverStyle === 'under') { el.style.left = (r.x + r.w / 2) + 'px'; el.style.top = (r.y + r.h + 6) + 'px'; } // just under the poster, never on it
+      else { const right = r.x + r.w + 10 + 220 <= root.offsetWidth; el.dataset.side = right ? 'right' : 'left'; el.style.top = Math.max(8, r.y + 6) + 'px'; el.style.left = (right ? r.x + r.w + 10 : r.x - 10 - 220) + 'px'; }
+      requestAnimationFrame(() => el.classList.add('is-on'));
+    }
+    root.addEventListener('mouseover', e => { if (st.hoverStyle === 'none' || root.offsetWidth < 900 || st.sheet) return;
+      const tile = e.target.closest('.tile, .x-card, .mf-tile, .feed-item__poster, .o-top3__item'); if (!tile || tile === hoverOn || !root.contains(tile)) return;
+      const href = tile.dataset.go || (tile.closest('[data-go]') || {}).dataset?.go || '', m = href.match(/^#\/film\/(\w+)/); if (m && F[m[1]]) showHover(tile, m[1]); });
+    root.addEventListener('mouseout', e => { if (hoverOn && !(e.relatedTarget && hoverOn.contains(e.relatedTarget))) hideHover(); });
+    root.addEventListener('scroll', () => { if (hoverOn) hideHover(); }, true);
+    // 3 · Back online: what waited lands. The hollow dot fills with a little pop ('land'), flies in from the line first ('travel'), or just updates
+    function land() {
+      const o = st.landing; st.landing = null; if (calm() || o.style === 'quiet') return;
+      const dot = root.querySelector('.v-dot.id-you'); if (!dot) return;
+      const cs = getComputedStyle(dot), fill = cs.backgroundColor, ink = cs.color, canvas = getComputedStyle(root).backgroundColor;
+      const pop = () => dot.animate([{ backgroundColor: canvas, color: fill, boxShadow: `inset 0 0 0 2px ${fill}`, scale: 1 }, // scale, not transform: the dot may be gliding too
+        { backgroundColor: fill, color: ink, boxShadow: `inset 0 0 0 0 ${fill}`, scale: 1.3, offset: .55 }, { scale: 1 }], { duration: 560, easing: EASE });
+      if (o.style !== 'travel' || !o.from) return pop();
+      const a = local(o.from), b = local(dot.getBoundingClientRect()), g = document.createElement('span');
+      g.className = 'ot-dot'; Object.assign(g.style, { left: a.x + 'px', top: a.y + 'px', width: a.w + 'px', height: a.h + 'px' }); root.appendChild(g); dot.style.visibility = 'hidden';
+      g.animate([{ transform: 'none' }, { transform: `translate(${b.x - a.x}px, ${b.y - a.y}px) scale(${b.w / a.w})` }], { duration: 620, easing: 'cubic-bezier(.45,.05,.2,1)' }).onfinish = () => { g.remove(); dot.style.visibility = ''; pop(); };
+    }
+    // 4 · Fun: tap kino and the crowd gathers again around your dot
+    function gather(el) {
+      const i = el.querySelector('i'); if (!i || calm()) return; const c = local(i.getBoundingClientRect()), cx = c.x + c.w / 2, cy = c.y + c.h / 2;
+      CROWD.forEach((h, n) => { const d = document.createElement('span'), a = (n * 60 + 18 + Math.random() * 24) * Math.PI / 180, rad = 44 + Math.random() * 16;
+        d.className = 'k-dot id-' + h + ' ot-crowd'; Object.assign(d.style, { left: cx - 4 + 'px', top: cy - 4 + 'px' }); root.appendChild(d);
+        d.animate([{ transform: `translate(${Math.cos(a) * rad}px, ${Math.sin(a) * rad}px)`, opacity: 0 }, { opacity: 1, offset: .2 }, { transform: 'translate(0, 0) scale(.4)', opacity: 0 }],
+          { duration: 780, delay: n * 45, easing: 'cubic-bezier(.5,0,.2,1)' }).onfinish = () => d.remove(); });
+      i.animate([{ scale: 1 }, { scale: 1.7, offset: .7 }, { scale: 1 }], { duration: 1050, easing: EASE });
+    }
+    // 4 · Fun: when the pick locks, the crowd's dots pop out around the poster once (crisp dots, never a glow)
+    function crowdPop() { // the dots start just outside the poster's edges and burst outward, so nothing is ever drawn on it
+      const p = root.querySelector('.p-stage .k-poster'); if (!p) return; const r = local(p.getBoundingClientRect()), cx = r.x + r.w / 2, cy = r.y + r.h / 2;
+      [...CROWD, ...CROWD].forEach((h, n) => { const d = document.createElement('span'), a = (n * 30 + 8 + Math.random() * 14) * Math.PI / 180, c = Math.cos(a), sn = Math.sin(a);
+        const edge = Math.min(r.w / 2 / Math.max(Math.abs(c), .001), r.h / 2 / Math.max(Math.abs(sn), .001)) + 10, far = edge + 28 + Math.random() * 36;
+        d.className = 'k-dot id-' + h + ' ot-crowd'; Object.assign(d.style, { left: cx - 4 + 'px', top: cy - 4 + 'px' }); root.appendChild(d);
+        d.animate([{ transform: `translate(${c * edge}px, ${sn * edge}px) scale(.3)`, opacity: 0 }, { opacity: 1, offset: .2 }, { transform: `translate(${c * far}px, ${sn * far}px) scale(1)`, opacity: 0 }],
+          { duration: 900, delay: 380 + (n % 6) * 30, easing: 'cubic-bezier(.2,.8,.3,1)', fill: 'backwards' }).onfinish = () => d.remove(); });
+    }
+    function afterRender(fxNow, keepScroll) {
+      if (st.openFrom) landOpen();
+      if (st.landing) land();
+      if (fxNow === 'settled' && st.fun.pop && !calm()) crowdPop();
+      // 4 · Fun: opening a friend's profile, your match counts up on its pill
+      if (!keepScroll && st.fun.pill && /^#\/profile\//.test(st.route)) { const tag = root.querySelector('.o-matchtag'); if (tag && !calm()) { tag.dataset.count = parseInt(tag.textContent, 10); tag.dataset.unit = '%'; countUp(tag); } }
+      root.classList.toggle('app--ls-fan', st.listEdit === 'fan');
+    }
+    // 4 · Fun: double-tap what someone said to like it, with a Tomato heart where you tapped
+    root.addEventListener('dblclick', e => {
+      if (!st.fun.dbl) return; const quote = e.target.closest('.feed-item__quote, .o-take__text'), item = quote && quote.closest('.feed-item, .o-take'); if (!item) return;
+      const like = item.querySelector('[data-act="like"]'); if (!like) return; window.getSelection && window.getSelection().removeAllRanges();
+      if (!st.liked[like.dataset.key]) like.click(); // likes first (it re-renders), then the heart goes on top
+      if (!calm()) { const R = root.getBoundingClientRect(), s = R.width / root.offsetWidth || 1, h = document.createElement('span');
+        h.className = 'ot-heart'; h.innerHTML = ic('heart-fill'); Object.assign(h.style, { left: (e.clientX - R.left) / s + 'px', top: (e.clientY - R.top) / s + 'px' }); root.appendChild(h);
+        h.animate([{ transform: 'translate(-50%, -50%) scale(.3)', opacity: 0, easing: SPRING }, { transform: 'translate(-50%, -50%) scale(1)', opacity: 1, offset: .3 },
+          { transform: 'translate(-50%, -50%) scale(1)', opacity: 1, offset: .62, easing: 'ease-in' }, { transform: 'translate(-50%, -110%) scale(.9)', opacity: 0 }], { duration: 900 }).onfinish = () => h.remove(); } });
     root.addEventListener('input', e => { const inp = e.target.dataset.input;
       if (inp === 'rsearch') { st.rq = e.target.value; patch(['.r-all']); }
       else if (inp === 'rpq' && st.rpick) { st.rpick.q = e.target.value; const box = root.querySelector('.rp-results'), br = root.querySelector('.rp-browse'); if (box) box.innerHTML = pickResults(st); if (br) br.hidden = !!e.target.value.trim(); }
@@ -4287,9 +4504,11 @@ const KAPP = (() => {
       if (/overlay$/.test(t.dataset.act || '') && e.target !== t) return;
       if (swiped) { swiped = false; return; } // the click that ends a swipe doesn't open the group
       if (t.dataset.go === '#/people' && st.peopleStyle === 'sheet' && !t.closest('.pps')) { st.ppsheet = { fresh: true }; render(true); return; }
+      if (t.dataset.go && t.classList.contains('app__wm') && t.dataset.go === st.route && st.fun.gather) { gather(t); return; } // tap kino on Home: the crowd gathers again
       if (t.dataset.go) { if (t.dataset.note) st.read[t.dataset.note] = true; if (t.dataset.go.startsWith('#/notifications')) st.notesSeen = true;
         const pop = st.bell || st.ymenu || st.ysheet || st.ppsheet; st.bell = null; st.ymenu = null; st.ysheet = null; st.ppsheet = null;
         ['thread', 'tsheet', 'fmenu', 'rpick', 'gnew', 'gjoin', 'logsheet', 'lsnew', 'lsopt', 'fsheet', 'setsheet', 'gsheet'].forEach(x => { st[x] = null; }); if (t.dataset.go === st.route) { if (pop) render(true); return; }
+        if (!t.closest('.app__tabs, .app__nav, .app__wm, .app__rail') && openFrom(t)) return;
         st.nav = t.closest('.app__tabs, .app__nav, .app__wm, .app__rail') ? 'tab' : 'fwd'; go(t.dataset.go); return; }
       if (t.dataset.rank) { st.rpick = null; st.logsheet = null; st.sheet = { k: t.dataset.rank, step: 0, i: 0, wins: 0, skips: 0, fresh: true }; render(true); return; }
       const a = t.dataset.act, r = st.sheet;
@@ -4333,7 +4552,12 @@ const KAPP = (() => {
         if (st.myVote && !st.askedPush) { st.askedPush = true; setTimeout(() => { if (!st.ask) { st.ask = { what: 'push', step: 'pre' }; render(true); } }, 900); } }
       else if (a === 'suggest') { st.suggested = 'spiderman'; render(true); }
       else if (a === 'nudge') { st.nudged = true; st.fx = 'nudge'; render(true); }
-      else if (a === 'lock') { st.locked = true; st.hist.push(st.route); st.route = '#/group/thursday/picked'; st.nav = 'fwd'; render(); }
+      else if (a === 'lock') { st.locked = true; st.hist.push(st.route); st.route = '#/group/thursday/picked'; st.nav = 'fwd'; st.fx = 'settled'; render(); }
+      else if (a === 'gather') { if (st.fun.gather) gather(t); }
+      else if (a === 'online') { // back online: the line slips away, then what waited lands (round 1 of interactions)
+        const line = root.querySelector('.st-off'), from = line && line.querySelector('.k-dot') ? line.querySelector('.k-dot').getBoundingClientRect() : null;
+        const done = () => { st.offline = null; st.landing = { style: st.onlineStyle, from }; render(true); };
+        if (line && st.onlineStyle !== 'quiet' && !calm()) line.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(-8px)' }], { duration: 220, easing: EASE, fill: 'forwards' }).onfinish = done; else done(); }
       else if (a === 'unlock') { st.locked = false; st.route = '#/group/thursday'; st.nav = 'back'; render(); }
       else if (a === 'save') { const k = st.route.split('/')[2]; st.saved[k] = !isSaved(st, k); st.fx = 'save'; render(true); }
       else if (a === 'ptab') { const i = +t.dataset.i; if (i === st.ptab) return; st.tabDir = i > st.ptab ? 'fwd' : 'back'; st.ptab = i; render(true); }
@@ -4398,7 +4622,7 @@ const KAPP = (() => {
         st.logged = [[day, l.k, { with: Object.keys(l.who).filter(p2 => l.who[p2]), rewatch: l.rewatch }], ...(st.logged || [])]; st.logsheet = null;
         if (then === 'rank') st.sheet = { k: l.k, step: 0, i: 0, wins: 0, skips: 0, fresh: true }; else { st.toast = { text: `Logged ${F[l.k][0]}` }; toastAway(); }
         render(true); }
-      else if (a === 'lsedit') { st.lsEdit = !st.lsEdit; render(true); }
+      else if (a === 'lsedit') { st.lsEdit = !st.lsEdit; st.fx = st.lsEdit ? 'ls-fan' : 'ls-fold'; render(true); }
       else if (a === 'lsopt') { const l = allLists(st).find(x => x.id === t.dataset.l); if (l) { st.lsopt = { id: l.id, fresh: true, step: 'edit' }; render(true); } }
       else if (a === 'lsoclose' || a === 'lsooverlay') dismiss(root, () => { st.lsopt = null; render(true); });
       else if (a === 'lso-vis') { st.lsopt.vis = t.dataset.w; render(true); }

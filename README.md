@@ -6,6 +6,15 @@ This is the coded prototype of design **V.2.2**. Everything runs in your browser
 
 **Open it:** https://noahohstudio.github.io/kino-prototype/ (the web with a top bar instead of the rail: https://noahohstudio.github.io/kino-prototype/?nav=top)
 
+## Updated on October 11, 2026
+
+- **A tighter web:** groups, the vote, It's settled., profiles and film pages now read like Home: a small, steady type scale, weight and grey for hierarchy, hairline rows instead of boxes, smaller thumbnails.
+- **Opening things:** what you tap travels to its place on the next screen. A poster becomes the film page's poster, a face becomes the profile's, and a list's pile deals its films out.
+- **Hovering on the web:** hover a poster to see which friends ranked it and their scores, in a card beside it.
+- **Back online:** the offline line slips away and your waiting vote fills with a little pop. Try again on the line brings you back sooner.
+- **Editing lists:** Edit fans every pile open, so you can see what's in them.
+- **A few fun ones:** tap kino at the top of Home and the crowd gathers again; double-tap a friend's take to like it; a friend's match counts up on their profile; It's settled. bursts with the crowd's dots.
+
 ## New since V.2.1
 
 - **Kino opens with a splash:** the crowd's dots gather around yours, every time it opens.
@@ -24,6 +33,8 @@ This is the coded prototype of design **V.2.2**. Everything runs in your browser
 - Open any film from Home or Explore.
 - On the web, pick up a pile on Explore.
 - Sign out from your menu, then join as someone new.
+- On the web, hover a poster on Home, Explore or My films.
+- Double-tap what a friend said in your feed.
 
 ## Notes for the developer
 
@@ -31,5 +42,6 @@ This is the coded prototype of design **V.2.2**. Everything runs in your browser
 - **Backdrops:** a film page shows a real still when we can match one to its film for certain. Otherwise it shows the poster's colour with a field of dots, in the same place, for the film library to fill in.
 - **What iOS decides:** push notifications use iOS's communication style, led by the sender's photo. iOS puts the app's icon on the corner of that photo itself, and an app can't remove it. The prototype draws the intent: a cream dot, the same "new" marker as the bell.
 - **What the browser decides:** on the web, the browser shows its own notification prompt, and there are no contacts to ask for.
+- **Motion:** two curves, Kino's ease (0.2, 0.7, 0.2, 1) and a small spring (0.3, 1.35, 0.5, 1); anything in your way stays under 0.6 seconds. Reduced motion turns it all off.
 
 Film posters and stills belong to their studios and appear here for a non-commercial design study.

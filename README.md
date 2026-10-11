@@ -16,6 +16,7 @@ This is the coded prototype of design **V.2.2**. Everything runs in your browser
 - **A few fun ones:** tap kino at the top of Home and the crowd gathers again; double-tap a friend's take to like it; a friend's match counts up on their profile; It's settled. bursts with the crowd's dots.
 - **Smoother, later the same day:** opening a film or a profile no longer flashes (the old screen fades away while the poster travels); back online, the line folds away and everything moves up in one piece; long lists deal only what's on screen, and posters further down load as you reach them.
 - **Who's voted:** the check on a voter's face sits just off its top right, like every other marker.
+- **A more menu on takes** (the last piece from the original): on iPhone, press and hold a take (or tap its “…”) and it lifts, with the menu right under it; on the web, the “…” shows when you point at a take, and a right-click opens the same menu. Rank it, Save, Add to a list, Share, Hide this take (with Undo) and Report (a reason, then thanks).
 
 ## New since V.2.1
 
@@ -37,6 +38,7 @@ This is the coded prototype of design **V.2.2**. Everything runs in your browser
 - Sign out from your menu, then join as someone new.
 - On the web, hover a poster on Home, Explore or My films.
 - Double-tap what a friend said in your feed.
+- Press and hold what a friend said in your feed, or right-click it on the web.
 
 ## Notes for the developer
 
@@ -44,6 +46,7 @@ This is the coded prototype of design **V.2.2**. Everything runs in your browser
 - **Backdrops:** a film page shows a real still when we can match one to its film for certain. Otherwise it shows the poster's colour with a field of dots, in the same place, for the film library to fill in.
 - **What iOS decides:** push notifications use iOS's communication style, led by the sender's photo. iOS puts the app's icon on the corner of that photo itself, and an app can't remove it. The prototype draws the intent: a cream dot, the same "new" marker as the bell.
 - **What the browser decides:** on the web, the browser shows its own notification prompt, and there are no contacts to ask for.
+- **A take's menu:** it opens after a 0.52s hold, and moving more than 8px lets go (that's a scroll). Report is the design only: it needs a real moderation queue behind it.
 - **Long lists:** only what's on screen animates (12 films at most), and posters past the first screenful load lazily. In the real build, virtualise long lists and page the feed in.
 - **Motion:** two curves, Kino's ease (0.2, 0.7, 0.2, 1) and a small spring (0.3, 1.35, 0.5, 1); anything in your way stays under 0.6 seconds. Reduced motion turns it all off.
 

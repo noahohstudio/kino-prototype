@@ -2550,6 +2550,65 @@ button.st-row { cursor: pointer; } button.st-row:hover .st-row__name { text-deco
 button.s-wm { background: none; border: 0; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .app--calm .ls-grid .ls-pile > span { animation: none !important; }
 @media (prefers-reduced-motion: reduce) { .ls-grid .ls-pile > span { animation: none !important; } .hv { transition: none; } }
+
+/* ---------- interactions, round 2 (2026-10-11, the choice sheet kino-interact-3): a more menu on takes ----------
+   The "…" sits at the end of a take's actions. iPhone: hold the take (it gives a little), then it lifts and the menu unfolds under it.
+   The web: a menu by the "…" (or where you right-clicked), in the same card as your menu from the rail. */
+.o-take__actions .t-more { margin-left: auto; }
+@container app (max-width: 899px) {
+  .app--more-hold .t-more { display: none; }
+  .app__page [data-take] { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+}
+@container app (min-width: 900px) {
+  .app--wmore-hover [data-take] .t-more { opacity: 0; transition: opacity var(--kino-motion-fast) var(--kino-ease); }
+  .app--wmore-hover [data-take]:hover .t-more, .app--wmore-hover .t-more:focus-visible, .app--wmore-hover .t-more[aria-expanded="true"] { opacity: 1; }
+}
+.app__page [data-take] { transition: transform .4s var(--kino-ease); }
+.app__page [data-take].is-pressing { transform: scale(.98); }
+.is-lifted-src { visibility: hidden; }
+.tm { position: absolute; inset: 0; z-index: 25; background: color-mix(in srgb, var(--kino-bg-canvas) 62%, transparent); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.tm.is-fresh { animation: k-fade .2s var(--kino-ease); }
+.tm-lift { position: absolute; pointer-events: none; transform: scale(1.03); }
+.tm-lift::before { content: ''; position: absolute; inset: 0 -14px; z-index: -1; border-radius: 18px; background: var(--kino-bg-surface); box-shadow: var(--kino-elevation-2); }
+.tm-lift > * { border-top: 0 !important; }
+.tm.is-fresh .tm-lift { animation: tm-lift .36s cubic-bezier(.3, 1.35, .5, 1) both; }
+.tm.is-fresh .tm-lift::before { animation: k-fade .2s var(--kino-ease) both; }
+@keyframes tm-lift { from { transform: scale(1); } to { transform: scale(1.03); } }
+.tm-menu { position: absolute; width: 250px; padding: var(--kino-space-6); display: flex; flex-direction: column; gap: 2px; background: var(--kino-bg-surface);
+  border: 1px solid var(--kino-border-subtle); border-radius: 14px; box-shadow: var(--kino-elevation-2); transform-origin: calc(100% - 20px) 0; }
+.tm-menu[data-from="hold"] { transform-origin: 50% 0; }
+.tm-menu[data-up] { transform-origin: calc(100% - 20px) 100%; }
+.tm-menu[data-from="hold"][data-up] { transform-origin: 50% 100%; }
+.tm-menu[data-from="right"] { transform-origin: 0 0; }
+.tm-menu.is-fresh { animation: tm-menu .26s var(--kino-ease) both; }
+.tm-menu.is-fresh .tm-row { animation: tm-row .3s var(--kino-ease) both; animation-delay: calc(50ms + var(--i) * 22ms); }
+@keyframes tm-menu { from { opacity: 0; transform: scale(.9); } }
+@keyframes tm-row { from { opacity: 0; transform: translateY(-4px); } }
+.tm-row { display: flex; align-items: center; gap: var(--kino-space-12); height: 44px; flex: none; padding: 0 var(--kino-space-12); border: 0; border-radius: 10px; background: none;
+  color: var(--kino-text-primary); font: 500 15px/20px var(--kino-font-ui); text-align: left; cursor: pointer; --k-icon-size: 20px; }
+.tm-row .k-icon { color: var(--kino-icon-secondary); }
+.tm-row:hover, .tm-row:active { background: var(--kino-bg-fill); }
+.tm-row:focus-visible { outline: 2px solid var(--kino-border-focus); outline-offset: -2px; }
+.tm-row--danger, .tm-row--danger .k-icon { color: var(--kino-text-danger); }
+.tm-sep { height: 1px; flex: none; margin: var(--kino-space-4) var(--kino-space-8); background: var(--kino-border-subtle); }
+.tm-pop { z-index: 25; width: 232px; border-radius: var(--kino-radius-card); }
+.tm-pop .tm-row { height: 40px; }
+.tm-pop.is-fresh { animation-duration: .2s; }
+.tm-pop.is-fresh .tm-row { animation: none; }
+.tm.is-closing { animation: tm-out .17s var(--kino-ease) forwards; }
+.tm.is-closing .tm-lift { animation: none; transition: transform .17s var(--kino-ease); transform: scale(1); }
+.tm-pop.is-closing { animation: tm-out .12s var(--kino-ease) forwards; }
+@keyframes tm-out { to { opacity: 0; } }
+.tm-sheet .tm-quote { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.t-hidden { flex-direction: row !important; align-items: center; justify-content: space-between; gap: var(--kino-space-12); min-height: 56px; padding-top: 10px !important; padding-bottom: 10px !important;
+  font: 400 13px/18px var(--kino-font-ui); color: var(--kino-text-secondary); }
+.t-hidden.is-fresh { animation: k-fade .3s var(--kino-ease); }
+.rpt-lede { margin: 0 var(--kino-space-4); }
+.rpt-done { display: flex; flex-direction: column; align-items: center; gap: var(--kino-space-8); padding: var(--kino-space-12) var(--kino-space-16) var(--kino-space-20); text-align: center; }
+.rpt-done b { font: 600 17px/22px var(--kino-font-ui); }
+.rpt-check { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; background: var(--kino-bg-fill); color: var(--kino-text-primary); --k-icon-size: 24px; margin-bottom: var(--kino-space-4); }
+@media (prefers-reduced-motion: reduce) { .tm, .tm-lift, .tm-menu, .tm-row, .t-hidden { animation: none !important; } .app__page [data-take] { transition: none; } }
+.app--calm .tm, .app--calm .tm-lift, .app--calm .tm-menu, .app--calm .tm-row, .app--calm .t-hidden { animation: none !important; }
 </style>
 <script>/* your choice if you've made one, otherwise your phone's light or dark setting */
 try{const t=localStorage.getItem('kino-ds-theme')||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');document.documentElement.dataset.theme=t;}catch(e){}</script>
@@ -2615,7 +2674,7 @@ try{const t=localStorage.getItem('kino-ds-theme')||(matchMedia('(prefers-color-s
 <symbol id="chart-bar" viewBox="0 0 256 256"><path fill="currentColor" d="M224,196h-4V40a12,12,0,0,0-12-12H152a12,12,0,0,0-12,12V76H96A12,12,0,0,0,84,88v36H48a12,12,0,0,0-12,12v60H32a12,12,0,0,0,0,24H224a12,12,0,0,0,0-24ZM164,52h32V196H164Zm-56,48h32v96H108ZM60,148H84v48H60Z"/></symbol>
 <symbol id="key" viewBox="0 0 256 256"><path fill="currentColor" d="M196,76a16,16,0,1,1-16-16A16,16,0,0,1,196,76Zm48,22.74A84.3,84.3,0,0,1,160.11,180H160a83.52,83.52,0,0,1-23.65-3.38l-7.86,7.87A12,12,0,0,1,120,188H108v12a12,12,0,0,1-12,12H84v12a12,12,0,0,1-12,12H40a20,20,0,0,1-20-20V187.31a19.86,19.86,0,0,1,5.86-14.14l53.52-53.52A84,84,0,1,1,244,98.74ZM202.43,53.57A59.48,59.48,0,0,0,158,36c-32,1-58,27.89-58,59.89a59.69,59.69,0,0,0,4.2,22.19,12,12,0,0,1-2.55,13.21L44,189v23H60V200a12,12,0,0,1,12-12H84V176a12,12,0,0,1,12-12h19l9.65-9.65a12,12,0,0,1,13.22-2.55A59.58,59.58,0,0,0,160,156h.08c32,0,58.87-26.07,59.89-58A59.55,59.55,0,0,0,202.43,53.57Z"/></symbol>
 <symbol id="text-aa" viewBox="0 0 256 256"><path fill="currentColor" d="M90.86,50.89a12,12,0,0,0-21.72,0l-64,136a12,12,0,0,0,21.71,10.22L42.44,164h75.12l15.58,33.11a12,12,0,0,0,21.72-10.22ZM53.74,140,80,84.18,106.27,140ZM200,84c-13.85,0-24.77,3.86-32.45,11.48a12,12,0,1,0,16.9,17c3-3,8.26-4.52,15.55-4.52,11,0,20,7.18,20,16v4.39A47.28,47.28,0,0,0,200,124c-24.26,0-44,17.94-44,40s19.74,40,44,40a47.18,47.18,0,0,0,22-5.38A12,12,0,0,0,244,192V124C244,101.94,224.26,84,200,84Zm0,96c-11,0-20-7.18-20-16s9-16,20-16,20,7.18,20,16S211,180,200,180Z"/></symbol>
-</svg>
+<symbol id="flag" viewBox="0 0 256 256"><path fill="none" stroke="currentColor" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" d="M48,224V48M48,48C104,0,160,96,216,48V168C160,216,104,120,48,168Z"/></symbol><symbol id="list-plus" viewBox="0 0 256 256"><path fill="none" stroke="currentColor" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" d="M40,64H216M40,128H216M40,192H120M184,160V224M152,192H216"/></symbol></svg>
 
 <div id="app"></div>
 <script>
@@ -2884,11 +2943,11 @@ const KINO = (() => {
   // A take's score sits on the right, big and bold (your request, 2026-10-10, like the original). The dot is still who:
   // in the badge reading (.app--score-badge) the dot grows into a circle in their colour and carries the number.
   const bigScore = (who, v) => `<span class="t-score${who === 'you' ? '' : ' id-' + P[who].h}" aria-label="${who === 'you' ? 'You' : P[who].n} scored it ${fmt(v)}"><span class="k-dot"></span><b class="t-score__n">${fmt(v)}</b></span>`;
-  const take = (k, s, when, text, likes, replies, who = 'maya') => `<article class="o-take">
+  const take = (k, s, when, text, likes, replies, who = 'maya') => `<article class="o-take" data-take="${who + k}" data-p="${who}" data-k="${k}">
     <div class="o-take__who">${avatar(who, 'sm')}<span><b>${P[who].n}</b> · ${when}</span></div>
     <div class="o-take__film tap" ${go(k)}>${poster(k, 's')}<div><span class="o-rank__title kino-title-l">${F[k][0]}</span><span class="sub">${F[k][1]} · ${F[k][2]}</span></div>${bigScore(who, s)}</div>
     ${text ? `<p class="o-take__text">${text}</p>` : ''}
-    <div class="o-take__actions"><button class="k-btn k-btn--ghost k-btn--sm">${ic('heart')}${likes}</button><button class="k-btn k-btn--ghost k-btn--sm">${ic('chat-circle')}${replies}</button></div>
+    <div class="o-take__actions"><button class="k-btn k-btn--ghost k-btn--sm">${ic('heart')}${likes}</button><button class="k-btn k-btn--ghost k-btn--sm">${ic('chat-circle')}${replies}</button><button class="k-iconbtn k-iconbtn--ghost k-iconbtn--sm t-more" data-act="tmore" aria-label="More for ${P[who].n}'s take" aria-haspopup="menu" aria-expanded="false">${ic('dots-three')}</button></div>
   </article>`;
   const TAKES = [
     ['spirited', 9.4, '2 days ago', 'Watched it again with my niece and cried at the train scene. Every single time.', 12, 3],
@@ -3064,11 +3123,11 @@ const KAPP = (() => {
   // Someone you don't follow yet comes with Follow, and with a friend who follows them when there is one.
   function takeItem(st, [p, k, s, t, txt, via], stranger) {
     const who = stranger ? `<span> · ${via ? `Followed by ${P[via].n}` : `${P[p].followers} followers`} · ${t}</span>${followBtn(st, p)}` : `<span> · ${t}</span>`;
-    return `<div class="feed-item${stranger ? ' feed-stranger' : ''}"><div class="feed-item__who">${pfLink(p, `${avatar(p, 'sm')}<b>${P[p].n}</b>`)}${who}</div>
+    return `<div class="feed-item${stranger ? ' feed-stranger' : ''}" data-take="${p + k}" data-p="${p}" data-k="${k}"><div class="feed-item__who">${pfLink(p, `${avatar(p, 'sm')}<b>${P[p].n}</b>`)}${who}</div>
         <div class="feed-item__body"><button class="feed-item__poster" data-go="#/film/${k}" aria-label="${F[k][0]}">${poster(k, 's')}</button>
           <div class="feed-item__film" data-go="#/film/${k}"><span class="feed-item__title">${F[k][0]}</span><span class="sub">${F[k][1]} · ${F[k][2]}</span></div><div class="feed-item__score" data-go="#/film/${k}">${bigScore(p, s)}</div>
           ${txt ? `<p class="o-take__text feed-item__quote">${txt}</p>` : ''}
-          <div class="o-take__actions"><button class="k-btn k-btn--ghost k-btn--sm${st.liked[p + k] ? ' is-on' : ''}${fx(st, 'like-' + p + k)}" data-act="like" data-key="${p + k}">${ic(st.liked[p + k] ? 'heart-fill' : 'heart')}${st.liked[p + k] ? 'Liked' : 'Like'}</button><button class="k-btn k-btn--ghost k-btn--sm${st.openThread === p + k ? ' is-on' : ''}" data-act="thread" data-key="${p + k}">${ic('chat-circle')}${repliesFor(st, p + k).length ? `${repliesFor(st, p + k).length} ${repliesFor(st, p + k).length === 1 ? 'reply' : 'replies'}` : 'Reply'}</button>${MY[k] == null && st.ranked[k] == null ? `<button class="k-btn k-btn--ghost k-btn--sm" data-rank="${k}">${ic('plus')}Rank it</button>` : ''}</div>${st.threadStyle === 'inline' && st.openThread === p + k ? `<div class="th-inline">${replyRows(st, p + k)}${composer(st, p + k, p)}</div>` : replyPeek(st, p + k)}</div></div>`;
+          <div class="o-take__actions"><button class="k-btn k-btn--ghost k-btn--sm${st.liked[p + k] ? ' is-on' : ''}${fx(st, 'like-' + p + k)}" data-act="like" data-key="${p + k}">${ic(st.liked[p + k] ? 'heart-fill' : 'heart')}${st.liked[p + k] ? 'Liked' : 'Like'}</button><button class="k-btn k-btn--ghost k-btn--sm${st.openThread === p + k ? ' is-on' : ''}" data-act="thread" data-key="${p + k}">${ic('chat-circle')}${repliesFor(st, p + k).length ? `${repliesFor(st, p + k).length} ${repliesFor(st, p + k).length === 1 ? 'reply' : 'replies'}` : 'Reply'}</button>${MY[k] == null && st.ranked[k] == null ? `<button class="k-btn k-btn--ghost k-btn--sm" data-rank="${k}">${ic('plus')}Rank it</button>` : ''}<button class="k-iconbtn k-iconbtn--ghost k-iconbtn--sm t-more" data-act="tmore" aria-label="More for ${P[p].n}'s take" aria-haspopup="menu" aria-expanded="false">${ic('dots-three')}</button></div>${st.threadStyle === 'inline' && st.openThread === p + k ? `<div class="th-inline">${replyRows(st, p + k)}${composer(st, p + k, p)}</div>` : replyPeek(st, p + k)}</div></div>`;
   }
   // A trailer: the still, a play button and nothing else on it. Above, the friends who want to see it, as their dots.
   function trailerItem(st, { k, who, why }) {
@@ -3929,11 +3988,42 @@ const KAPP = (() => {
         return `<button class="gs-row set-opt" role="checkbox" aria-checked="${on}" data-act="fm-list" data-l="${l.id}"><span><b>${l.name}</b><span class="sub">${nfilms(l.films.length)}</span></span>${ic('check')}</button>`; }).join('')}</div>
         <button class="k-btn k-btn--ghost k-btn--block" data-act="fm-newlist">${ic('plus')}New list</button><button class="k-btn k-btn--primary k-btn--block" data-act="fmclose">Done</button>`
       : `<div class="gs-head fm-head">${poster(k, 's')}<div class="gs-head__text"><b>${F[k][0]}</b><span class="sub">${F[k][1]} · ${F[k][2]}</span></div></div>
-        <div class="gs-list"><button class="gs-row y-row" data-act="fm-lists">${ic('plus')}<span class="y-row__text"><b>Add to a list</b><span class="sub">${inLists.length ? `In ${inLists.map(l => l.name).join(', ')}` : 'Comfort rewatches, Big screen only…'}</span></span>${ic('caret-right')}</button>
+        <div class="gs-list"><button class="gs-row y-row" data-act="fm-lists">${ic('list-plus')}<span class="y-row__text"><b>Add to a list</b><span class="sub">${inLists.length ? `In ${inLists.map(l => l.name).join(', ')}` : 'Comfort rewatches, Big screen only…'}</span></span>${ic('caret-right')}</button>
           <button class="gs-row y-row" data-act="fm-log">${ic('calendar-blank')}<span class="y-row__text"><b>Log a watch</b><span class="sub">When, and who with</span></span>${ic('caret-right')}</button>
           <button class="gs-row y-row" data-act="fm-share">${ic('share-network')}<span class="y-row__text"><b>Share</b><span class="sub">With a friend or a group</span></span></button>
           <button class="gs-row y-row" data-act="fm-no">${ic('eye-slash')}<span class="y-row__text"><b>Not interested</b><span class="sub">Kino won't suggest it again</span></span></button></div>`;
     return sheetWrap(m, 'fmoverlay', F[k][0], body, 'fm');
+  }
+  // Interactions, round 2 (2026-10-11, the choice sheet kino-interact-3): a more menu on takes, the last piece from the original.
+  // What's in it, in order. Rank it only when you haven't; st.moreItems narrows the list (the sheet's "what's in it" preview).
+  const TM_ITEMS = ['rank', 'save', 'list', 'share', 'hide', 'report'];
+  function tmItems(st, m) { const k = m.k, saved = isSaved(st, k), who = P[m.p].n;
+    const it = { rank: MY[k] == null && st.ranked[k] == null && ['tm-rank', 'plus', 'Rank it', 'You haven\'t yet'],
+      save: ['tm-save', saved ? 'bookmark-simple-fill' : 'bookmark-simple', saved ? 'Saved' : 'Save', saved ? 'On your watchlist' : 'To your watchlist'],
+      list: ['tm-list', 'list-plus', 'Add to a list', 'Comfort rewatches, Big screen only…'],
+      share: ['tm-share', 'share-network', 'Share', 'With a friend or a group'],
+      hide: ['tm-hide', 'eye-slash', 'Hide this take', `You'll still see ${who}'s others`],
+      report: ['tm-report', 'flag', 'Report', `${who} won't know it was you`] };
+    return (st.moreItems || TM_ITEMS).filter(id => it[id]).map(id => [id, ...it[id]]); }
+  function takeMenu(st) {
+    const m = st.tmore, rows = tmItems(st, m), who = P[m.p].n;
+    if (m.kind === 'sheet') return sheetWrap(m, 'tmoverlay', `${who}'s take`, `<div class="gs-head fm-head">${poster(m.k, 's')}<div class="gs-head__text"><b>${who} on ${F[m.k][0]}</b><span class="sub tm-quote">${m.quote ? `“${m.quote}”` : `Scored it ${m.s}`}</span></div></div>
+      <div class="gs-list">${rows.map(([id, act, icon, label, sub]) => `<button class="gs-row y-row${id === 'report' ? ' gs-row--danger' : ''}" data-act="${act}">${ic(icon)}<span class="y-row__text"><b>${label}</b><span class="sub">${sub}</span></span>${id === 'list' ? ic('caret-right') : ''}</button>`).join('')}</div>`, 'tm-sheet');
+    const list = rows.map(([id, act, icon, label], i) => `${id === 'hide' && i ? '<span class="tm-sep" role="separator"></span>' : ''}<button class="tm-row${id === 'report' ? ' tm-row--danger' : ''}" role="menuitem" data-act="${act}" style="--i:${i}">${ic(icon)}<span>${label}</span></button>`).join('');
+    const menu = `<div class="tm-menu${m.kind === 'pop' ? ' tm-pop' : ''}${m.fresh ? ' is-fresh' : ''}" role="menu" aria-label="${who}'s take on ${F[m.k][0]}" data-from="${m.from}"${m.up ? ' data-up' : ''} style="left:${m.mx}px;top:${m.my}px">${list}</div>`;
+    if (m.kind === 'pop') return menu;
+    return `<div class="tm${m.fresh ? ' is-fresh' : ''}" data-act="tmclose"><div class="tm-lift" style="left:${m.r.x}px;top:${m.r.y}px;width:${m.r.w}px" aria-hidden="true">${m.html}</div>${menu}</div>`;
+  }
+  // Reporting: a reason, then thanks. The take goes away the same way Hide does.
+  const REASONS = [['spoils', 'It gives the ending away'], ['mean', 'It\'s mean or hateful'], ['spam', 'It\'s spam, or selling something'], ['off', 'It isn\'t about the film'], ['else', 'Something else']];
+  function reportSheet(st) {
+    const r = st.report, who = P[r.p].n;
+    const body = r.step === 'sent' ? `${sheetHead('Report', 'rpclose')}<div class="rpt-done"><span class="rpt-check">${ic('check')}</span><b>Thanks for telling us</b><p class="sub">We'll take a look. You won't see this take again, and ${who} won't know it was you.</p></div>
+        <button class="k-btn k-btn--primary k-btn--block" data-act="rp-done">Done</button>`
+      : `${sheetHead(`Report ${who}'s take`, 'rpclose')}<p class="sub rpt-lede">What's wrong with it? ${who} won't know it was you.</p>
+        <div class="gs-list">${REASONS.map(([id, l]) => `<button class="gs-row set-opt" role="radio" aria-checked="${r.reason === id}" data-act="rp-why" data-r="${id}"><span><b>${l}</b></span>${ic('check')}</button>`).join('')}</div>
+        <button class="k-btn k-btn--primary k-btn--block" data-act="rp-send"${r.reason ? '' : ' disabled'}>Send</button>`;
+    return sheetWrap(r, 'rpoverlay', `Report ${who}'s take`, body, 'rpt');
   }
 
   // 3 · Browsing the whole catalogue, inside Explore: your filters make a pile of their own
@@ -4273,6 +4363,7 @@ const KAPP = (() => {
       rpick: null, pickStyle: 'shelves', afterRank: 'stay', gnew: null, gjoin: null, gnewStyle: 'who', newGroups: [], diaryStyle: 'list', logged: [], logsheet: null,
       listStyle: 'pile', lists: null, lsnew: null, peopleStyle: 'page', pplTab: 'friends', pq: '', ppsheet: null, thread: null, threadStyle: 'sheet', myReplies: {}, drafts: {}, openThread: null,
       openFrom: null, landing: null, // interactions: what's travelling to the next screen, and a vote landing when you're back online
+      tmore: null, report: null, hidden: {}, moreStyle: 'lift', webMore: 'hover', hideStyle: 'fold', moreItems: null, // round 2: a take's more menu (the styles are the sheet's options; mine first)
       theme: (() => { try { return (opts.hash && localStorage.getItem('kino-ds-theme')) || 'device'; } catch (e) { return 'device'; } })(),
       webNav: opts.webNav === undefined ? 'rail' : opts.webNav || null }, opts.state || {}); // the web: 'rail' (your pick, the default), 'top', or false for V.2.1's web
     root.classList.add('app'); root.classList.toggle('app--device', !!opts.device); // a board frame draws its own status bar
@@ -4286,6 +4377,7 @@ const KAPP = (() => {
       root.classList.toggle('app--tight', !!st.webNav); root.classList.toggle('app--rail', rail); root.classList.toggle('app--bare', /^#\/(signin|join|welcome|invite|lock)/.test(st.route)); root.classList.toggle('app--calm', calm()); root.classList.toggle('app--score-badge', st.scoreStyle === 'badge');
       root.classList.toggle('app--text-large', st.textSize === 'large'); root.classList.toggle('app--text-xl', st.textSize === 'xl');
       root.classList.toggle('app--offline', !!st.offline);
+      root.classList.toggle('app--more-hold', st.moreStyle === 'hold'); root.classList.toggle('app--wmore-hover', st.webMore === 'hover');
       const enter = keepScroll ? 'app__page--still' : 'app__page--' + (st.nav || 'tab'); st.nav = null;
       const sec = section(st.route);
       root.innerHTML = `${opts.device ? `<div class="app__status"><span>9:41</span><span></span></div>` : ''}
@@ -4298,7 +4390,7 @@ const KAPP = (() => {
           ${st.bell ? bellPop(st) : ''}${st.ymenu ? youPop(st) : ''}</div></header>`}
         <div class="app__shell">${rail ? railNav(st, sec) : ''}<div class="app__scroll"><div class="app__page ${enter}">${route(st)}</div></div></div>
         <nav class="app__tabs"><div class="k-tabbar" role="tablist">${NAV.map(([l, n, h]) => `<button class="k-tab" role="tab" aria-selected="${sec === h}" ${h === 'rank' ? 'data-act="rpick"' : `data-go="${h}"`}>${ic(n, 'k-icon--off')}${ic(n + '-fill', 'k-icon--on')}${l}<span class="k-tab__dot"></span></button>`).join('')}</div></nav>
-        ${st.sheet ? rankSheet(st) : ''}${st.gsheet ? groupSheet(st) : ''}${st.ysheet ? youSheet(st) : ''}${st.setsheet ? setSheet(st) : ''}${st.rpick ? rankPick(st) : ''}${st.gnew ? groupNew(st) : ''}${st.gjoin ? groupJoin(st) : ''}${st.logsheet ? logSheet(st) : ''}${st.lsnew ? listNew(st) : ''}${st.lsopt ? listOpt(st) : ''}${st.ppsheet ? peopleSheet(st) : ''}${st.thread ? threadSheet(st) : ''}${st.fmenu ? filmMenu(st) : ''}${st.fsheet ? filterSheet(st) : ''}${st.tsheet ? talkSheet(st) : ''}${st.trailer ? trailerOverlay(st) : ''}
+        ${st.sheet ? rankSheet(st) : ''}${st.gsheet ? groupSheet(st) : ''}${st.ysheet ? youSheet(st) : ''}${st.setsheet ? setSheet(st) : ''}${st.rpick ? rankPick(st) : ''}${st.gnew ? groupNew(st) : ''}${st.gjoin ? groupJoin(st) : ''}${st.logsheet ? logSheet(st) : ''}${st.lsnew ? listNew(st) : ''}${st.lsopt ? listOpt(st) : ''}${st.ppsheet ? peopleSheet(st) : ''}${st.thread ? threadSheet(st) : ''}${st.fmenu ? filmMenu(st) : ''}${st.fsheet ? filterSheet(st) : ''}${st.tsheet ? talkSheet(st) : ''}${st.trailer ? trailerOverlay(st) : ''}${st.report ? reportSheet(st) : ''}${st.tmore ? takeMenu(st) : ''}
         ${st.toast ? `<div class="app__toast" role="status"><span>${st.toast.text}</span>${st.toast.undo ? '<button class="k-btn k-btn--ghost k-btn--sm" data-act="undo">Undo</button>' : ''}${st.toast.retry ? '<button class="k-btn k-btn--ghost k-btn--sm" data-act="retry">Try again</button>' : ''}</div>` : ''}
         ${st.ask ? askSheet(st) : ''}${st.splash ? splashHtml(st) : ''}`;
       const nsc = root.querySelector('.app__scroll'); nsc.scrollTop = top;
@@ -4306,13 +4398,14 @@ const KAPP = (() => {
       root.style.setProperty('--app-h', nsc.clientHeight + 'px'); // the web side column is as tall as the window
       nsc.addEventListener('scroll', () => root.querySelectorAll('.s-sticky').forEach(s => s.classList.toggle('is-stuck', s.getBoundingClientRect().top <= nsc.getBoundingClientRect().top + 1 && nsc.scrollTop > 0)), { passive: true });
       if (opts.hash) history.replaceState(null, '', st.route);
+      takesAfter();
       glide(root, before); reveal(root); fitLabels(root);
       if (st.splash && st.splash.t == null && !st.splash.timer) st.splash.timer = setTimeout(() => { st.splash = null; root.querySelector('.sp')?.remove(); }, calm() ? 0 : 2450);
       root.querySelectorAll('.r-result [data-count]:not(.is-counted), .ob-pct [data-count]:not(.is-counted)').forEach(countUp);
       afterRender(st.fx, keepScroll);
       st.fx = null; st.tabDir = null; st.bellFx = null; if (st.sheet) { st.sheet.fresh = false; st.sheet.dir = null; }
       if (st.ysheet) st.ysheet.fresh = false; if (st.setsheet) st.setsheet.fresh = false; if (st.ymenu) st.ymenu = 'open';
-      ['rpick', 'gnew', 'gjoin', 'logsheet', 'lsnew', 'lsopt', 'ppsheet', 'thread', 'fmenu', 'fsheet', 'tsheet'].forEach(x => { if (st[x]) st[x].fresh = false; });
+      ['rpick', 'gnew', 'gjoin', 'logsheet', 'lsnew', 'lsopt', 'ppsheet', 'thread', 'fmenu', 'fsheet', 'tsheet', 'tmore', 'report'].forEach(x => { if (st[x]) st[x].fresh = false; });
       watchFeed();
     }
     // The feed doesn't end: near the bottom, the three dots wait a beat and the next page deals in underneath. Each render
@@ -4423,6 +4516,90 @@ const KAPP = (() => {
         d.animate([{ transform: `translate(${c * edge}px, ${sn * edge}px) scale(.3)`, opacity: 0 }, { opacity: 1, offset: .2 }, { transform: `translate(${c * far}px, ${sn * far}px) scale(1)`, opacity: 0 }],
           { duration: 900, delay: 380 + (n % 6) * 30, easing: 'cubic-bezier(.2,.8,.3,1)', fill: 'backwards' }).onfinish = () => d.remove(); });
     }
+    /* ---------- interactions, round 2 (2026-10-11, the choice sheet kino-interact-3): a more menu on takes ----------
+       iPhone: press and hold a take, or its "…". st.moreStyle 'lift' (mine): the take lifts and the menu unfolds under it;
+       'sheet': Kino's usual sheet, like the film page's menu; 'hold': the lift, with no "…". The web: st.webMore 'hover' (mine):
+       the "…" shows when you hover, and a right-click opens the menu where you clicked; 'always': the "…" always shows;
+       'dialog': a centred dialog, like the film page's. Hiding: st.hideStyle 'fold' (mine): it folds away, with Undo; 'line': a line stays. */
+    const takeEl = key => [...root.querySelectorAll('.app__page [data-take]')].find(el => el.dataset.take === key);
+    function openTake(el, from, at) {
+      const wide = root.offsetWidth >= 900, kind = wide ? (st.webMore === 'dialog' ? 'sheet' : 'pop') : st.moreStyle === 'sheet' ? 'sheet' : 'lift';
+      const m = { key: el.dataset.take, p: el.dataset.p, k: el.dataset.k, kind, from, fresh: true,
+        quote: (el.querySelector('.o-take__text') || {}).textContent || '', s: (el.querySelector('.t-score__n') || {}).textContent || '' };
+      const rows = tmItems(st, m), menuW = wide ? 232 : 250, menuH = rows.length * (wide ? 42 : 46) - 2 + (rows.some(r => r[0] === 'hide') && rows[0][0] !== 'hide' ? 9 : 0) + 14;
+      if (kind === 'pop') { // by the "…", right-aligned to it; a right-click opens it where you clicked
+        let x, y; const b = from === 'right' ? null : local(el.querySelector('.t-more').getBoundingClientRect());
+        if (b) { x = b.x + b.w - menuW; y = b.y + b.h + 6; if (y + menuH > root.offsetHeight - 12) { y = b.y - 6 - menuH; m.up = true; } } else { x = at.x; y = at.y; if (y + menuH > root.offsetHeight - 12) { y = at.y - menuH; m.up = true; } }
+        m.mx = Math.max(12, Math.min(x, root.offsetWidth - menuW - 12)); m.my = Math.max(12, y);
+      } else if (kind === 'lift') { // the take lifts where it is; the menu goes under it, or over it, or the feed moves up to make room
+        const sc = root.querySelector('.app__scroll'), tabs = root.querySelector('.app__tabs');
+        const floor = (tabs && tabs.offsetParent ? local(tabs.getBoundingClientRect()).y : root.offsetHeight) - 10, ceil = opts.device ? 56 : 12;
+        let r = local(el.getBoundingClientRect());
+        if (r.y < ceil) { sc.scrollTop -= (ceil - r.y) + 8; r = local(el.getBoundingClientRect()); }
+        if (r.y + r.h > floor) { sc.scrollTop += Math.min(r.y + r.h - floor + 8, r.y - ceil); r = local(el.getBoundingClientRect()); } // the whole take on screen first
+        let below = r.y + r.h + 10 + menuH <= floor;
+        if (!below && r.y - 10 - menuH < ceil) { sc.scrollTop += r.y + r.h + 10 + menuH - floor; r = local(el.getBoundingClientRect()); below = true; }
+        const px = from === 'hold' && at ? at.x - menuW / 2 : r.x + r.w - menuW;
+        Object.assign(m, { r, up: !below, my: below ? r.y + r.h + 10 : r.y - 10 - menuH, mx: Math.max(r.x - 6, Math.min(px, r.x + r.w + 6 - menuW)) });
+        const c = el.cloneNode(true); c.classList.remove('is-new', 'is-pressing', 'is-lifted-src'); c.removeAttribute('data-take'); c.removeAttribute('style');
+        c.querySelectorAll('[data-act], [data-go], [data-rank]').forEach(n => { n.removeAttribute('data-act'); n.removeAttribute('data-go'); n.removeAttribute('data-rank'); });
+        m.html = c.outerHTML;
+      }
+      st.tmore = m; render(true);
+      const b = el.querySelector('.t-more'); if (b && kind === 'pop') takeEl(m.key)?.querySelector('.t-more')?.setAttribute('aria-expanded', 'true');
+    }
+    function closeTake(then) {
+      const m = st.tmore; if (!m) { if (then) then(); return; }
+      const fin = () => { st.tmore = null; root.querySelectorAll('.tm, .tm-pop').forEach(n => n.remove()); const el = takeEl(m.key);
+        if (el) { el.classList.remove('is-lifted-src'); el.querySelector('.t-more')?.setAttribute('aria-expanded', 'false'); } if (then) then(); };
+      if (m.kind === 'sheet') return then ? (st.tmore = null, then()) : dismiss(root, () => { st.tmore = null; render(true); });
+      const layer = root.querySelector('.tm, .tm-pop'); if (!layer || calm()) return fin();
+      layer.classList.add('is-closing'); setTimeout(fin, m.kind === 'pop' ? 120 : 170);
+    }
+    // Hide (or after a report): 'fold' folds the take away in one piece, then Undo; 'line' shrinks it to a line that stays
+    function hideTake(key, p, how) {
+      const el = takeEl(key), name = P[p].n, line = st.hideStyle === 'line';
+      const done = () => { st.hidden[key] = how; st.hidFx = key;
+        if (!line) st.toast = how === 'reported' ? { text: 'Thanks for telling us' } : { text: `${name}'s take is hidden`, undo: 'tk:' + key };
+        render(true); if (st.toast) toastAway(); };
+      if (!el || calm()) return done();
+      el.style.overflow = 'hidden';
+      if (line) { el.animate([{ height: el.offsetHeight + 'px' }, { height: '56px' }], { duration: 300, easing: EASE, fill: 'forwards' });
+        [...el.children].forEach(c => c.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, easing: EASE, fill: 'forwards' })); setTimeout(done, 300); return; }
+      const cs = getComputedStyle(el), gap = parseFloat(getComputedStyle(el.parentElement).rowGap) || 0;
+      el.animate([{ opacity: 1, height: cs.height, paddingTop: cs.paddingTop, paddingBottom: cs.paddingBottom, borderTopWidth: cs.borderTopWidth, marginBottom: '0px' }, { opacity: 0, offset: .4 },
+        { opacity: 0, height: '0px', paddingTop: '0px', paddingBottom: '0px', borderTopWidth: '0px', marginBottom: -gap + 'px' }], { duration: 360, easing: EASE, fill: 'forwards' }).onfinish = done;
+    }
+    // After every render: hidden takes go (or become their line), and the lifted take's place stays empty while it's up
+    function takesAfter() {
+      root.querySelectorAll('.app__page [data-take]').forEach(el => { const how = st.hidden[el.dataset.take]; if (!how) return;
+        if (st.hideStyle !== 'line') return el.remove();
+        const who = P[el.dataset.p].n, film = F[el.dataset.k][0], ln = document.createElement('div');
+        ln.className = el.classList[0] + ' t-hidden' + (st.hidFx === el.dataset.take ? ' is-fresh' : '');
+        ln.innerHTML = how === 'reported' ? `<span>You reported ${who}'s take on ${film}. Thanks for telling us</span>` : `<span>You hid ${who}'s take on ${film}</span><button class="k-btn k-btn--ghost k-btn--sm" data-act="tunhide" data-key="${el.dataset.take}">Undo</button>`;
+        el.replaceWith(ln); });
+      st.hidFx = null;
+      if (st.tmore && st.tmore.kind === 'lift') takeEl(st.tmore.key)?.classList.add('is-lifted-src');
+    }
+    // Press and hold (iPhone): the take gives a little under your finger, then lifts. Moving your finger (scrolling) lets go.
+    let tmHold = null;
+    const tmLetGo = () => { if (!tmHold) return; clearTimeout(tmHold.t1); clearTimeout(tmHold.t2); tmHold.el.classList.remove('is-pressing'); tmHold = null; };
+    root.addEventListener('pointerdown', e => { const el = e.target.closest('.app__page [data-take]');
+      if (!el || root.offsetWidth >= 900 || e.button > 0 || st.tmore || e.target.closest('.t-more, .feed-follow, input, textarea')) return;
+      tmLetGo(); const at = local({ left: e.clientX, top: e.clientY, width: 0, height: 0 });
+      tmHold = { el, x0: e.clientX, y0: e.clientY, t1: setTimeout(() => el.classList.add('is-pressing'), 120), t2: setTimeout(() => { el.classList.remove('is-pressing'); tmHold = null;
+        const eat = ev => { if (ev.target.closest && ev.target.closest('.tm-menu')) return; ev.stopPropagation(); ev.preventDefault(); root.removeEventListener('click', eat, true); };
+        root.addEventListener('click', eat, true); setTimeout(() => root.removeEventListener('click', eat, true), 700); // the click that ends the hold opens nothing
+        openTake(el, 'hold', at); }, 520) }; });
+    root.addEventListener('pointermove', e => { if (tmHold && Math.hypot(e.clientX - tmHold.x0, e.clientY - tmHold.y0) > 8) tmLetGo(); });
+    ['pointerup', 'pointercancel'].forEach(ev => root.addEventListener(ev, tmLetGo, true));
+    // Right-click (the web, 'hover'): the menu opens where you clicked. On iPhone, the browser's own menu never shows over a take.
+    root.addEventListener('contextmenu', e => { const el = e.target.closest('.app__page [data-take]'); if (!el) return;
+      if (root.offsetWidth < 900) { e.preventDefault(); return; } if (st.webMore !== 'hover') return;
+      e.preventDefault(); const at = local({ left: e.clientX, top: e.clientY, width: 0, height: 0 }); closeTake(() => openTake(el, 'right', at)); });
+    root.addEventListener('scroll', () => { tmLetGo(); if (st.tmore && st.tmore.kind === 'pop') closeTake(); }, true);
+    root.addEventListener('keydown', e => { if (e.key === 'Escape' && st.tmore) closeTake(); });
+
     function afterRender(fxNow, keepScroll) {
       if (st.openFrom) landOpen();
       if (st.landing) land();
@@ -4498,6 +4675,7 @@ const KAPP = (() => {
     root.addEventListener('click', e => {
       if (st.bell && !e.target.closest('.n-pop, .n-bell')) { st.bell = null; root.querySelector('.n-pop')?.remove(); root.querySelector('.n-bell')?.setAttribute('aria-expanded', 'false'); }
       if (st.ymenu && !e.target.closest('.y-pop, [data-act="ymenu"]')) { st.ymenu = null; root.querySelector('.y-pop')?.remove(); root.querySelectorAll('[data-act="ymenu"]').forEach(b => b.setAttribute('aria-expanded', 'false')); }
+      if (st.tmore && st.tmore.kind === 'pop' && !e.target.closest('.tm-menu, [data-act="tmore"]')) closeTake();
       const t = e.target.closest('[data-go],[data-rank],[data-act]'); if (!t || !root.contains(t)) return;
       if (/overlay$/.test(t.dataset.act || '') && e.target !== t) return;
       if (swiped) { swiped = false; return; } // the click that ends a swipe doesn't open the group
@@ -4523,7 +4701,7 @@ const KAPP = (() => {
           clearTimeout(toastTimer); toastTimer = setTimeout(() => { st.toast = null; const el = root.querySelector('.app__toast'); if (el) el.remove(); }, 5000); };
         const row = root.querySelector(`.g-item[data-gid="${id}"]`);
         if (row && !calm()) row.animate([{ height: row.offsetHeight + 'px', opacity: 1 }, { height: '0px', opacity: 0 }], { duration: 280, easing: 'cubic-bezier(.2,.7,.2,1)' }).onfinish = done; else done(); }
-      else if (a === 'undo') { const u = String(st.toast.undo); if (u.startsWith('ni:')) delete st.notInterested[u.slice(3)]; else if (u.startsWith('ls:') && st.lsGone) allLists(st).splice(st.lsGone.i, 0, st.lsGone.l); else delete st.removed[u]; st.toast = null; clearTimeout(toastTimer); render(true); }
+      else if (a === 'undo') { const u = String(st.toast.undo); if (u.startsWith('tk:')) delete st.hidden[u.slice(3)]; else if (u.startsWith('ni:')) delete st.notInterested[u.slice(3)]; else if (u.startsWith('ls:') && st.lsGone) allLists(st).splice(st.lsGone.i, 0, st.lsGone.l); else delete st.removed[u]; st.toast = null; clearTimeout(toastTimer); render(true); }
       else if (a === 'group' && st.swiped) { st.swiped = null; root.querySelectorAll('.g-item.is-open').forEach(i => i.classList.remove('is-open')); }
       else if (a === 'group') { if (t.dataset.to) { st.nav = 'fwd'; go(t.dataset.to); } } // no spin: a quiet press, then the group pushes in
       else if (a === 'done' && st.afterRank !== 'two' && r && !r.saved) { r.saved = true; render(true); }
@@ -4578,6 +4756,19 @@ const KAPP = (() => {
       else if (a === 'fm-newlist') { const k = st.fmenu.k; st.fmenu = null; st.lsnew = { fresh: true, name: '', withFilm: k }; render(true); }
       else if (a === 'fm-log') { const k = st.fmenu.k; st.fmenu = null; st.logsheet = { k, fresh: true, when: 'Today', who: {}, rewatch: (st.ranked[k] ?? MY[k]) != null }; render(true); }
       else if (a === 'fm-share') { st.fmenu = null; st.toast = { text: 'Link copied' }; render(true); toastAway(); }
+      else if (a === 'tmore') { const el = t.closest('[data-take]'); if (!el) return; const same = st.tmore && st.tmore.key === el.dataset.take; closeTake(same ? null : () => openTake(el, 'dots')); }
+      else if (a === 'tmclose' || a === 'tmoverlay') closeTake();
+      else if (a === 'tm-rank') { const k = st.tmore.k; closeTake(() => { st.sheet = { k, step: 0, i: 0, wins: 0, skips: 0, fresh: true }; render(true); }); }
+      else if (a === 'tm-save') { const k = st.tmore.k, on = !isSaved(st, k); closeTake(() => { st.saved[k] = on; st.toast = { text: on ? `Saved ${F[k][0]} to your watchlist` : `Took ${F[k][0]} off your watchlist` }; render(true); toastAway(); }); }
+      else if (a === 'tm-list') { const k = st.tmore.k; closeTake(() => { st.fmenu = { k, step: 'lists', fresh: true }; render(true); }); }
+      else if (a === 'tm-share') closeTake(() => { st.toast = { text: 'Link copied' }; render(true); toastAway(); });
+      else if (a === 'tm-hide') { const m = st.tmore; closeTake(() => { if (m.kind === 'sheet') render(true); hideTake(m.key, m.p, 'hidden'); }); }
+      else if (a === 'tm-report') { const m = st.tmore; closeTake(() => { st.report = { key: m.key, p: m.p, k: m.k, step: 'why', reason: null, fresh: true }; render(true); }); }
+      else if (a === 'rp-why') { st.report.reason = t.dataset.r; render(true); }
+      else if (a === 'rp-send') { st.report.step = 'sent'; render(true); }
+      else if (a === 'rp-done' || ((a === 'rpclose' || a === 'rpoverlay') && st.report && st.report.step === 'sent')) { const r = st.report; dismiss(root, () => { st.report = null; render(true); hideTake(r.key, r.p, 'reported'); }); }
+      else if (a === 'rpclose' || a === 'rpoverlay') dismiss(root, () => { st.report = null; render(true); });
+      else if (a === 'tunhide') { delete st.hidden[t.dataset.key]; render(true); }
       else if (a === 'fm-no') { const k = st.fmenu.k; st.notInterested[k] = true; st.fmenu = null; st.toast = { text: `Kino won't suggest ${F[k][0]} again`, undo: 'ni:' + k }; render(true); toastAway(); }
       else if (a === 'fopen') { st.fdraft = JSON.parse(JSON.stringify(st.browse || BROWSE0)); st.fsheet = { fresh: true }; render(true); }
       else if (a === 'fclose' || a === 'foverlay') dismiss(root, () => { st.fsheet = null; render(true); });

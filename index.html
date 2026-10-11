@@ -2551,17 +2551,16 @@ button.s-wm { background: none; border: 0; padding: 0; cursor: pointer; -webkit-
 .app--calm .ls-grid .ls-pile > span { animation: none !important; }
 @media (prefers-reduced-motion: reduce) { .ls-grid .ls-pile > span { animation: none !important; } .hv { transition: none; } }
 
-/* ---------- interactions, round 2 (2026-10-11, the choice sheet kino-interact-3): a more menu on takes ----------
+/* ---------- interactions, round 2 (passed 2026-10-11; notes/interact-3.md): a more menu on takes ----------
    The "…" sits at the end of a take's actions. iPhone: hold the take (it gives a little), then it lifts and the menu unfolds under it.
    The web: a menu by the "…" (or where you right-clicked), in the same card as your menu from the rail. */
 .o-take__actions .t-more { margin-left: auto; }
 @container app (max-width: 899px) {
-  .app--more-hold .t-more { display: none; }
   .app__page [data-take] { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 }
 @container app (min-width: 900px) {
-  .app--wmore-hover [data-take] .t-more { opacity: 0; transition: opacity var(--kino-motion-fast) var(--kino-ease); }
-  .app--wmore-hover [data-take]:hover .t-more, .app--wmore-hover .t-more:focus-visible, .app--wmore-hover .t-more[aria-expanded="true"] { opacity: 1; }
+  [data-take] .t-more { opacity: 0; transition: opacity var(--kino-motion-fast) var(--kino-ease); }
+  [data-take]:hover .t-more, .t-more:focus-visible, .t-more[aria-expanded="true"] { opacity: 1; }
 }
 .app__page [data-take] { transition: transform .4s var(--kino-ease); }
 .app__page [data-take].is-pressing { transform: scale(.98); }
@@ -2599,16 +2598,12 @@ button.s-wm { background: none; border: 0; padding: 0; cursor: pointer; -webkit-
 .tm.is-closing .tm-lift { animation: none; transition: transform .17s var(--kino-ease); transform: scale(1); }
 .tm-pop.is-closing { animation: tm-out .12s var(--kino-ease) forwards; }
 @keyframes tm-out { to { opacity: 0; } }
-.tm-sheet .tm-quote { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
-.t-hidden { flex-direction: row !important; align-items: center; justify-content: space-between; gap: var(--kino-space-12); min-height: 56px; padding-top: 10px !important; padding-bottom: 10px !important;
-  font: 400 13px/18px var(--kino-font-ui); color: var(--kino-text-secondary); }
-.t-hidden.is-fresh { animation: k-fade .3s var(--kino-ease); }
 .rpt-lede { margin: 0 var(--kino-space-4); }
 .rpt-done { display: flex; flex-direction: column; align-items: center; gap: var(--kino-space-8); padding: var(--kino-space-12) var(--kino-space-16) var(--kino-space-20); text-align: center; }
 .rpt-done b { font: 600 17px/22px var(--kino-font-ui); }
 .rpt-check { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; background: var(--kino-bg-fill); color: var(--kino-text-primary); --k-icon-size: 24px; margin-bottom: var(--kino-space-4); }
-@media (prefers-reduced-motion: reduce) { .tm, .tm-lift, .tm-menu, .tm-row, .t-hidden { animation: none !important; } .app__page [data-take] { transition: none; } }
-.app--calm .tm, .app--calm .tm-lift, .app--calm .tm-menu, .app--calm .tm-row, .app--calm .t-hidden { animation: none !important; }
+@media (prefers-reduced-motion: reduce) { .tm, .tm-lift, .tm-menu, .tm-row { animation: none !important; } .app__page [data-take] { transition: none; } }
+.app--calm .tm, .app--calm .tm-lift, .app--calm .tm-menu, .app--calm .tm-row { animation: none !important; }
 </style>
 <script>/* your choice if you've made one, otherwise your phone's light or dark setting */
 try{const t=localStorage.getItem('kino-ds-theme')||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');document.documentElement.dataset.theme=t;}catch(e){}</script>
@@ -3994,8 +3989,8 @@ const KAPP = (() => {
           <button class="gs-row y-row" data-act="fm-no">${ic('eye-slash')}<span class="y-row__text"><b>Not interested</b><span class="sub">Kino won't suggest it again</span></span></button></div>`;
     return sheetWrap(m, 'fmoverlay', F[k][0], body, 'fm');
   }
-  // Interactions, round 2 (2026-10-11, the choice sheet kino-interact-3): a more menu on takes, the last piece from the original.
-  // What's in it, in order. Rank it only when you haven't; st.moreItems narrows the list (the sheet's "what's in it" preview).
+  // Interactions, round 2 (passed 2026-10-11; notes/interact-3.md): a more menu on takes, the last piece from the original.
+  // What's in it, in order: what you'd do with the film, then about the take. Rank it only when you haven't ranked the film.
   const TM_ITEMS = ['rank', 'save', 'list', 'share', 'hide', 'report'];
   function tmItems(st, m) { const k = m.k, saved = isSaved(st, k), who = P[m.p].n;
     const it = { rank: MY[k] == null && st.ranked[k] == null && ['tm-rank', 'plus', 'Rank it', 'You haven\'t yet'],
@@ -4004,11 +3999,9 @@ const KAPP = (() => {
       share: ['tm-share', 'share-network', 'Share', 'With a friend or a group'],
       hide: ['tm-hide', 'eye-slash', 'Hide this take', `You'll still see ${who}'s others`],
       report: ['tm-report', 'flag', 'Report', `${who} won't know it was you`] };
-    return (st.moreItems || TM_ITEMS).filter(id => it[id]).map(id => [id, ...it[id]]); }
+    return TM_ITEMS.filter(id => it[id]).map(id => [id, ...it[id]]); }
   function takeMenu(st) {
     const m = st.tmore, rows = tmItems(st, m), who = P[m.p].n;
-    if (m.kind === 'sheet') return sheetWrap(m, 'tmoverlay', `${who}'s take`, `<div class="gs-head fm-head">${poster(m.k, 's')}<div class="gs-head__text"><b>${who} on ${F[m.k][0]}</b><span class="sub tm-quote">${m.quote ? `“${m.quote}”` : `Scored it ${m.s}`}</span></div></div>
-      <div class="gs-list">${rows.map(([id, act, icon, label, sub]) => `<button class="gs-row y-row${id === 'report' ? ' gs-row--danger' : ''}" data-act="${act}">${ic(icon)}<span class="y-row__text"><b>${label}</b><span class="sub">${sub}</span></span>${id === 'list' ? ic('caret-right') : ''}</button>`).join('')}</div>`, 'tm-sheet');
     const list = rows.map(([id, act, icon, label], i) => `${id === 'hide' && i ? '<span class="tm-sep" role="separator"></span>' : ''}<button class="tm-row${id === 'report' ? ' tm-row--danger' : ''}" role="menuitem" data-act="${act}" style="--i:${i}">${ic(icon)}<span>${label}</span></button>`).join('');
     const menu = `<div class="tm-menu${m.kind === 'pop' ? ' tm-pop' : ''}${m.fresh ? ' is-fresh' : ''}" role="menu" aria-label="${who}'s take on ${F[m.k][0]}" data-from="${m.from}"${m.up ? ' data-up' : ''} style="left:${m.mx}px;top:${m.my}px">${list}</div>`;
     if (m.kind === 'pop') return menu;
@@ -4363,7 +4356,7 @@ const KAPP = (() => {
       rpick: null, pickStyle: 'shelves', afterRank: 'stay', gnew: null, gjoin: null, gnewStyle: 'who', newGroups: [], diaryStyle: 'list', logged: [], logsheet: null,
       listStyle: 'pile', lists: null, lsnew: null, peopleStyle: 'page', pplTab: 'friends', pq: '', ppsheet: null, thread: null, threadStyle: 'sheet', myReplies: {}, drafts: {}, openThread: null,
       openFrom: null, landing: null, // interactions: what's travelling to the next screen, and a vote landing when you're back online
-      tmore: null, report: null, hidden: {}, moreStyle: 'lift', webMore: 'hover', hideStyle: 'fold', moreItems: null, // round 2: a take's more menu (the styles are the sheet's options; mine first)
+      tmore: null, report: null, hidden: {}, // round 2 (passed): a take's more menu, a report in progress, the takes you've hidden
       theme: (() => { try { return (opts.hash && localStorage.getItem('kino-ds-theme')) || 'device'; } catch (e) { return 'device'; } })(),
       webNav: opts.webNav === undefined ? 'rail' : opts.webNav || null }, opts.state || {}); // the web: 'rail' (your pick, the default), 'top', or false for V.2.1's web
     root.classList.add('app'); root.classList.toggle('app--device', !!opts.device); // a board frame draws its own status bar
@@ -4377,7 +4370,6 @@ const KAPP = (() => {
       root.classList.toggle('app--tight', !!st.webNav); root.classList.toggle('app--rail', rail); root.classList.toggle('app--bare', /^#\/(signin|join|welcome|invite|lock)/.test(st.route)); root.classList.toggle('app--calm', calm()); root.classList.toggle('app--score-badge', st.scoreStyle === 'badge');
       root.classList.toggle('app--text-large', st.textSize === 'large'); root.classList.toggle('app--text-xl', st.textSize === 'xl');
       root.classList.toggle('app--offline', !!st.offline);
-      root.classList.toggle('app--more-hold', st.moreStyle === 'hold'); root.classList.toggle('app--wmore-hover', st.webMore === 'hover');
       const enter = keepScroll ? 'app__page--still' : 'app__page--' + (st.nav || 'tab'); st.nav = null;
       const sec = section(st.route);
       root.innerHTML = `${opts.device ? `<div class="app__status"><span>9:41</span><span></span></div>` : ''}
@@ -4516,14 +4508,13 @@ const KAPP = (() => {
         d.animate([{ transform: `translate(${c * edge}px, ${sn * edge}px) scale(.3)`, opacity: 0 }, { opacity: 1, offset: .2 }, { transform: `translate(${c * far}px, ${sn * far}px) scale(1)`, opacity: 0 }],
           { duration: 900, delay: 380 + (n % 6) * 30, easing: 'cubic-bezier(.2,.8,.3,1)', fill: 'backwards' }).onfinish = () => d.remove(); });
     }
-    /* ---------- interactions, round 2 (2026-10-11, the choice sheet kino-interact-3): a more menu on takes ----------
-       iPhone: press and hold a take, or its "…". st.moreStyle 'lift' (mine): the take lifts and the menu unfolds under it;
-       'sheet': Kino's usual sheet, like the film page's menu; 'hold': the lift, with no "…". The web: st.webMore 'hover' (mine):
-       the "…" shows when you hover, and a right-click opens the menu where you clicked; 'always': the "…" always shows;
-       'dialog': a centred dialog, like the film page's. Hiding: st.hideStyle 'fold' (mine): it folds away, with Undo; 'line': a line stays. */
+    /* ---------- interactions, round 2 (passed 2026-10-11; notes/interact-3.md): a more menu on takes ----------
+       Noah's picks, which were mine. iPhone: press and hold a take, or tap its "…": the take lifts and the menu unfolds under it.
+       The web: the "…" shows when you hover a take, and a right-click opens the same menu where you clicked.
+       Hiding (and after a report): the take folds away in one piece, with Undo. */
     const takeEl = key => [...root.querySelectorAll('.app__page [data-take]')].find(el => el.dataset.take === key);
     function openTake(el, from, at) {
-      const wide = root.offsetWidth >= 900, kind = wide ? (st.webMore === 'dialog' ? 'sheet' : 'pop') : st.moreStyle === 'sheet' ? 'sheet' : 'lift';
+      const wide = root.offsetWidth >= 900, kind = wide ? 'pop' : 'lift';
       const m = { key: el.dataset.take, p: el.dataset.p, k: el.dataset.k, kind, from, fresh: true,
         quote: (el.querySelector('.o-take__text') || {}).textContent || '', s: (el.querySelector('.t-score__n') || {}).textContent || '' };
       const rows = tmItems(st, m), menuW = wide ? 232 : 250, menuH = rows.length * (wide ? 42 : 46) - 2 + (rows.some(r => r[0] === 'hide') && rows[0][0] !== 'hide' ? 9 : 0) + 14;
@@ -4552,33 +4543,23 @@ const KAPP = (() => {
       const m = st.tmore; if (!m) { if (then) then(); return; }
       const fin = () => { st.tmore = null; root.querySelectorAll('.tm, .tm-pop').forEach(n => n.remove()); const el = takeEl(m.key);
         if (el) { el.classList.remove('is-lifted-src'); el.querySelector('.t-more')?.setAttribute('aria-expanded', 'false'); } if (then) then(); };
-      if (m.kind === 'sheet') return then ? (st.tmore = null, then()) : dismiss(root, () => { st.tmore = null; render(true); });
       const layer = root.querySelector('.tm, .tm-pop'); if (!layer || calm()) return fin();
       layer.classList.add('is-closing'); setTimeout(fin, m.kind === 'pop' ? 120 : 170);
     }
-    // Hide (or after a report): 'fold' folds the take away in one piece, then Undo; 'line' shrinks it to a line that stays
+    // Hide (or after a report): the take folds away in one piece (like the offline line), then Undo
     function hideTake(key, p, how) {
-      const el = takeEl(key), name = P[p].n, line = st.hideStyle === 'line';
-      const done = () => { st.hidden[key] = how; st.hidFx = key;
-        if (!line) st.toast = how === 'reported' ? { text: 'Thanks for telling us' } : { text: `${name}'s take is hidden`, undo: 'tk:' + key };
-        render(true); if (st.toast) toastAway(); };
+      const el = takeEl(key), name = P[p].n;
+      const done = () => { st.hidden[key] = how; st.toast = how === 'reported' ? { text: 'Thanks for telling us' } : { text: `${name}'s take is hidden`, undo: 'tk:' + key };
+        render(true); toastAway(); };
       if (!el || calm()) return done();
       el.style.overflow = 'hidden';
-      if (line) { el.animate([{ height: el.offsetHeight + 'px' }, { height: '56px' }], { duration: 300, easing: EASE, fill: 'forwards' });
-        [...el.children].forEach(c => c.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, easing: EASE, fill: 'forwards' })); setTimeout(done, 300); return; }
       const cs = getComputedStyle(el), gap = parseFloat(getComputedStyle(el.parentElement).rowGap) || 0;
       el.animate([{ opacity: 1, height: cs.height, paddingTop: cs.paddingTop, paddingBottom: cs.paddingBottom, borderTopWidth: cs.borderTopWidth, marginBottom: '0px' }, { opacity: 0, offset: .4 },
         { opacity: 0, height: '0px', paddingTop: '0px', paddingBottom: '0px', borderTopWidth: '0px', marginBottom: -gap + 'px' }], { duration: 360, easing: EASE, fill: 'forwards' }).onfinish = done;
     }
-    // After every render: hidden takes go (or become their line), and the lifted take's place stays empty while it's up
+    // After every render: hidden takes go, and the lifted take's place stays empty while it's up
     function takesAfter() {
-      root.querySelectorAll('.app__page [data-take]').forEach(el => { const how = st.hidden[el.dataset.take]; if (!how) return;
-        if (st.hideStyle !== 'line') return el.remove();
-        const who = P[el.dataset.p].n, film = F[el.dataset.k][0], ln = document.createElement('div');
-        ln.className = el.classList[0] + ' t-hidden' + (st.hidFx === el.dataset.take ? ' is-fresh' : '');
-        ln.innerHTML = how === 'reported' ? `<span>You reported ${who}'s take on ${film}. Thanks for telling us</span>` : `<span>You hid ${who}'s take on ${film}</span><button class="k-btn k-btn--ghost k-btn--sm" data-act="tunhide" data-key="${el.dataset.take}">Undo</button>`;
-        el.replaceWith(ln); });
-      st.hidFx = null;
+      root.querySelectorAll('.app__page [data-take]').forEach(el => { if (st.hidden[el.dataset.take]) el.remove(); });
       if (st.tmore && st.tmore.kind === 'lift') takeEl(st.tmore.key)?.classList.add('is-lifted-src');
     }
     // Press and hold (iPhone): the take gives a little under your finger, then lifts. Moving your finger (scrolling) lets go.
@@ -4593,9 +4574,9 @@ const KAPP = (() => {
         openTake(el, 'hold', at); }, 520) }; });
     root.addEventListener('pointermove', e => { if (tmHold && Math.hypot(e.clientX - tmHold.x0, e.clientY - tmHold.y0) > 8) tmLetGo(); });
     ['pointerup', 'pointercancel'].forEach(ev => root.addEventListener(ev, tmLetGo, true));
-    // Right-click (the web, 'hover'): the menu opens where you clicked. On iPhone, the browser's own menu never shows over a take.
+    // Right-click (the web): the menu opens where you clicked. On iPhone, the browser's own menu never shows over a take.
     root.addEventListener('contextmenu', e => { const el = e.target.closest('.app__page [data-take]'); if (!el) return;
-      if (root.offsetWidth < 900) { e.preventDefault(); return; } if (st.webMore !== 'hover') return;
+      if (root.offsetWidth < 900) { e.preventDefault(); return; }
       e.preventDefault(); const at = local({ left: e.clientX, top: e.clientY, width: 0, height: 0 }); closeTake(() => openTake(el, 'right', at)); });
     root.addEventListener('scroll', () => { tmLetGo(); if (st.tmore && st.tmore.kind === 'pop') closeTake(); }, true);
     root.addEventListener('keydown', e => { if (e.key === 'Escape' && st.tmore) closeTake(); });
@@ -4762,13 +4743,12 @@ const KAPP = (() => {
       else if (a === 'tm-save') { const k = st.tmore.k, on = !isSaved(st, k); closeTake(() => { st.saved[k] = on; st.toast = { text: on ? `Saved ${F[k][0]} to your watchlist` : `Took ${F[k][0]} off your watchlist` }; render(true); toastAway(); }); }
       else if (a === 'tm-list') { const k = st.tmore.k; closeTake(() => { st.fmenu = { k, step: 'lists', fresh: true }; render(true); }); }
       else if (a === 'tm-share') closeTake(() => { st.toast = { text: 'Link copied' }; render(true); toastAway(); });
-      else if (a === 'tm-hide') { const m = st.tmore; closeTake(() => { if (m.kind === 'sheet') render(true); hideTake(m.key, m.p, 'hidden'); }); }
+      else if (a === 'tm-hide') { const m = st.tmore; closeTake(() => hideTake(m.key, m.p, 'hidden')); }
       else if (a === 'tm-report') { const m = st.tmore; closeTake(() => { st.report = { key: m.key, p: m.p, k: m.k, step: 'why', reason: null, fresh: true }; render(true); }); }
       else if (a === 'rp-why') { st.report.reason = t.dataset.r; render(true); }
       else if (a === 'rp-send') { st.report.step = 'sent'; render(true); }
       else if (a === 'rp-done' || ((a === 'rpclose' || a === 'rpoverlay') && st.report && st.report.step === 'sent')) { const r = st.report; dismiss(root, () => { st.report = null; render(true); hideTake(r.key, r.p, 'reported'); }); }
       else if (a === 'rpclose' || a === 'rpoverlay') dismiss(root, () => { st.report = null; render(true); });
-      else if (a === 'tunhide') { delete st.hidden[t.dataset.key]; render(true); }
       else if (a === 'fm-no') { const k = st.fmenu.k; st.notInterested[k] = true; st.fmenu = null; st.toast = { text: `Kino won't suggest ${F[k][0]} again`, undo: 'ni:' + k }; render(true); toastAway(); }
       else if (a === 'fopen') { st.fdraft = JSON.parse(JSON.stringify(st.browse || BROWSE0)); st.fsheet = { fresh: true }; render(true); }
       else if (a === 'fclose' || a === 'foverlay') dismiss(root, () => { st.fsheet = null; render(true); });

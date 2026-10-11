@@ -872,7 +872,7 @@
 .v-voter { display: flex; flex-direction: column; align-items: center; gap: 4px; font: 400 12px/16px var(--kino-font-ui); color: var(--kino-text-secondary); }
 .v-voter .k-avatar { position: relative; }
 .v-voter.is-waiting .k-avatar { opacity: .4; }
-.v-check { position: absolute; right: -3px; bottom: -3px; width: 16px; height: 16px; border-radius: 50%; background: var(--kino-bg-inverse); color: var(--kino-icon-on-inverse); display: grid; place-items: center; box-shadow: 0 0 0 2px var(--kino-bg-surface); }
+.v-check { position: absolute; top: -3px; right: -3px; width: 16px; height: 16px; border-radius: 50%; background: var(--kino-bg-inverse); color: var(--kino-icon-on-inverse); display: grid; place-items: center; box-shadow: 0 0 0 2px var(--kino-bg-surface); }
 .v-check .k-icon { --k-icon-size: 10px; }
 .picked { display: flex; flex-direction: column; align-items: center; text-align: center; gap: var(--kino-space-16); padding-top: var(--kino-space-16); }
 .picked .k-poster { --k-pw: 220px; box-shadow: var(--kino-elevation-2); }
@@ -2276,7 +2276,6 @@ button.st-row { cursor: pointer; } button.st-row:hover .st-row__name { text-deco
 .ls-opt { position: absolute; top: 4px; right: 4px; z-index: 6; width: 32px; height: 32px; display: grid; place-items: center; border: 0; border-radius: 50%; background: var(--kino-bg-surface);
   box-shadow: var(--kino-elevation-1); color: var(--kino-text-primary); cursor: pointer; --k-icon-size: 18px; }
 .ls-grid.is-editing .ls-card { cursor: pointer; }
-.ls-grid.is-editing .ls-pile { opacity: .85; }
 .ls-del { color: var(--kino-text-danger); }
 .ls-head { flex-direction: row; justify-content: space-between; align-items: flex-start; }
 @container app (min-width: 900px) { .ls-pile > span:nth-child(n+4) { display: block; } .ls-pile { height: 132px; } .ls-pile .k-poster { --k-pw: 76px; } }
@@ -2512,25 +2511,26 @@ button.st-row { cursor: pointer; } button.st-row:hover .st-row__name { text-deco
   .app--tight .s-split[data-profile] .s-panel.s-panel--2 > .m-card:last-child { border-left: 0; border-top: 1px solid var(--kino-border-subtle); margin-top: var(--kino-space-24); }
 }
 
-/* ===== Interactions, round 1 (2026-10-11): live for the workshop (kino-interact-1); the defaults are my picks =====
-   1 Opening things: what you tapped travels to its place on the next screen (st.openStyle travel), the screen grows out of it (zoom), or the usual push.
-   2 Hovering a poster on the web: friends' scores in a card beside it, never on it (st.hoverStyle beside), or a small pill just under it (under).
-   3 Back online: the line slips away and your hollow dot fills (st.onlineStyle land), flies in from the line first (travel), or just updates (quiet).
-   4 Lists: a pile deals its films out as it opens (st.listOpen deal); Edit fans every pile open so you can see what's in it (st.listEdit fan).
-   5 Fun: tap kino and the crowd gathers again; double-tap a take to like it; a friend's match counts up; the crowd pops once when a pick locks. */
-.app__page--open { animation: k-fade .34s var(--kino-ease) both; }
+/* ===== Interactions (round 1 passed, 2026-10-11; notes/interact-1.md): Noah's picks, which were mine =====
+   1 Opening things: what you tapped travels to its place (a copy of it, .ot-ghost) while the old screen fades away on top (.ot-old),
+     so the new screen is already there, whole: no cut to black, no words arriving before their pictures.
+   2 Hovering a poster on the web: friends' scores in a card beside it, never on it (.hv); it flips to the other side near the edge.
+   3 Back online: the offline line folds away so everything under it moves up in one piece, then your hollow dot fills.
+   4 Lists: a pile deals out only the films on screen as it opens; Edit fans every pile open (and folds them when you're done).
+   5 Fun: tap kino and the crowd gathers again; double-tap a take to like it; a friend's match counts up; It's settled. bursts. */
+.ot-old { position: absolute; z-index: 4; overflow: hidden; box-sizing: border-box; pointer-events: none; background: var(--kino-bg-canvas); } /* under the tab bar (5) */
+.ot-old * { animation: none !important; transition: none !important; }
 .ot-ghost { position: absolute; z-index: 60; pointer-events: none; transform-origin: 0 0; }
 .ot-ghost > .k-poster { --k-pw: 100% !important; width: 100% !important; height: 100%; box-shadow: var(--kino-elevation-2); }
 .ot-ghost > .k-avatar { width: 100% !important; height: 100% !important; }
-.ot-dot { position: absolute; z-index: 60; pointer-events: none; border-radius: 50%; background: var(--kino-signal-you); transform-origin: 0 0; }
 .ot-crowd { position: absolute; z-index: 60; pointer-events: none; width: 8px; height: 8px; }
 .ot-heart { position: absolute; z-index: 60; pointer-events: none; line-height: 0; color: var(--kino-signal-you); --k-icon-size: 56px; }
-/* 2 · Hover previews (web only): a floating card or pill, drawn above the screen so a side column can't clip it */
-.hv { position: absolute; z-index: 40; pointer-events: none; opacity: 0; transition: opacity .16s var(--kino-ease), transform .2s var(--kino-ease); }
-.hv--beside { width: 220px; box-sizing: border-box; display: flex; flex-direction: column; gap: 2px; padding: var(--kino-space-12) var(--kino-space-16);
+/* 2 · The hover card (web only), drawn above the screen so a side column can't clip it */
+.hv { position: absolute; z-index: 40; pointer-events: none; opacity: 0; transition: opacity .16s var(--kino-ease), transform .2s var(--kino-ease);
+  width: 220px; box-sizing: border-box; display: flex; flex-direction: column; gap: 2px; padding: var(--kino-space-12) var(--kino-space-16);
   border-radius: var(--kino-radius-card); background: var(--kino-bg-surface); border: 1px solid var(--kino-border-subtle); box-shadow: var(--kino-elevation-2); }
-.hv--beside[data-side="right"] { transform: translateX(-6px); }
-.hv--beside[data-side="left"] { transform: translateX(6px); }
+.hv[data-side="right"] { transform: translateX(-6px); }
+.hv[data-side="left"] { transform: translateX(6px); }
 .hv.is-on { opacity: 1; transform: none; }
 .hv__t { font: 600 15px/20px var(--kino-font-ui); color: var(--kino-text-primary); }
 .hv__m { font: 400 13px/18px var(--kino-font-ui); color: var(--kino-text-secondary); }
@@ -2538,23 +2538,18 @@ button.st-row { cursor: pointer; } button.st-row:hover .st-row__name { text-deco
 .hv__row { display: flex; align-items: center; gap: var(--kino-space-8); font: 400 13px/18px var(--kino-font-ui); color: var(--kino-text-secondary); }
 .hv__row .k-score { min-width: 44px; }
 .hv__avg { font: 400 12px/16px var(--kino-font-ui); color: var(--kino-text-secondary); }
-.hv--under { display: flex; align-items: center; gap: var(--kino-space-6); height: 28px; padding: 0 var(--kino-space-10, 10px) 0 var(--kino-space-8); border-radius: var(--kino-radius-pill); white-space: nowrap;
-  background: var(--kino-bg-surface); border: 1px solid var(--kino-border-subtle); box-shadow: var(--kino-elevation-2); font: 600 13px/1 var(--kino-font-ui); color: var(--kino-text-primary); transform: translate(-50%, -4px); }
-.hv--under.is-on { transform: translate(-50%, 0); }
-.hv--under > span:only-child { font-weight: 400; color: var(--kino-text-secondary); padding-left: var(--kino-space-2, 2px); }
 /* 3 · Back online: Try again sits at the end of the offline line */
 .st-off__go { flex: none; margin: -6px -8px -6px auto; }
-/* 4 · Edit fans every pile open (and folds them when you're done) */
+/* 4 · Edit fans every pile open, and Done folds them */
 @keyframes ls-fan { from { transform: translateX(calc(-50% + var(--x))) translateY(var(--y)) rotate(var(--r)); } }
 @keyframes ls-fold { from { transform: translateX(calc(-50% + var(--hx))) translateY(var(--hy)) rotate(var(--hr)); } }
-.app--ls-fan .ls-grid.is-editing .ls-pile { opacity: 1; }
-.app--ls-fan .ls-grid.is-editing .ls-pile > span:nth-child(n+2) { transform: translateX(calc(-50% + var(--hx))) translateY(var(--hy)) rotate(var(--hr)); }
-.app--ls-fan .ls-grid.is-fanning .ls-pile > span:nth-child(n+2) { animation: ls-fan .44s cubic-bezier(.3, 1.35, .5, 1) both; animation-delay: calc(var(--i) * 30ms); }
-.app--ls-fan .ls-grid.is-folding .ls-pile > span:nth-child(n+2) { animation: ls-fold .32s var(--kino-ease) both; }
-/* 5 · The wordmark on Home is a button now: tap it and the crowd gathers again */
+.ls-grid.is-editing .ls-pile > span:nth-child(n+2) { transform: translateX(calc(-50% + var(--hx))) translateY(var(--hy)) rotate(var(--hr)); }
+.ls-grid.is-fanning .ls-pile > span:nth-child(n+2) { animation: ls-fan .44s cubic-bezier(.3, 1.35, .5, 1) both; animation-delay: calc(var(--i) * 30ms); }
+.ls-grid.is-folding .ls-pile > span:nth-child(n+2) { animation: ls-fold .32s var(--kino-ease) both; }
+/* 5 · The wordmark on Home is a button: tap it and the crowd gathers again */
 button.s-wm { background: none; border: 0; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-.app--calm .app__page--open, .app--calm .ls-grid .ls-pile > span { animation: none !important; }
-@media (prefers-reduced-motion: reduce) { .app__page--open, .ls-grid .ls-pile > span { animation: none !important; } .hv { transition: none; } }
+.app--calm .ls-grid .ls-pile > span { animation: none !important; }
+@media (prefers-reduced-motion: reduce) { .ls-grid .ls-pile > span { animation: none !important; } .hv { transition: none; } }
 </style>
 <script>/* your choice if you've made one, otherwise your phone's light or dark setting */
 try{const t=localStorage.getItem('kino-ds-theme')||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');document.documentElement.dataset.theme=t;}catch(e){}</script>
@@ -3480,18 +3475,19 @@ const KAPP = (() => {
   // My films (picked A, with your change): your top 3 on the podium with the big quiet numbers, then everything else by feeling,
   // the feelings as captions. No numbers on the cards: the order is the ranking. Watchlist is the second tab.
   const watchlist = st => WATCH.filter(k => st.saved[k] !== false).concat(Object.keys(st.saved).filter(k => st.saved[k] && !WATCH.includes(k)));
-  const filmTile = (k, meta) => `<button class="mf-tile" data-go="#/film/${k}" aria-label="${F[k][0]}">${poster(k, 'm')}<span class="mf-tile__t">${F[k][0]}</span><span class="mf-tile__m">${meta}</span></button>`;
+  // Long grids load as you go: past the first screenful, a poster's image loads only as it comes near (Noah, interactions round 1: "smartload")
+  const filmTile = (k, meta, i = 0) => `<button class="mf-tile" data-go="#/film/${k}" aria-label="${F[k][0]}">${i >= 12 ? poster(k, 'm').replace('<img ', '<img loading="lazy" ') : poster(k, 'm')}<span class="mf-tile__t">${F[k][0]}</span><span class="mf-tile__m">${meta}</span></button>`;
   const feelCount = (st, id) => FEEL_N[id] + Object.values(st.ranked).filter(s => feels(id, s)).length;
   function filmsBody(st, podium) {
     const list = myListWith(st), total = MY_TOTAL + Object.keys(st.ranked).length, tab = st.mtab || 'ranked', watch = watchlist(st);
     const feel = ([id, label]) => { const films = list.slice(3).filter(([, s2]) => feels(id, s2)); return films.length ? `<section class="mf-feel">
-        <p class="mf-cap">${label}<span>${feelCount(st, id)}</span></p><div class="mf-grid">${films.map(([k, s2]) => filmTile(k, `${score('you', s2)}<span>${F[k][1]}</span>`)).join('')}</div></section>` : ''; };
+        <p class="mf-cap">${label}<span>${feelCount(st, id)}</span></p><div class="mf-grid">${films.map(([k, s2], i) => filmTile(k, `${score('you', s2)}<span>${F[k][1]}</span>`, i)).join('')}</div></section>` : ''; };
     return `<div class="m-seg mf-tabs" role="tablist">${[['ranked', 'Rankings'], ['diary', 'Diary'], ['watch', 'Watchlist'], ['lists', 'Lists']].map(([id, l]) => `<button role="tab" aria-selected="${tab === id}" data-act="mtab" data-t="${id}">${l}</button>`).join('')}</div>
         ${tab === 'ranked' ? `${podium ? `<div class="mf-podium">${top3('you', { top: list.slice(0, 3).map(([k]) => k) })}</div>` : ''}${FEEL.slice(1).map(feel).join('')}
           <div class="r-all__more"><span class="sub">Showing ${list.length} of ${total}</span><button class="k-btn k-btn--secondary k-btn--sm">Show more</button></div>`
         : tab === 'diary' ? (st.blank === 'diary' ? emptyDiary() : diary(st)) : tab === 'lists' ? listsView(st)
         : st.blank === 'watch' ? emptyWatch()
-        : watch.length ? `<div class="mf-grid">${watch.map(k => filmTile(k, `<span>${F[k][1]}</span>`)).join('')}</div>`
+        : watch.length ? `<div class="mf-grid">${watch.map((k, i) => filmTile(k, `<span>${F[k][1]}</span>`, i)).join('')}</div>`
         : '<p class="sub mf-none">Films you save show up here.</p>'}`;
   }
   function myFilms(st) {
@@ -3848,7 +3844,7 @@ const KAPP = (() => {
     return `${topbar('', { back: true, end: iconbtn('share-network', 'Share list') + more })}
       <div class="mf"><div class="s-head ls-head"><div><h1 class="s-title">${l.name}</h1><p class="s-sub">${nfilms(l.films.length)} · ${l.note}</p></div><span class="wide-only">${more}</span></div>
         <div><button class="k-btn k-btn--secondary k-btn--sm" data-act="lsadd" data-l="${l.id}">${ic('plus')}Add films</button></div>
-        ${l.films.length ? `<div class="mf-grid">${l.films.map(k => filmTile(k, `<span>${F[k][1]}</span>`)).join('')}</div>` : '<p class="sub mf-none">Nothing here yet. Add a few films.</p>'}</div>`;
+        ${l.films.length ? `<div class="mf-grid">${l.films.map((k, i) => filmTile(k, `<span>${F[k][1]}</span>`, i)).join('')}</div>` : '<p class="sub mf-none">Nothing here yet. Add a few films.</p>'}</div>`;
   }
   // A list's options: rename it, choose who sees it, or delete it (asks once, with Undo after)
   function listOpt(st) {
@@ -4276,8 +4272,7 @@ const KAPP = (() => {
       newUser: null, tsheet: null, talk: [], talkDraft: '', textSize: 'default',
       rpick: null, pickStyle: 'shelves', afterRank: 'stay', gnew: null, gjoin: null, gnewStyle: 'who', newGroups: [], diaryStyle: 'list', logged: [], logsheet: null,
       listStyle: 'pile', lists: null, lsnew: null, peopleStyle: 'page', pplTab: 'friends', pq: '', ppsheet: null, thread: null, threadStyle: 'sheet', myReplies: {}, drafts: {}, openThread: null,
-      // Interactions, round 1 (2026-10-11), live for the workshop; the defaults are my picks
-      openStyle: 'travel', hoverStyle: 'beside', onlineStyle: 'land', listOpen: 'deal', listEdit: 'fan', fun: { gather: true, dbl: true, pill: true, pop: true }, openFrom: null, landing: null,
+      openFrom: null, landing: null, // interactions: what's travelling to the next screen, and a vote landing when you're back online
       theme: (() => { try { return (opts.hash && localStorage.getItem('kino-ds-theme')) || 'device'; } catch (e) { return 'device'; } })(),
       webNav: opts.webNav === undefined ? 'rail' : opts.webNav || null }, opts.state || {}); // the web: 'rail' (your pick, the default), 'top', or false for V.2.1's web
     root.classList.add('app'); root.classList.toggle('app--device', !!opts.device); // a board frame draws its own status bar
@@ -4338,28 +4333,39 @@ const KAPP = (() => {
     }
     function go(r) { if (r === st.route) return; st.hist.push(st.route); st.route = r; st.ptab = 0; st.pile = null; render(); }
 
-    /* ---------- interactions, round 1 (2026-10-11): live for the workshop ----------
-       st.openStyle 'travel' | 'push' | 'zoom' · st.hoverStyle 'beside' | 'under' | 'none' (web) · st.onlineStyle 'land' | 'travel' | 'quiet'
-       st.listOpen 'deal' | 'push' · st.listEdit 'fan' | 'still' · st.fun { gather, dbl, pill, pop } */
+    /* ---------- interactions (round 1 passed, 2026-10-11; notes/interact-1.md): Noah's picks, which were mine ----------
+       What you tap travels to its place, a web hover card sits beside a poster, your waiting dot fills when you're back online,
+       a list deals out of its pile (only what's on screen) and Edit fans the piles; plus four fun ones. With calm(), none of it runs. */
     const local = r => { const R = root.getBoundingClientRect(), s = R.width / root.offsetWidth || 1; return { x: (r.left - R.left) / s, y: (r.top - R.top) / s, w: r.width / s, h: r.height / s }; };
-    // 1 · Opening things: what you tapped (a poster, a face, a list's pile) travels to its place on the next screen
+    // The next screen gets ready while your finger is still down (or the mouse is over a poster): its backdrop is decoded before it opens
+    const warmed = {};
+    const warm = to => { const m = /^#\/film\/(\w+)/.exec(to || ''); if (!m || warmed[m[1]] || !BACKDROPS[m[1]]) return;
+      const i = warmed[m[1]] = new Image(); i.src = 'stills/' + BACKDROPS[m[1]]; if (i.decode) i.decode().catch(() => {}); };
+    root.addEventListener('pointerdown', e => { const t = e.target.closest('[data-go]'); if (t && root.contains(t)) warm(t.dataset.go); }, { passive: true });
+    // 1 · Opening things: what you tapped (a poster, a face, a list's pile) travels to its place on the next screen. The old screen
+    // fades away on top, so the new one is already there underneath, whole, instead of arriving out of black (Noah's "glitch")
     function openFrom(t) {
       const to = t.dataset.go, kind = /^#\/film\//.test(to) ? 'film' : /^#\/profile\//.test(to) ? 'person' : /^#\/list\//.test(to) ? 'list' : null;
-      if (!kind || to === st.route || calm() || (kind === 'list' ? st.listOpen === 'push' : st.openStyle === 'push')) return false;
+      if (!kind || to === st.route || calm()) return false;
       const box = t.closest('.feed-item, .tile, .x-card, .mf-tile, .ls-card, .n-row, .e-row, .h-person, .o-rank__row') || t;
       const near = sel => t.querySelector(sel) || box.querySelector(`[data-go="${to}"] ${sel}`); // only ever the face or poster of what you opened
       const src = kind === 'person' ? near('.k-avatar') : kind === 'list' ? t.querySelector('.ls-pile') : near('.k-poster');
       const rect = src && src.getBoundingClientRect(); if (!rect || !rect.width) return false;
-      st.openFrom = { kind, rect, html: src.outerHTML, style: kind === 'list' ? 'deal' : st.openStyle };
-      st.nav = st.openFrom.style === 'zoom' ? 'still' : 'open'; go(to); return true;
+      const sc = root.querySelector('.app__scroll'), page = sc && sc.querySelector('.app__page');
+      st.openFrom = { kind, rect, html: src.outerHTML, old: page && { el: page, rect: sc.getBoundingClientRect(), top: sc.scrollTop, pad: getComputedStyle(sc).padding } };
+      if (kind !== 'list') src.style.visibility = 'hidden'; // the copy flies; the original doesn't stay behind on the fading screen (a pile stays: its films come out of it)
+      warm(to); st.nav = 'still'; go(to); return true;
     }
     function landOpen() {
-      const o = st.openFrom; st.openFrom = null; const from = local(o.rect), page = root.querySelector('.app__page');
-      if (o.style === 'zoom') { const pg = local(page.getBoundingClientRect()); // the new screen grows out of what you tapped
-        page.style.transformOrigin = `${from.x + from.w / 2 - pg.x}px ${from.y + from.h / 2 - pg.y}px`;
-        page.animate([{ opacity: 0, transform: 'scale(.86)' }, { opacity: 1, transform: 'none' }], { duration: 400, easing: EASE }); return; }
-      if (o.style === 'deal') { const cx = from.x + from.w / 2, cy = from.y + from.h / 2;
-        root.querySelectorAll('.mf-grid > *').forEach((el, i) => { const r = local(el.getBoundingClientRect()), rot = ((i * 37) % 17) - 8;
+      const o = st.openFrom; st.openFrom = null; const from = local(o.rect);
+      if (o.old) { const r = local(o.old.rect), ov = document.createElement('div'); ov.className = 'ot-old'; ov.setAttribute('aria-hidden', 'true');
+        Object.assign(ov.style, { left: r.x + 'px', top: r.y + 'px', width: r.w + 'px', height: r.h + 'px', padding: o.old.pad });
+        ov.appendChild(o.old.el); root.appendChild(ov); ov.scrollTop = o.old.top;
+        ov.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 220, easing: 'cubic-bezier(.2,0,.4,1)', fill: 'forwards' }).onfinish = () => ov.remove(); }
+      if (o.kind === 'list') { // only the films you can see are dealt (up to 12); the rest are simply there, and their posters load as they come near
+        const view = local(root.querySelector('.app__scroll').getBoundingClientRect()), cx = from.x + from.w / 2, cy = from.y + from.h / 2; let n = 0;
+        root.querySelectorAll('.mf-grid > *').forEach(el => { const r = local(el.getBoundingClientRect()); if (r.y > view.y + view.h || n >= 12) return;
+          const i = n++, rot = ((i * 37) % 17) - 8;
           el.animate([{ opacity: 0, transform: `translate(${cx - r.x - r.w / 2}px, ${cy - r.y - r.h / 2}px) scale(.5) rotate(${rot}deg)` }, { opacity: 1, transform: 'none' }],
             { duration: 560, delay: 80 + i * 45, easing: SPRING, fill: 'backwards' }); });
         return; }
@@ -4370,41 +4376,34 @@ const KAPP = (() => {
       g.animate([{ transform: 'none' }, { transform: `translate(${to.x - from.x}px, ${to.y - from.y}px) scale(${to.w / from.w}, ${to.h / from.h})` }],
         { duration: 500, easing: 'cubic-bezier(.3,.8,.25,1)', fill: 'forwards' }).onfinish = () => { target.style.visibility = ''; g.remove(); };
     }
-    // 2 · Hovering a poster on the web: friends' dots and scores beside it, never on it ('beside'), or tucked under its edge ('under')
+    // 2 · Hovering a poster on the web: a card beside it (never on it) with what your friends gave it; it flips to the other side near the edge
     let hoverOn = null;
     const friendsOn = k => { const x = X[k] || {}; if (x.friends) return x.friends.map(f => [f[0], f[1]]);
       const who = (PILES[0].who || {})[k] || [], ranked = q => ((KINO.PEOPLE[q] || {}).rankings || []).find(r => r[0] === k);
-      return who.map(q => [q, ranked(q) ? ranked(q)[1] : null]); };
+      return who.map(q => [q, ranked(q) ? ranked(q)[1] : null]); }; // scores only where a friend has really ranked it
     function hideHover() { root.querySelectorAll('.hv').forEach(h => h.remove()); hoverOn = null; }
     function showHover(tile, k) {
       hideHover(); hoverOn = tile; const r = local((tile.querySelector('.k-poster') || tile).getBoundingClientRect()), fr = friendsOn(k), scored = fr.filter(f => f[1] != null);
       const avg = scored.length ? scored.reduce((a, f) => a + f[1], 0) / scored.length : null, el = document.createElement('div');
-      el.className = 'hv hv--' + st.hoverStyle; el.setAttribute('aria-hidden', 'true');
-      if (st.hoverStyle === 'under') el.innerHTML = fr.length ? `${whodots(fr.map(f => f[0]))}${avg != null ? `<b>${fmt(avg)}</b>` : ''}` : '<span>No friends yet</span>';
-      else el.innerHTML = `<b class="hv__t">${F[k][0]}</b><span class="hv__m">${F[k][1]} · ${F[k][2]}</span>${scored.length
+      el.className = 'hv'; el.setAttribute('aria-hidden', 'true');
+      el.innerHTML = `<b class="hv__t">${F[k][0]}</b><span class="hv__m">${F[k][1]} · ${F[k][2]}</span>${scored.length
         ? `<span class="hv__rows">${scored.slice(0, 3).map(([q, sc]) => `<span class="hv__row">${score(q, sc)}<span>${P[q].n}</span></span>`).join('')}</span><span class="hv__avg">Friends · average ${fmt(avg)}</span>`
         : fr.length ? `<span class="hv__rows"><span class="hv__row">${whodots(fr.map(f => f[0]))}<span>Loved by ${names(fr.map(f => f[0]))}</span></span></span>` : '<span class="hv__m">No friends have ranked it yet</span>'}`;
       root.appendChild(el);
-      if (st.hoverStyle === 'under') { el.style.left = (r.x + r.w / 2) + 'px'; el.style.top = (r.y + r.h + 6) + 'px'; } // just under the poster, never on it
-      else { const right = r.x + r.w + 10 + 220 <= root.offsetWidth; el.dataset.side = right ? 'right' : 'left'; el.style.top = Math.max(8, r.y + 6) + 'px'; el.style.left = (right ? r.x + r.w + 10 : r.x - 10 - 220) + 'px'; }
+      const right = r.x + r.w + 10 + 220 <= root.offsetWidth; el.dataset.side = right ? 'right' : 'left'; el.style.top = Math.max(8, r.y + 6) + 'px'; el.style.left = (right ? r.x + r.w + 10 : r.x - 10 - 220) + 'px';
       requestAnimationFrame(() => el.classList.add('is-on'));
     }
-    root.addEventListener('mouseover', e => { if (st.hoverStyle === 'none' || root.offsetWidth < 900 || st.sheet) return;
+    root.addEventListener('mouseover', e => { if (root.offsetWidth < 900 || st.sheet) return;
       const tile = e.target.closest('.tile, .x-card, .mf-tile, .feed-item__poster, .o-top3__item'); if (!tile || tile === hoverOn || !root.contains(tile)) return;
-      const href = tile.dataset.go || (tile.closest('[data-go]') || {}).dataset?.go || '', m = href.match(/^#\/film\/(\w+)/); if (m && F[m[1]]) showHover(tile, m[1]); });
+      const href = tile.dataset.go || (tile.closest('[data-go]') || {}).dataset?.go || '', m = href.match(/^#\/film\/(\w+)/); if (m && F[m[1]]) { warm(href); showHover(tile, m[1]); } });
     root.addEventListener('mouseout', e => { if (hoverOn && !(e.relatedTarget && hoverOn.contains(e.relatedTarget))) hideHover(); });
     root.addEventListener('scroll', () => { if (hoverOn) hideHover(); }, true);
-    // 3 · Back online: what waited lands. The hollow dot fills with a little pop ('land'), flies in from the line first ('travel'), or just updates
+    // 3 · Back online: the line has folded away (see 'online'), then your waiting dot fills with a little pop, right where it waited
     function land() {
-      const o = st.landing; st.landing = null; if (calm() || o.style === 'quiet') return;
-      const dot = root.querySelector('.v-dot.id-you'); if (!dot) return;
+      st.landing = null; if (calm()) return; const dot = root.querySelector('.v-dot.id-you'); if (!dot) return;
       const cs = getComputedStyle(dot), fill = cs.backgroundColor, ink = cs.color, canvas = getComputedStyle(root).backgroundColor;
-      const pop = () => dot.animate([{ backgroundColor: canvas, color: fill, boxShadow: `inset 0 0 0 2px ${fill}`, scale: 1 }, // scale, not transform: the dot may be gliding too
+      dot.animate([{ backgroundColor: canvas, color: fill, boxShadow: `inset 0 0 0 2px ${fill}`, scale: 1 }, // scale, not transform: the dot may be gliding too
         { backgroundColor: fill, color: ink, boxShadow: `inset 0 0 0 0 ${fill}`, scale: 1.3, offset: .55 }, { scale: 1 }], { duration: 560, easing: EASE });
-      if (o.style !== 'travel' || !o.from) return pop();
-      const a = local(o.from), b = local(dot.getBoundingClientRect()), g = document.createElement('span');
-      g.className = 'ot-dot'; Object.assign(g.style, { left: a.x + 'px', top: a.y + 'px', width: a.w + 'px', height: a.h + 'px' }); root.appendChild(g); dot.style.visibility = 'hidden';
-      g.animate([{ transform: 'none' }, { transform: `translate(${b.x - a.x}px, ${b.y - a.y}px) scale(${b.w / a.w})` }], { duration: 620, easing: 'cubic-bezier(.45,.05,.2,1)' }).onfinish = () => { g.remove(); dot.style.visibility = ''; pop(); };
     }
     // 4 · Fun: tap kino and the crowd gathers again around your dot
     function gather(el) {
@@ -4415,8 +4414,8 @@ const KAPP = (() => {
           { duration: 780, delay: n * 45, easing: 'cubic-bezier(.5,0,.2,1)' }).onfinish = () => d.remove(); });
       i.animate([{ scale: 1 }, { scale: 1.7, offset: .7 }, { scale: 1 }], { duration: 1050, easing: EASE });
     }
-    // 4 · Fun: when the pick locks, the crowd's dots pop out around the poster once (crisp dots, never a glow)
-    function crowdPop() { // the dots start just outside the poster's edges and burst outward, so nothing is ever drawn on it
+    // 4 · Fun: when the pick locks, the crowd's dots burst once from just outside the poster's edges (crisp dots, never a glow, never on the poster)
+    function crowdPop() {
       const p = root.querySelector('.p-stage .k-poster'); if (!p) return; const r = local(p.getBoundingClientRect()), cx = r.x + r.w / 2, cy = r.y + r.h / 2;
       [...CROWD, ...CROWD].forEach((h, n) => { const d = document.createElement('span'), a = (n * 30 + 8 + Math.random() * 14) * Math.PI / 180, c = Math.cos(a), sn = Math.sin(a);
         const edge = Math.min(r.w / 2 / Math.max(Math.abs(c), .001), r.h / 2 / Math.max(Math.abs(sn), .001)) + 10, far = edge + 28 + Math.random() * 36;
@@ -4427,14 +4426,13 @@ const KAPP = (() => {
     function afterRender(fxNow, keepScroll) {
       if (st.openFrom) landOpen();
       if (st.landing) land();
-      if (fxNow === 'settled' && st.fun.pop && !calm()) crowdPop();
+      if (fxNow === 'settled' && !calm()) crowdPop();
       // 4 · Fun: opening a friend's profile, your match counts up on its pill
-      if (!keepScroll && st.fun.pill && /^#\/profile\//.test(st.route)) { const tag = root.querySelector('.o-matchtag'); if (tag && !calm()) { tag.dataset.count = parseInt(tag.textContent, 10); tag.dataset.unit = '%'; countUp(tag); } }
-      root.classList.toggle('app--ls-fan', st.listEdit === 'fan');
+      if (!keepScroll && /^#\/profile\//.test(st.route)) { const tag = root.querySelector('.o-matchtag'); if (tag && !calm()) { tag.dataset.count = parseInt(tag.textContent, 10); tag.dataset.unit = '%'; countUp(tag); } }
     }
-    // 4 · Fun: double-tap what someone said to like it, with a Tomato heart where you tapped
+    // 4 · Fun: double-tap what a friend said in your feed to like it, with a Tomato heart where you tapped
     root.addEventListener('dblclick', e => {
-      if (!st.fun.dbl) return; const quote = e.target.closest('.feed-item__quote, .o-take__text'), item = quote && quote.closest('.feed-item, .o-take'); if (!item) return;
+      const quote = e.target.closest('.feed-item__quote, .o-take__text'), item = quote && quote.closest('.feed-item, .o-take'); if (!item) return;
       const like = item.querySelector('[data-act="like"]'); if (!like) return; window.getSelection && window.getSelection().removeAllRanges();
       if (!st.liked[like.dataset.key]) like.click(); // likes first (it re-renders), then the heart goes on top
       if (!calm()) { const R = root.getBoundingClientRect(), s = R.width / root.offsetWidth || 1, h = document.createElement('span');
@@ -4504,7 +4502,7 @@ const KAPP = (() => {
       if (/overlay$/.test(t.dataset.act || '') && e.target !== t) return;
       if (swiped) { swiped = false; return; } // the click that ends a swipe doesn't open the group
       if (t.dataset.go === '#/people' && st.peopleStyle === 'sheet' && !t.closest('.pps')) { st.ppsheet = { fresh: true }; render(true); return; }
-      if (t.dataset.go && t.classList.contains('app__wm') && t.dataset.go === st.route && st.fun.gather) { gather(t); return; } // tap kino on Home: the crowd gathers again
+      if (t.dataset.go && t.classList.contains('app__wm') && t.dataset.go === st.route) { gather(t); return; } // tap kino on Home: the crowd gathers again
       if (t.dataset.go) { if (t.dataset.note) st.read[t.dataset.note] = true; if (t.dataset.go.startsWith('#/notifications')) st.notesSeen = true;
         const pop = st.bell || st.ymenu || st.ysheet || st.ppsheet; st.bell = null; st.ymenu = null; st.ysheet = null; st.ppsheet = null;
         ['thread', 'tsheet', 'fmenu', 'rpick', 'gnew', 'gjoin', 'logsheet', 'lsnew', 'lsopt', 'fsheet', 'setsheet', 'gsheet'].forEach(x => { st[x] = null; }); if (t.dataset.go === st.route) { if (pop) render(true); return; }
@@ -4553,11 +4551,14 @@ const KAPP = (() => {
       else if (a === 'suggest') { st.suggested = 'spiderman'; render(true); }
       else if (a === 'nudge') { st.nudged = true; st.fx = 'nudge'; render(true); }
       else if (a === 'lock') { st.locked = true; st.hist.push(st.route); st.route = '#/group/thursday/picked'; st.nav = 'fwd'; st.fx = 'settled'; render(); }
-      else if (a === 'gather') { if (st.fun.gather) gather(t); }
-      else if (a === 'online') { // back online: the line slips away, then what waited lands (round 1 of interactions)
-        const line = root.querySelector('.st-off'), from = line && line.querySelector('.k-dot') ? line.querySelector('.k-dot').getBoundingClientRect() : null;
-        const done = () => { st.offline = null; st.landing = { style: st.onlineStyle, from }; render(true); };
-        if (line && st.onlineStyle !== 'quiet' && !calm()) line.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(-8px)' }], { duration: 220, easing: EASE, fill: 'forwards' }).onfinish = done; else done(); }
+      else if (a === 'gather') gather(t);
+      else if (a === 'online') { // back online: the line folds away so everything under it moves up together, in one piece; then what waited lands
+        const line = root.querySelector('.st-off'), done = () => { st.offline = null; st.landing = true; render(true); };
+        if (!line || calm()) done();
+        else { const cs = getComputedStyle(line), gap = parseFloat(getComputedStyle(line.parentElement).rowGap) || 0; line.style.overflow = 'hidden';
+          line.animate([{ opacity: 1, height: cs.height, paddingTop: cs.paddingTop, paddingBottom: cs.paddingBottom, marginTop: cs.marginTop, marginBottom: cs.marginBottom },
+            { opacity: 0, offset: .4 }, { opacity: 0, height: '0px', paddingTop: '0px', paddingBottom: '0px', marginTop: '0px', marginBottom: -gap + 'px' }],
+            { duration: 360, easing: EASE, fill: 'forwards' }).onfinish = done; } }
       else if (a === 'unlock') { st.locked = false; st.route = '#/group/thursday'; st.nav = 'back'; render(); }
       else if (a === 'save') { const k = st.route.split('/')[2]; st.saved[k] = !isSaved(st, k); st.fx = 'save'; render(true); }
       else if (a === 'ptab') { const i = +t.dataset.i; if (i === st.ptab) return; st.tabDir = i > st.ptab ? 'fwd' : 'back'; st.ptab = i; render(true); }

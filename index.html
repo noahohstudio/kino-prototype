@@ -2609,6 +2609,9 @@ button.s-wm { background: none; border: 0; padding: 0; cursor: pointer; -webkit-
    1 Your profile's Lists, on the web: the piles sat in a ~580px column split four ways and overlapped; two roomy columns there.
    2 Pages reached from a menu (Invites, Settings, Your stats, People, Notification settings) get a Back above the title on the web. */
 @container app (min-width: 900px) { .mf--profile .ls-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--kino-space-40); row-gap: var(--kino-space-32); } }
+/* 4 Profiles on the web: the profile column rested 32px down (the page's top padding) but stuck at 24, so it jumped 8px as you started
+     scrolling the right side and back at the top (Noah, 2026-10-11). It sticks exactly where it rests now. */
+@container app (min-width: 900px) { .app--tight .s-split[data-profile] > aside { top: var(--kino-space-32); } }
 .s-back { margin: 0 0 var(--kino-space-12) calc(-1 * var(--kino-space-12)); padding: 0 var(--kino-space-12); }
 /* 3 My films' podium, on the web: bolder, and it grows with the window (Noah, 2026-10-11: "could be bolder, very small currently.
      Responsive to window size too?"). It scales with the app's width (cqi): 460 wide at 900, 640 at 1280, 740 at 1480 and up. */
@@ -4455,7 +4458,7 @@ const KAPP = (() => {
       const src = kind === 'person' ? near('.k-avatar') : kind === 'list' ? t.querySelector('.ls-pile') : near('.k-poster');
       const rect = src && src.getBoundingClientRect(); if (!rect || !rect.width) return false;
       const sc = root.querySelector('.app__scroll'), page = sc && sc.querySelector('.app__page');
-      st.openFrom = { kind, rect, html: src.outerHTML, old: page && { el: page, rect: sc.getBoundingClientRect(), top: sc.scrollTop, pad: getComputedStyle(sc).padding } };
+      st.openFrom = { kind, rect, old: page && { el: page, rect: sc.getBoundingClientRect(), top: sc.scrollTop, pad: getComputedStyle(sc).padding } };
       if (kind !== 'list') src.style.visibility = 'hidden'; // the copy flies; the original doesn't stay behind on the fading screen (a pile stays: its films come out of it)
       warm(to); st.nav = 'still'; go(to); return true;
     }
@@ -4473,11 +4476,15 @@ const KAPP = (() => {
             { duration: 560, delay: 80 + i * 45, easing: SPRING, fill: 'backwards' }); });
         return; }
       const target = o.kind === 'film' ? root.querySelector('.s-film__hero .k-poster') : root.querySelector('.o-profile .k-avatar'); if (!target) return;
-      const to = local(target.getBoundingClientRect()), g = document.createElement('div');
-      g.className = 'ot-ghost'; g.innerHTML = o.html; Object.assign(g.style, { left: from.x + 'px', top: from.y + 'px', width: from.w + 'px', height: from.h + 'px' });
+      // The copy that flies is the destination itself (its size, its font, its full-size image), shrunk to where you tapped and grown into place.
+      // A copy of the small face carried the small face's font (Geist, 12px) scaled up, then Bricolage took over when it landed (Noah, 2026-10-11).
+      const to = local(target.getBoundingClientRect()), g = document.createElement('div'), twin = target.cloneNode(true), cs = getComputedStyle(target);
+      ['font', 'letterSpacing', 'color', 'backgroundColor', 'borderRadius'].forEach(k => { twin.style[k] = cs[k]; });
+      Object.assign(twin.style, { width: to.w + 'px', height: to.h + 'px', margin: '0', visibility: 'visible' }); twin.querySelectorAll('img').forEach(i => { i.decoding = 'sync'; });
+      g.className = 'ot-ghost'; g.appendChild(twin); Object.assign(g.style, { left: to.x + 'px', top: to.y + 'px', width: to.w + 'px', height: to.h + 'px' });
       root.appendChild(g); target.style.visibility = 'hidden';
-      g.animate([{ transform: 'none' }, { transform: `translate(${to.x - from.x}px, ${to.y - from.y}px) scale(${to.w / from.w}, ${to.h / from.h})` }],
-        { duration: 500, easing: 'cubic-bezier(.3,.8,.25,1)', fill: 'forwards' }).onfinish = () => { target.style.visibility = ''; g.remove(); };
+      g.animate([{ transform: `translate(${from.x - to.x}px, ${from.y - to.y}px) scale(${from.w / to.w}, ${from.h / to.h})` }, { transform: 'none' }],
+        { duration: 500, easing: 'cubic-bezier(.3,.8,.25,1)', fill: 'backwards' }).onfinish = () => { target.style.visibility = ''; g.remove(); };
     }
     // 2 · Hovering a poster on the web: a card beside it (never on it) with what your friends gave it; it flips to the other side near the edge
     let hoverOn = null;

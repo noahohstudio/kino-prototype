@@ -2635,6 +2635,68 @@ button.s-wm { background: none; border: 0; padding: 0; cursor: pointer; -webkit-
   .app--tight .s-profile-back { top: var(--kino-space-8); left: var(--kino-space-8); }
   .s-pagenav + .picked { margin-block: auto; } /* It's settled. stays centred under it */
 }
+
+/* ===== Where Back sits on the web: the options while the choice sheet film-back-1 is out (2026-10-12) =====
+   Every option but the band (as published in 09efae8) puts the film's card first at the top of the page and lets it stick where it rests
+   (32px, the page's top padding), so it's still from the first scroll; the info column still starts where the backdrop fades. */
+@container app (min-width: 900px) {
+  .s-film--card { padding-top: 0 !important; }
+  .s-film--card > .s-film__side { top: var(--kino-space-32); }
+  .s-film--card > .s-film__main { position: relative; padding-top: 200px; }
+  .app--tight .s-film--card > .s-film__main { padding-top: 284px; }
+  .s-film__cardnav .s-back, .s-film__artnav .s-back, .s-webbar .s-back { margin: 0 0 0 calc(-1 * var(--kino-space-12)); }
+  /* card: the card's own top row, Back and Share; it sticks with the card */
+  .s-film__cardnav { display: flex !important; align-items: center; justify-content: space-between; margin-bottom: calc(-1 * var(--kino-space-12)); }
+  /* art: over the backdrop, beside the card; it scrolls away with the art */
+  .s-film__artnav { display: flex !important; align-items: center; justify-content: space-between; position: absolute; top: 0; left: 0; right: 0; z-index: 2; }
+  .s-film__artnav .k-iconbtn { color: var(--kino-cream-50); background: rgb(18 17 16 / .45); }
+  /* bar: a top bar like iPhone's; clear over the backdrop, then the page's colour with the page's name once you scroll */
+  .app__page:has(> .s-webbar) > .s-webbar { position: sticky; top: 0; z-index: 6; display: flex !important; align-items: center; gap: var(--kino-space-12); height: 56px;
+    margin: calc(-1 * var(--kino-space-32)) calc(-1 * var(--kino-space-32)) 0; padding: 0 var(--kino-space-32); transition: background-color var(--kino-motion-fast) var(--kino-ease), box-shadow var(--kino-motion-fast) var(--kino-ease); }
+  .s-webbar.is-stuck { background: var(--kino-bg-canvas); box-shadow: 0 1px 0 var(--kino-border-subtle); }
+  .s-webbar__t { flex: 1; min-width: 0; font: 600 15px/20px var(--kino-font-ui); white-space: nowrap; opacity: 0; transition: opacity var(--kino-motion-fast) var(--kino-ease); }
+  .s-webbar.is-stuck .s-webbar__t { opacity: 1; }
+  .app__page:has(> .s-webbar) > .s-film--card > .s-film__side { top: 88px; }
+  .app--tight .app__page:has(> .s-webbar) > .s-film--card > .s-film__side { top: 80px; }
+  .app__page:has(> .s-webbar) > .s-film--card > .s-film__main { padding-top: 152px; }
+  .app--tight .app__page:has(> .s-webbar) > .s-film--card > .s-film__main { padding-top: 236px; }
+  /* rail: beside the wordmark, so nothing in the rail moves */
+  .app__rail-back { position: absolute; top: 20px; right: var(--kino-space-12); z-index: 1; }
+  /* rail and bar stand in for every page's own Back (unless only the film page follows) */
+  .app--rail.app--wb-rail.app--wb-all .app__page .s-back, .app--wb-bar.app--wb-all .app__page .s-back:not(.s-back--bar),
+  .app--rail.app--wb-rail.app--wb-all .app__page :is(.s-pagenav, .s-profile-back), .app--wb-bar.app--wb-all .app__page :is(.s-pagenav, .s-profile-back) { display: none !important; }
+}
+/* The compact rail (icons only): Back takes the wordmark's place on a page you pushed into */
+@container app (min-width: 900px) and (max-width: 1199px) {
+  .app__rail-back { top: 12px; right: auto; left: 50%; transform: translateX(-50%); width: 44px; height: 40px; padding: 0; gap: 0; justify-content: center; }
+  .app__rail-back span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .app__rail:has(> .app__rail-back) > .app__wm { visibility: hidden; }
+}
+
+/* ===== Pills always fit their words (Noah, 2026-10-12: "some pills dont have enough space for some of the captions within them... Lets make
+   sure this never happens, and fix it.") A pill never shrinks below its words (.k-btn is nowrap), so every row of them makes room instead:
+   it wraps, or (a row of tabs) it scrolls. audit.py's pill check flags any pill whose words overflow, that pokes out of its box, or that
+   overlaps the next one, at every width, with a long name, at larger text sizes and in the sheets. ===== */
+/* A film's Your score card: one row when there's room; in the web's 240px column (and at larger text) "Add a take" and the "…" take a second row */
+.you-box__actions { flex-wrap: wrap; }
+.you-box__actions .k-btn { flex: 1 1 auto; }
+.you-box__more { display: flex; gap: var(--kino-space-8); margin-left: auto; } /* save and the "…" (or the "…" alone) wrap as one, never a lone "…" */
+.you-box__more .f-more { margin-left: 0; }
+.you-box__pair { display: flex; gap: var(--kino-space-8); flex: 1 1 auto; } /* ranked: "Add a take" and the "…" move to a second row together */
+.you-box__pair .k-btn { flex: 1 1 auto; }
+.you-box__pair .f-more { margin-left: 0; }
+/* The tight web: the card's buttons are the small size, ranked or not, so Rank it, save and the "…" share one row in the 240px column */
+@container app (min-width: 900px) {
+  .app--tight .you-box__actions .k-btn { --k-icon-size: var(--kino-size-icon-sm); height: var(--kino-size-control-sm); padding: 0 var(--kino-space-16); gap: var(--kino-space-6); font: 600 13px/16px var(--kino-font-ui); }
+  .app--tight .you-box__actions .k-btn--secondary { font-weight: 500; }
+  .app--tight .you-box__actions .k-iconbtn { --k-icon-size: var(--kino-size-icon-sm); width: var(--kino-size-control-sm); height: var(--kino-size-control-sm); }
+}
+/* A take's actions (Like, Reply, Rank it, the "…"): at larger text the last of them move to a second line, the "…" still at the end */
+.o-take__actions { flex-wrap: wrap; }
+/* A row of tabs that can't fit (My films' four, a friend's four, at extra large text) scrolls sideways inside its pill instead of running off the screen */
+.m-seg { overflow-x: auto; scrollbar-width: none; max-width: 100%; } /* no wider than its column, even when it sizes to its tabs (My films) */
+.m-seg::-webkit-scrollbar { display: none; }
+.m-seg button, .m-seg a { flex-shrink: 0; }
 </style>
 <script>/* your choice if you've made one, otherwise your phone's light or dark setting */
 try{const t=localStorage.getItem('kino-ds-theme')||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');document.documentElement.dataset.theme=t;}catch(e){}</script>
@@ -3127,7 +3189,19 @@ const KAPP = (() => {
   // In "Rank what you watched", the poster itself starts the ranking
   const rankTile = k => `<button class="tile" data-rank="${k}" aria-label="Rank ${F[k][0]}">${poster(k, 'm')}</button>`;
   // On the web the top bar is hidden, so pages reached from a menu get their own Back above the title (data-act back: wherever you came from)
-  const webBack = `<button class="k-btn k-btn--ghost k-btn--sm s-back" data-act="back">${ic('caret-left')}Back</button>`;
+  /* Where Back sits on the web (2026-10-12, the choice sheet film-back-1). Noah loves the film page's sticky card but not its Back, alone over
+     the backdrop, and wants the card first at the top of the screen so it sticks straight away. st.webBack: 'band' (as published in 09efae8),
+     'rail' (in the rail, beside the wordmark), 'card' (the card's own top row), 'art' (over the backdrop, beside the card) or 'bar' (a top bar,
+     like iPhone's). st.backTo: 'back' says Back, 'name' says where it goes. st.backAll: every page you push into does what the film page does. */
+  const pageName = (st, r) => { const [, a, b] = (r || '#/home').split('/'), g = a === 'group' && [...(st.newGroups || []), ...GROUPS].find(x => x.id === b), l = a === 'list' && allLists(st).find(x => x.id === b);
+    return a === 'film' && F[b] ? F[b][0] : a === 'profile' && P[b] ? P[b].n : g ? g.name : l ? l.name : a === 'me' ? ({ ranked: 'My films', stats: 'Your stats', edit: 'Edit profile' })[b] || 'Your profile'
+      : ({ explore: 'Explore', groups: 'Groups', notifications: 'Notifications', settings: 'Settings', invites: 'Invites', people: 'People' })[a] || 'Home'; };
+  const backTo = st => { const n = st.backTo === 'name' && pageName(st, st.hist[st.hist.length - 1]); return n && n.length <= 12 ? n : 'Back'; }; // a long name (Thursday film club) says Back, so it always fits
+  const webBack = (st, cls = '') => `<button class="k-btn k-btn--ghost k-btn--sm s-back ${cls}" data-act="back">${ic('caret-left')}${backTo(st)}</button>`;
+  const pushedRoute = r => /^#\/(film|group|profile|list)\//.test(r) || /^#\/(notifications|settings|invites|people)(\/|$)/.test(r) || r === '#/me/stats';
+  const wbk = st => st.webBack === 'rail' && st.webNav !== 'rail' ? 'card' : st.webBack || 'band'; // the top-bar web has no rail: the card's row stands in
+  const backHere = st => pushedRoute(st.route) && (st.backAll !== false || st.route.startsWith('#/film/'));
+  const webBar = st => wbk(st) === 'bar' && backHere(st) ? `<div class="wide-only s-webbar">${webBack(st, 's-back--bar')}<b class="s-webbar__t">${pageName(st, st.route)}</b><span class="s-webbar__end">${st.route.startsWith('#/film/') ? `<button class="k-iconbtn k-iconbtn--ghost k-iconbtn--sm" aria-label="Share">${ic('share-network')}</button>` : ''}</span></div>` : '';
   const topbar = (title = '', o = {}) => `<div class="m-topbar narrow-only">${o.back ? `<button class="k-iconbtn k-iconbtn--ghost k-iconbtn--sm" data-act="back" aria-label="Back">${ic('caret-left')}</button>` : '<span style="width:36px"></span>'}<span class="m-topbar__title">${title}</span><div class="m-topbar__end">${o.end || '<span style="width:36px"></span>'}</div></div>`;
   const iconbtn = (icon, label, extra = '') => `<button class="k-iconbtn k-iconbtn--ghost k-iconbtn--sm" aria-label="${label}" ${extra}>${ic(icon)}</button>`;
   const shelf = keys => `<div class="m-shelf">${keys.map(k => `<div>${tile(k)}</div>`).join('')}</div>`;
@@ -3322,15 +3396,16 @@ const KAPP = (() => {
     const pos = mine != null ? myListWith(st).findIndex(([kk]) => kk === k) + 1 : null;
     const you = mine != null
       ? `<div class="m-card you-box"><div class="you-box__row"><div><div class="label">Your score</div><div class="sub" style="margin-top:4px">#${pos} of your ${MY_TOTAL + Object.keys(st.ranked).length} films</div></div><span class="k-score k-score--hero"><span class="k-dot"></span><span class="k-score__num">${fmt(mine)}</span></span></div>
-          <div class="you-box__actions"><button class="k-btn k-btn--secondary k-btn--sm" data-rank="${k}">Rank again</button><button class="k-btn k-btn--secondary k-btn--sm">${ic('pencil-simple')}Add a take</button>${more}</div></div>`
+          <div class="you-box__actions"><button class="k-btn k-btn--secondary k-btn--sm" data-rank="${k}">Rank again</button><span class="you-box__pair"><button class="k-btn k-btn--secondary k-btn--sm">${ic('pencil-simple')}Add a take</button>${more}</span></div></div>`
       : `<div class="m-card you-box"><div class="you-box__row"><div><div class="label">Your score</div><div class="sub" style="margin-top:4px">${x.predict ? `Kino thinks you'll land around ${fmt(x.predict)}` : 'Not ranked yet'}</div></div><span class="k-score k-score--hero k-score--unranked"><span class="k-dot k-dot--empty"></span><span class="k-score__num">–</span></span></div>
-          <div class="you-box__actions"><button class="k-btn k-btn--accent" data-rank="${k}">${ic('film-slate')}Rank it</button><button class="k-iconbtn k-iconbtn--secondary${fx(st, 'save')}" aria-label="Save to watchlist" aria-pressed="${!!isSaved(st, k)}" data-act="save">${ic(isSaved(st, k) ? 'bookmark-simple-fill' : 'bookmark-simple')}</button>${more}</div></div>`;
+          <div class="you-box__actions"><button class="k-btn k-btn--accent" data-rank="${k}">${ic('film-slate')}Rank it</button><span class="you-box__more"><button class="k-iconbtn k-iconbtn--secondary${fx(st, 'save')}" aria-label="Save to watchlist" aria-pressed="${!!isSaved(st, k)}" data-act="save">${ic(isSaved(st, k) ? 'bookmark-simple-fill' : 'bookmark-simple')}</button>${more}</span></div></div>`;
     const where = `<div class="s-section wtw"><div class="m-section-head"><h3>Where to watch</h3><span class="sub">Sample data</span></div>
       <div class="m-card m-card--flush">${wtwFor(k).map(([n, type, detail]) => `<div class="wtw__row"><span class="wtw__mark" aria-hidden="true">${n.split(' ').map(w => w[0]).join('').slice(0, 2)}</span><div class="wtw__body"><b>${n}</b><span class="sub">${type} · ${detail}</span></div>${iconbtn('arrow-up-right', 'Open ' + n)}</div>`).join('')}</div></div>`;
-    return `${back}${topbar('', { back: true, end: iconbtn('share-network', 'Share') })}
-      <div class="s-film s-film--back"><div class="wide-only s-film__nav">${webBack}</div>
-        <div class="s-film__side"><div class="s-film__hero">${poster(k, 'xl')}<h1>${F[k][0]}</h1><div class="m-meta"><span>${meta(k)}</span></div><div class="chips">${(x.g || []).map(g => `<span class="k-chip">${g}</span>`).join('')}</div>${watch}</div>${you}</div>
-        <div class="s-film__main">
+    const share = iconbtn('share-network', 'Share'), w = wbk(st);
+    return `${back}${topbar('', { back: true, end: share })}
+      <div class="s-film s-film--back${w === 'band' ? '' : ' s-film--card'}">${w === 'band' ? `<div class="wide-only s-film__nav">${webBack(st)}</div>` : ''}
+        <div class="s-film__side">${w === 'card' ? `<div class="wide-only s-film__cardnav">${webBack(st)}${share}</div>` : ''}<div class="s-film__hero">${poster(k, 'xl')}<h1>${F[k][0]}</h1><div class="m-meta"><span>${meta(k)}</span></div><div class="chips">${(x.g || []).map(g => `<span class="k-chip">${g}</span>`).join('')}</div>${watch}</div>${you}</div>
+        <div class="s-film__main">${w === 'art' ? `<div class="wide-only s-film__artnav">${webBack(st)}${share}</div>` : ''}
           <div class="m-card m-card--flush"><div class="m-section-head"><h3>Friends · average ${fmt(avg)}</h3></div>
             ${friends.map(([p, s, t]) => `<div class="m-person" data-go="#/profile/${p}" style="cursor:pointer">${avatar(p)}<div class="m-person__body"><div class="m-person__name">${P[p].n === 'Maya' ? 'Maya Kim' : P[p].n}</div><div class="m-person__sub">${t || 'Ranked this week'}</div></div>${score(p, s)}</div>`).join('')}
           </div>
@@ -3440,7 +3515,7 @@ const KAPP = (() => {
     const sub = !st.myVote ? 'Tap a poster to vote. Kino\'s picks are films the whole group is likely to love.'
       : !allIn ? `You're in. Waiting on ${names(others)}`
       : host === 'you' ? 'Everyone\'s in. Lock it whenever you\'re ready.' : `Everyone's in. ${P[host].n} will lock it soon.`;
-    return `${topbar(g.name, { back: true, end: iconbtn('dots-three', 'Group options', 'data-act="gmenu" data-gid="thursday"') })}<div class="wide-only s-pagenav">${webBack}</div>
+    return `${topbar(g.name, { back: true, end: iconbtn('dots-three', 'Group options', 'data-act="gmenu" data-gid="thursday"') })}<div class="wide-only s-pagenav">${webBack(st)}</div>
       ${offLine(st)}<div class="s-head"><span class="sub wide-only">${g.name}</span><h1 class="s-title">What are we watching ${g.when.split(' ·')[0]}?</h1><p class="s-sub">${sub}</p></div>${catchUp(st, g.who)}
       <div class="s-vote">
         <div><div class="v-field v-field--${st.dots || 'edge'}">${pool.map(film).join('')}${add}</div>
@@ -3461,7 +3536,7 @@ const KAPP = (() => {
     const k = tally[0][0], [prov] = wtwFor(k);
     // No orbit: everyone's dot drops onto the pick's bottom edge, the same way votes sit on a poster. One screen, no scrolling.
     const dots = `<span class="p-dots" aria-label="Watching: ${names(g.who)}">${g.who.map((p, i) => `<span class="v-dot ${p === 'you' ? 'id-you' : 'id-' + P[p].h}" style="--i:${i}">${P[p].i}</span>`).join('')}</span>`;
-    return `${topbar('', { back: true })}<div class="wide-only s-pagenav">${webBack}</div>
+    return `${topbar('', { back: true })}<div class="wide-only s-pagenav">${webBack(st)}</div>
       <div class="picked"><h1 class="picked__hero">It's settled.</h1>
         <div class="p-stage tap" data-go="#/film/${k}" aria-label="${F[k][0]}">${poster(k, 'xl')}${dots}</div>
         <div class="picked__info">
@@ -3481,7 +3556,7 @@ const KAPP = (() => {
     const tools = iconbtn('share-network', 'Share profile') + iconbtn('dots-three', 'More options');
     return `${topbar('', { back: true, end: tools })}
       <div class="s-split" data-profile>
-        <aside class="s-profile-side"><div class="wide-only"><div class="s-profile-back">${webBack}</div><div class="s-profile-tools">${tools}</div></div>${header('friend', { who: p, actions, name: st.longName && p === 'maya' ? 'Maximiliana Ferreira-Okonkwo' : undefined })}</aside>
+        <aside class="s-profile-side"><div class="wide-only"><div class="s-profile-back">${webBack(st)}</div><div class="s-profile-tools">${tools}</div></div>${header('friend', { who: p, actions, name: st.longName && p === 'maya' ? 'Maximiliana Ferreira-Okonkwo' : undefined })}</aside>
         <div>${catchUp(st, [p, 'you'])}<div class="s-sticky"><div class="m-seg" role="tablist">${TABS.map(([t], i) => `<button role="tab" aria-selected="${i === st.ptab}" data-act="ptab" data-i="${i}">${t}</button>`).join('')}</div></div>
           <div class="s-panel ${st.ptab === 0 ? 's-panel--2' : ''} ${st.tabDir ? 's-panel--' + st.tabDir : ''}">${TABS[st.ptab][1]()}</div></div>
       </div>`;
@@ -3535,11 +3610,11 @@ const KAPP = (() => {
   function notifications(st) {
     const gear = iconbtn('gear-six', 'Notification settings', 'data-go="#/notifications/settings"');
     return `${topbar('', { back: true, end: gear })}
-      <div class="s-narrow n-page"><div><div class="wide-only">${webBack}</div><div class="n-head"><h1 class="s-title">Notifications</h1><span class="wide-only">${gear}</span></div></div>${st.blank === 'bell' ? emptyBell() : noteList(st)}</div>`;
+      <div class="s-narrow n-page"><div><div class="wide-only">${webBack(st)}</div><div class="n-head"><h1 class="s-title">Notifications</h1><span class="wide-only">${gear}</span></div></div>${st.blank === 'bell' ? emptyBell() : noteList(st)}</div>`;
   }
   function notifSettings(st) {
     return `${topbar('Notification settings', { back: true })}
-      <div class="s-narrow e-form"><div class="wide-only">${webBack}<h1 class="s-title">Notification settings</h1></div>
+      <div class="s-narrow e-form"><div class="wide-only">${webBack(st)}<h1 class="s-title">Notification settings</h1></div>
         <div class="e-group"><span class="m-label">Tell me about</span>${NSET.map(x => nswitch(st, x)).join('')}</div></div>`;
   }
 
@@ -3596,7 +3671,7 @@ const KAPP = (() => {
     const split = [['loved', 'loved it'], ['fine', 'it was fine'], ['no', 'not for me']];
     return `${topbar('Your stats', { back: true })}
       <div class="st">
-        <div class="s-head"><div class="wide-only">${webBack}</div><h1 class="s-title wide-only">Your stats</h1><p class="s-sub">From your ${total} rankings</p></div>
+        <div class="s-head"><div class="wide-only">${webBack(st)}</div><h1 class="s-title wide-only">Your stats</h1><p class="s-sub">From your ${total} rankings</p></div>
         <div class="st-grid">
           ${card('Your year in films', `${year} films ranked in the last 12 months`, `<div class="st-bars" role="img" aria-label="Films ranked each month, most in October">${YEAR.map(([m, v], i) => `<span class="st-bar${i === YEAR.length - 1 ? ' is-now' : ''}"><i style="height:${Math.round((v + (i === YEAR.length - 1 ? Object.keys(st.ranked).length : 0)) / max * 100)}%"></i><span>${m}</span></span>`).join('')}</div>`, 'st-card--wide')}
           ${card('How you score', 'Your average is 8.1', `<div class="st-split">${split.map(([id]) => `<i class="st-split__${id}" style="flex:${feelCount(st, id)}"></i>`).join('')}</div>
@@ -3619,7 +3694,7 @@ const KAPP = (() => {
     const theme = st.theme || 'device';
     return `${topbar('Settings', { back: true })}
       <div class="s-narrow e-form set">
-        <div class="wide-only">${webBack}<h1 class="s-title">Settings</h1></div>
+        <div class="wide-only">${webBack(st)}<h1 class="s-title">Settings</h1></div>
         <button class="set-me" data-go="#/me">${avatar('you', 'lg')}<span class="e-row__body"><b>Dani Cho</b><span class="sub">@dani.watches</span><span class="sub">dani@example.com</span></span>${ic('caret-right')}</button>
         <div class="e-group"><span class="m-label">You</span>
           ${row(ic('pencil-simple'), 'Edit profile', 'Photo, name, username and bio', 'data-go="#/me/edit"')}
@@ -3661,7 +3736,7 @@ const KAPP = (() => {
   function invites(st) {
     return `${topbar('Invites', { back: true })}
       <div class="s-narrow e-form inv">
-        <div class="wide-only">${webBack}<h1 class="s-title">Invites</h1></div>
+        <div class="wide-only">${webBack(st)}<h1 class="s-title">Invites</h1></div>
         <div class="m-card inv-card">${cluster(['maya', 'jo', 'ari', 'sam'], 56)}<h2 class="kino-display-m">Bring your people</h2><p class="s-sub">Kino gets better with the friends you watch with. You have 3 invites left.</p>
           <div class="inv-link"><span>kino.app/i/dani</span><button class="k-btn k-btn--ghost k-btn--sm" data-act="copy">${ic(st.copied ? 'check' : 'copy')}${st.copied ? 'Copied' : 'Copy'}</button></div>
           <button class="k-btn k-btn--accent k-btn--block">${ic('share-network')}Share your invite</button></div>
@@ -3867,7 +3942,7 @@ const KAPP = (() => {
   // A group you just made or joined, before its first pick
   function groupStart(st, g) {
     const mine = g.by === 'you', waiting = mine ? g.who.filter(p => p !== 'you') : [];
-    return `${topbar(g.name, { back: true, end: iconbtn('dots-three', 'Group options') })}<div class="wide-only s-pagenav">${webBack}</div>
+    return `${topbar(g.name, { back: true, end: iconbtn('dots-three', 'Group options') })}<div class="wide-only s-pagenav">${webBack(st)}</div>
       <div class="s-narrow gst"><div class="gs-confirm">${cluster(g.who, 104)}<h1 class="s-title">${g.name}</h1>
         <p class="s-sub">${mine ? `You started it just now. Waiting for ${names(waiting)} to join.` : `${P[g.by].n} started it. You're in, with ${names(g.who.filter(p => p !== 'you' && p !== g.by))}.`}</p></div>
         <div class="m-card gst-next"><h3>No pick yet</h3><p class="s-sub">Suggest a film and everyone votes. Kino adds a few the whole group is likely to love.</p><button class="k-btn k-btn--accent k-btn--block">${ic('popcorn')}Suggest the first film</button></div>
@@ -3926,10 +4001,10 @@ const KAPP = (() => {
   }
   function listPage(st, id) {
     const l = allLists(st).find(x => x.id === id) || allLists(st)[0];
-    if (!l) return `${topbar('', { back: true })}<div class="mf"><div class="wide-only">${webBack}</div><p class="sub mf-none">This list is gone.</p></div>`;
+    if (!l) return `${topbar('', { back: true })}<div class="mf"><div class="wide-only">${webBack(st)}</div><p class="sub mf-none">This list is gone.</p></div>`;
     const more = `<button class="k-iconbtn k-iconbtn--ghost k-iconbtn--sm" data-act="lsopt" data-l="${l.id}" aria-label="Change this list">${ic('dots-three')}</button>`;
     return `${topbar('', { back: true, end: iconbtn('share-network', 'Share list') + more })}
-      <div class="mf"><div><div class="wide-only">${webBack}</div><div class="s-head ls-head"><div><h1 class="s-title">${l.name}</h1><p class="s-sub">${nfilms(l.films.length)} · ${l.note}</p></div><span class="wide-only">${more}</span></div></div>
+      <div class="mf"><div><div class="wide-only">${webBack(st)}</div><div class="s-head ls-head"><div><h1 class="s-title">${l.name}</h1><p class="s-sub">${nfilms(l.films.length)} · ${l.note}</p></div><span class="wide-only">${more}</span></div></div>
         <div><button class="k-btn k-btn--secondary k-btn--sm" data-act="lsadd" data-l="${l.id}">${ic('plus')}Add films</button></div>
         ${l.films.length ? `<div class="mf-grid">${l.films.map((k, i) => filmTile(k, `<span>${F[k][1]}</span>`, i)).join('')}</div>` : '<p class="sub mf-none">Nothing here yet. Add a few films.</p>'}</div>`;
   }
@@ -3965,7 +4040,7 @@ const KAPP = (() => {
   const peopleTabs = st => `<div class="m-seg" role="tablist">${PTABS.map(([id, l, n]) => `<button role="tab" aria-selected="${(st.pplTab || 'friends') === id}" data-act="pptab" data-t="${id}">${l} ${n}</button>`).join('')}</div>`;
   function people(st) {
     return `${topbar('People', { back: true })}
-      <div class="s-narrow pp"><div class="wide-only">${webBack}<h1 class="s-title">People</h1></div>${peopleTabs(st)}
+      <div class="s-narrow pp"><div class="wide-only">${webBack(st)}<h1 class="s-title">People</h1></div>${peopleTabs(st)}
         <label class="k-search">${ic('magnifying-glass')}<input type="search" placeholder="Search people" aria-label="Search people" data-input="pq" value="${st.pq || ''}"></label>
         <div class="pp-list">${peopleRows(st)}</div>
         <section class="m-card pp-find"><div class="m-section-head"><h3>Find your people</h3><button class="k-btn k-btn--ghost k-btn--sm" data-go="#/invites">${ic('link-simple')}Invite</button></div>
@@ -4283,7 +4358,8 @@ const KAPP = (() => {
   const RAIL = [['Home', 'house', '#/home'], ['Explore', 'magnifying-glass', '#/explore'], ['Groups', 'users-three', '#/groups'], ['My films', 'film-slate', '#/me/ranked']];
   function railNav(st, sec) {
     const here = h => (h === '#/me/ranked' ? st.route === h : sec === h), me = (st.route.startsWith('#/me') && st.route !== '#/me/ranked') || /^#\/(settings|invites)/.test(st.route); // a friend's profile isn't you
-    return `<nav class="app__rail" aria-label="Kino"><button class="app__wm" data-go="#/home">kino<i></i></button>
+    const rb = wbk(st) === 'rail' && backHere(st) ? `<button class="k-btn k-btn--ghost k-btn--sm app__rail-back" data-act="back" title="${backTo(st) === 'Back' ? 'Back' : 'Back to ' + backTo(st)}">${ic('caret-left')}<span>${backTo(st)}</span></button>` : '';
+    return `<nav class="app__rail" aria-label="Kino"><button class="app__wm" data-go="#/home">kino<i></i></button>${rb}
       <label class="k-search app__rail-search">${ic('magnifying-glass')}<input type="search" placeholder="Search" aria-label="Search films, friends, lists"></label>
       <div class="app__rail-nav">${RAIL.map(([l, n, h]) => `<button class="app__rail-item" data-go="${h}" title="${l}" ${here(h) ? 'aria-current="page"' : ''}>${ic(n, 'k-icon--off')}${ic(n + '-fill', 'k-icon--on')}<span>${l}</span></button>`).join('')}
         <button class="app__rail-item n-bell" data-act="bell" title="Notifications" aria-expanded="${!!st.bell}" aria-label="Notifications${st.notesSeen ? '' : `, ${unreadNotes(st)} new`}">${ic('bell')}<span>Notifications</span>${st.notesSeen ? '' : '<span class="n-bell__dot"></span>'}</button></div>
@@ -4404,6 +4480,7 @@ const KAPP = (() => {
       root.classList.toggle('app--tight', !!st.webNav); root.classList.toggle('app--rail', rail); root.classList.toggle('app--bare', /^#\/(signin|join|welcome|invite|lock)(\/|$)/.test(st.route)); // whole names only: #/invites (yours) keeps the rail and tab bar, #/invite (a friend's) doesn't root.classList.toggle('app--calm', calm()); root.classList.toggle('app--score-badge', st.scoreStyle === 'badge');
       root.classList.toggle('app--text-large', st.textSize === 'large'); root.classList.toggle('app--text-xl', st.textSize === 'xl');
       root.classList.toggle('app--offline', !!st.offline);
+      ['rail', 'card', 'art', 'bar'].forEach(v => root.classList.toggle('app--wb-' + v, wbk(st) === v)); root.classList.toggle('app--wb-all', st.backAll !== false);
       const enter = keepScroll ? 'app__page--still' : 'app__page--' + (st.nav || 'tab'); st.nav = null;
       const sec = section(st.route);
       root.innerHTML = `${opts.device ? `<div class="app__status"><span>9:41</span><span></span></div>` : ''}
@@ -4414,7 +4491,7 @@ const KAPP = (() => {
             ${bellBtn(st, `data-act="bell" aria-expanded="${!!st.bell}"`)}
             <button data-act="ymenu" style="background:none;border:0;padding:0;cursor:pointer" aria-label="You" aria-haspopup="menu" aria-expanded="${!!st.ymenu}"><span class="k-avatar k-avatar--sm id-${P.you.h}">DC<span class="k-avatar__you"></span></span></button></nav>
           ${st.bell ? bellPop(st) : ''}${st.ymenu ? youPop(st) : ''}</div></header>`}
-        <div class="app__shell">${rail ? railNav(st, sec) : ''}<div class="app__scroll"><div class="app__page ${enter}">${route(st)}</div></div></div>
+        <div class="app__shell">${rail ? railNav(st, sec) : ''}<div class="app__scroll"><div class="app__page ${enter}">${webBar(st)}${route(st)}</div></div></div>
         <nav class="app__tabs"><div class="k-tabbar" role="tablist">${NAV.map(([l, n, h]) => `<button class="k-tab" role="tab" aria-selected="${sec === h}" ${h === 'rank' ? 'data-act="rpick"' : `data-go="${h}"`}>${ic(n, 'k-icon--off')}${ic(n + '-fill', 'k-icon--on')}${l}<span class="k-tab__dot"></span></button>`).join('')}</div></nav>
         ${st.sheet ? rankSheet(st) : ''}${st.gsheet ? groupSheet(st) : ''}${st.ysheet ? youSheet(st) : ''}${st.setsheet ? setSheet(st) : ''}${st.rpick ? rankPick(st) : ''}${st.gnew ? groupNew(st) : ''}${st.gjoin ? groupJoin(st) : ''}${st.logsheet ? logSheet(st) : ''}${st.lsnew ? listNew(st) : ''}${st.lsopt ? listOpt(st) : ''}${st.ppsheet ? peopleSheet(st) : ''}${st.thread ? threadSheet(st) : ''}${st.fmenu ? filmMenu(st) : ''}${st.fsheet ? filterSheet(st) : ''}${st.tsheet ? talkSheet(st) : ''}${st.trailer ? trailerOverlay(st) : ''}${st.report ? reportSheet(st) : ''}${st.tmore ? takeMenu(st) : ''}
         ${st.toast ? `<div class="app__toast" role="status"><span>${st.toast.text}</span>${st.toast.undo ? '<button class="k-btn k-btn--ghost k-btn--sm" data-act="undo">Undo</button>' : ''}${st.toast.retry ? '<button class="k-btn k-btn--ghost k-btn--sm" data-act="retry">Try again</button>' : ''}</div>` : ''}
@@ -4423,7 +4500,7 @@ const KAPP = (() => {
       kept.forEach(([k, t, l]) => { const el = root.querySelector(`[data-keep="${k}"]`); if (el) { el.scrollTop = t; el.scrollLeft = l; } });
       if (keepScroll) { settling = true; requestAnimationFrame(() => requestAnimationFrame(() => { settling = false; })); } // those scrolls land in the next frame, before its callbacks
       root.style.setProperty('--app-h', nsc.clientHeight + 'px'); // the web side column is as tall as the window
-      nsc.addEventListener('scroll', () => root.querySelectorAll('.s-sticky').forEach(s => s.classList.toggle('is-stuck', s.getBoundingClientRect().top <= nsc.getBoundingClientRect().top + 1 && nsc.scrollTop > 0)), { passive: true });
+      nsc.addEventListener('scroll', () => root.querySelectorAll('.s-sticky, .s-webbar').forEach(s => s.classList.toggle('is-stuck', s.getBoundingClientRect().top <= nsc.getBoundingClientRect().top + 1 && nsc.scrollTop > 0)), { passive: true });
       if (opts.hash) history.replaceState(null, '', st.route);
       takesAfter();
       glide(root, before); reveal(root); fitLabels(root);

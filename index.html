@@ -2623,6 +2623,18 @@ button.s-wm { background: none; border: 0; padding: 0; cursor: pointer; -webkit-
   .mf-podium .o-top3__title { min-height: 40px; font: 500 15px/20px var(--kino-font-ui); }
   .mf-podium .o-top3__item--1 .o-top3__title { min-height: 44px; font: 600 17px/22px var(--kino-font-ui); }
 }
+/* 5 A way back on the web from every page you push into (Noah, 2026-10-12: "there doesn't seem to be a back option when you click on a film
+     from the main page"). The browser's own back leaves the prototype, so the page carries one: a film, a group, It's settled., a new group,
+     a list and notifications get it at the top left; a friend's profile has it in the card's top row, across from share and more, so the card stays put. */
+.s-pagenav { margin-bottom: calc(-1 * var(--kino-space-12)); }
+.s-pagenav .s-back, .s-film__nav .s-back { margin-bottom: 0; }
+.s-film__nav { position: absolute; top: 0; left: 0; z-index: 2; } /* in the empty band over the backdrop's canvas side; the film doesn't move */
+.s-profile-back { position: absolute; top: var(--kino-space-12); left: var(--kino-space-12); z-index: 1; }
+.s-profile-back .s-back { margin: 0; }
+@container app (min-width: 900px) {
+  .app--tight .s-profile-back { top: var(--kino-space-8); left: var(--kino-space-8); }
+  .s-pagenav + .picked { margin-block: auto; } /* It's settled. stays centred under it */
+}
 </style>
 <script>/* your choice if you've made one, otherwise your phone's light or dark setting */
 try{const t=localStorage.getItem('kino-ds-theme')||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');document.documentElement.dataset.theme=t;}catch(e){}</script>
@@ -3316,7 +3328,7 @@ const KAPP = (() => {
     const where = `<div class="s-section wtw"><div class="m-section-head"><h3>Where to watch</h3><span class="sub">Sample data</span></div>
       <div class="m-card m-card--flush">${wtwFor(k).map(([n, type, detail]) => `<div class="wtw__row"><span class="wtw__mark" aria-hidden="true">${n.split(' ').map(w => w[0]).join('').slice(0, 2)}</span><div class="wtw__body"><b>${n}</b><span class="sub">${type} · ${detail}</span></div>${iconbtn('arrow-up-right', 'Open ' + n)}</div>`).join('')}</div></div>`;
     return `${back}${topbar('', { back: true, end: iconbtn('share-network', 'Share') })}
-      <div class="s-film s-film--back">
+      <div class="s-film s-film--back"><div class="wide-only s-film__nav">${webBack}</div>
         <div class="s-film__side"><div class="s-film__hero">${poster(k, 'xl')}<h1>${F[k][0]}</h1><div class="m-meta"><span>${meta(k)}</span></div><div class="chips">${(x.g || []).map(g => `<span class="k-chip">${g}</span>`).join('')}</div>${watch}</div>${you}</div>
         <div class="s-film__main">
           <div class="m-card m-card--flush"><div class="m-section-head"><h3>Friends · average ${fmt(avg)}</h3></div>
@@ -3428,7 +3440,7 @@ const KAPP = (() => {
     const sub = !st.myVote ? 'Tap a poster to vote. Kino\'s picks are films the whole group is likely to love.'
       : !allIn ? `You're in. Waiting on ${names(others)}`
       : host === 'you' ? 'Everyone\'s in. Lock it whenever you\'re ready.' : `Everyone's in. ${P[host].n} will lock it soon.`;
-    return `${topbar(g.name, { back: true, end: iconbtn('dots-three', 'Group options', 'data-act="gmenu" data-gid="thursday"') })}
+    return `${topbar(g.name, { back: true, end: iconbtn('dots-three', 'Group options', 'data-act="gmenu" data-gid="thursday"') })}<div class="wide-only s-pagenav">${webBack}</div>
       ${offLine(st)}<div class="s-head"><span class="sub wide-only">${g.name}</span><h1 class="s-title">What are we watching ${g.when.split(' ·')[0]}?</h1><p class="s-sub">${sub}</p></div>${catchUp(st, g.who)}
       <div class="s-vote">
         <div><div class="v-field v-field--${st.dots || 'edge'}">${pool.map(film).join('')}${add}</div>
@@ -3449,7 +3461,7 @@ const KAPP = (() => {
     const k = tally[0][0], [prov] = wtwFor(k);
     // No orbit: everyone's dot drops onto the pick's bottom edge, the same way votes sit on a poster. One screen, no scrolling.
     const dots = `<span class="p-dots" aria-label="Watching: ${names(g.who)}">${g.who.map((p, i) => `<span class="v-dot ${p === 'you' ? 'id-you' : 'id-' + P[p].h}" style="--i:${i}">${P[p].i}</span>`).join('')}</span>`;
-    return `${topbar('', { back: true })}
+    return `${topbar('', { back: true })}<div class="wide-only s-pagenav">${webBack}</div>
       <div class="picked"><h1 class="picked__hero">It's settled.</h1>
         <div class="p-stage tap" data-go="#/film/${k}" aria-label="${F[k][0]}">${poster(k, 'xl')}${dots}</div>
         <div class="picked__info">
@@ -3469,7 +3481,7 @@ const KAPP = (() => {
     const tools = iconbtn('share-network', 'Share profile') + iconbtn('dots-three', 'More options');
     return `${topbar('', { back: true, end: tools })}
       <div class="s-split" data-profile>
-        <aside class="s-profile-side"><div class="wide-only"><div class="s-profile-tools">${tools}</div></div>${header('friend', { who: p, actions, name: st.longName && p === 'maya' ? 'Maximiliana Ferreira-Okonkwo' : undefined })}</aside>
+        <aside class="s-profile-side"><div class="wide-only"><div class="s-profile-back">${webBack}</div><div class="s-profile-tools">${tools}</div></div>${header('friend', { who: p, actions, name: st.longName && p === 'maya' ? 'Maximiliana Ferreira-Okonkwo' : undefined })}</aside>
         <div>${catchUp(st, [p, 'you'])}<div class="s-sticky"><div class="m-seg" role="tablist">${TABS.map(([t], i) => `<button role="tab" aria-selected="${i === st.ptab}" data-act="ptab" data-i="${i}">${t}</button>`).join('')}</div></div>
           <div class="s-panel ${st.ptab === 0 ? 's-panel--2' : ''} ${st.tabDir ? 's-panel--' + st.tabDir : ''}">${TABS[st.ptab][1]()}</div></div>
       </div>`;
@@ -3523,7 +3535,7 @@ const KAPP = (() => {
   function notifications(st) {
     const gear = iconbtn('gear-six', 'Notification settings', 'data-go="#/notifications/settings"');
     return `${topbar('', { back: true, end: gear })}
-      <div class="s-narrow n-page"><div class="n-head"><h1 class="s-title">Notifications</h1><span class="wide-only">${gear}</span></div>${st.blank === 'bell' ? emptyBell() : noteList(st)}</div>`;
+      <div class="s-narrow n-page"><div><div class="wide-only">${webBack}</div><div class="n-head"><h1 class="s-title">Notifications</h1><span class="wide-only">${gear}</span></div></div>${st.blank === 'bell' ? emptyBell() : noteList(st)}</div>`;
   }
   function notifSettings(st) {
     return `${topbar('Notification settings', { back: true })}
@@ -3855,7 +3867,7 @@ const KAPP = (() => {
   // A group you just made or joined, before its first pick
   function groupStart(st, g) {
     const mine = g.by === 'you', waiting = mine ? g.who.filter(p => p !== 'you') : [];
-    return `${topbar(g.name, { back: true, end: iconbtn('dots-three', 'Group options') })}
+    return `${topbar(g.name, { back: true, end: iconbtn('dots-three', 'Group options') })}<div class="wide-only s-pagenav">${webBack}</div>
       <div class="s-narrow gst"><div class="gs-confirm">${cluster(g.who, 104)}<h1 class="s-title">${g.name}</h1>
         <p class="s-sub">${mine ? `You started it just now. Waiting for ${names(waiting)} to join.` : `${P[g.by].n} started it. You're in, with ${names(g.who.filter(p => p !== 'you' && p !== g.by))}.`}</p></div>
         <div class="m-card gst-next"><h3>No pick yet</h3><p class="s-sub">Suggest a film and everyone votes. Kino adds a few the whole group is likely to love.</p><button class="k-btn k-btn--accent k-btn--block">${ic('popcorn')}Suggest the first film</button></div>
@@ -3914,10 +3926,10 @@ const KAPP = (() => {
   }
   function listPage(st, id) {
     const l = allLists(st).find(x => x.id === id) || allLists(st)[0];
-    if (!l) return `${topbar('', { back: true })}<div class="mf"><p class="sub mf-none">This list is gone.</p></div>`;
+    if (!l) return `${topbar('', { back: true })}<div class="mf"><div class="wide-only">${webBack}</div><p class="sub mf-none">This list is gone.</p></div>`;
     const more = `<button class="k-iconbtn k-iconbtn--ghost k-iconbtn--sm" data-act="lsopt" data-l="${l.id}" aria-label="Change this list">${ic('dots-three')}</button>`;
     return `${topbar('', { back: true, end: iconbtn('share-network', 'Share list') + more })}
-      <div class="mf"><div class="s-head ls-head"><div><h1 class="s-title">${l.name}</h1><p class="s-sub">${nfilms(l.films.length)} · ${l.note}</p></div><span class="wide-only">${more}</span></div>
+      <div class="mf"><div><div class="wide-only">${webBack}</div><div class="s-head ls-head"><div><h1 class="s-title">${l.name}</h1><p class="s-sub">${nfilms(l.films.length)} · ${l.note}</p></div><span class="wide-only">${more}</span></div></div>
         <div><button class="k-btn k-btn--secondary k-btn--sm" data-act="lsadd" data-l="${l.id}">${ic('plus')}Add films</button></div>
         ${l.films.length ? `<div class="mf-grid">${l.films.map((k, i) => filmTile(k, `<span>${F[k][1]}</span>`, i)).join('')}</div>` : '<p class="sub mf-none">Nothing here yet. Add a few films.</p>'}</div>`;
   }
@@ -4383,6 +4395,7 @@ const KAPP = (() => {
     root.classList.add('app'); root.classList.toggle('app--device', !!opts.device); // a board frame draws its own status bar
     // A new screen pushes in (or pops back, or fades for a tab). Taps that change something in place re-render without the page
     // animation, and what moved glides to its new place.
+    let settling = false; // an in-place re-render puts the page back where it was, and that fires a scroll of its own: what closes on scroll lets it pass
     function render(keepScroll) {
       const sc = root.querySelector('.app__scroll'), top = keepScroll && sc ? sc.scrollTop : 0, before = keepScroll ? measure(root) : null;
       // Inner scrollers (the web side column, the people row) keep their place through an in-place re-render
@@ -4408,6 +4421,7 @@ const KAPP = (() => {
         ${st.ask ? askSheet(st) : ''}${st.splash ? splashHtml(st) : ''}`;
       const nsc = root.querySelector('.app__scroll'); nsc.scrollTop = top;
       kept.forEach(([k, t, l]) => { const el = root.querySelector(`[data-keep="${k}"]`); if (el) { el.scrollTop = t; el.scrollLeft = l; } });
+      if (keepScroll) { settling = true; requestAnimationFrame(() => requestAnimationFrame(() => { settling = false; })); } // those scrolls land in the next frame, before its callbacks
       root.style.setProperty('--app-h', nsc.clientHeight + 'px'); // the web side column is as tall as the window
       nsc.addEventListener('scroll', () => root.querySelectorAll('.s-sticky').forEach(s => s.classList.toggle('is-stuck', s.getBoundingClientRect().top <= nsc.getBoundingClientRect().top + 1 && nsc.scrollTop > 0)), { passive: true });
       if (opts.hash) history.replaceState(null, '', st.route);
@@ -4603,8 +4617,10 @@ const KAPP = (() => {
     root.addEventListener('contextmenu', e => { const el = e.target.closest('.app__page [data-take]'); if (!el) return;
       if (root.offsetWidth < 900) { e.preventDefault(); return; }
       e.preventDefault(); const at = local({ left: e.clientX, top: e.clientY, width: 0, height: 0 }); closeTake(() => openTake(el, 'right', at)); });
-    root.addEventListener('scroll', () => { tmLetGo(); if (st.tmore && st.tmore.kind === 'pop') closeTake(); }, true);
+    root.addEventListener('scroll', () => { tmLetGo(); if (st.tmore && st.tmore.kind === 'pop' && !settling) closeTake(); }, true); // not the scroll the menu's own render makes (it closed itself the moment it opened, 2026-10-12)
     root.addEventListener('keydown', e => { if (e.key === 'Escape' && st.tmore) closeTake(); });
+    // An in-place re-render takes the focused button with it and focus falls to the page, where root never hears a key: pass Escape on (2026-10-12)
+    root.ownerDocument.addEventListener('keydown', e => { if (e.key === 'Escape' && root.isConnected && !root.contains(e.target)) root.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })); });
 
     function afterRender(fxNow, keepScroll) {
       if (st.openFrom) landOpen();

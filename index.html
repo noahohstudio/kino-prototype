@@ -2604,6 +2604,12 @@ button.s-wm { background: none; border: 0; padding: 0; cursor: pointer; -webkit-
 .rpt-check { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; background: var(--kino-bg-fill); color: var(--kino-text-primary); --k-icon-size: 24px; margin-bottom: var(--kino-space-4); }
 @media (prefers-reduced-motion: reduce) { .tm, .tm-lift, .tm-menu, .tm-row { animation: none !important; } .app__page [data-take] { transition: none; } }
 .app--calm .tm, .app--calm .tm-lift, .app--calm .tm-menu, .app--calm .tm-row { animation: none !important; }
+
+/* ===== Finalizing V.2.3 (2026-10-11): two fixes from Noah's look at the live link =====
+   1 Your profile's Lists, on the web: the piles sat in a ~580px column split four ways and overlapped; two roomy columns there.
+   2 Pages reached from a menu (Invites, Settings, Your stats, People, Notification settings) get a Back above the title on the web. */
+@container app (min-width: 900px) { .mf--profile .ls-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--kino-space-40); row-gap: var(--kino-space-32); } }
+.s-back { margin: 0 0 var(--kino-space-12) calc(-1 * var(--kino-space-12)); padding: 0 var(--kino-space-12); }
 </style>
 <script>/* your choice if you've made one, otherwise your phone's light or dark setting */
 try{const t=localStorage.getItem('kino-ds-theme')||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');document.documentElement.dataset.theme=t;}catch(e){}</script>
@@ -3095,6 +3101,8 @@ const KAPP = (() => {
   const tile = (k, who = []) => `<button class="tile" data-go="#/film/${k}" aria-label="${F[k][0]}">${poster(k, 'm')}${who.length ? `<span class="tile__who">${whodots(who)}</span>` : ''}</button>`;
   // In "Rank what you watched", the poster itself starts the ranking
   const rankTile = k => `<button class="tile" data-rank="${k}" aria-label="Rank ${F[k][0]}">${poster(k, 'm')}</button>`;
+  // On the web the top bar is hidden, so pages reached from a menu get their own Back above the title (data-act back: wherever you came from)
+  const webBack = `<button class="k-btn k-btn--ghost k-btn--sm s-back" data-act="back">${ic('caret-left')}Back</button>`;
   const topbar = (title = '', o = {}) => `<div class="m-topbar narrow-only">${o.back ? `<button class="k-iconbtn k-iconbtn--ghost k-iconbtn--sm" data-act="back" aria-label="Back">${ic('caret-left')}</button>` : '<span style="width:36px"></span>'}<span class="m-topbar__title">${title}</span><div class="m-topbar__end">${o.end || '<span style="width:36px"></span>'}</div></div>`;
   const iconbtn = (icon, label, extra = '') => `<button class="k-iconbtn k-iconbtn--ghost k-iconbtn--sm" aria-label="${label}" ${extra}>${ic(icon)}</button>`;
   const shelf = keys => `<div class="m-shelf">${keys.map(k => `<div>${tile(k)}</div>`).join('')}</div>`;
@@ -3506,7 +3514,7 @@ const KAPP = (() => {
   }
   function notifSettings(st) {
     return `${topbar('Notification settings', { back: true })}
-      <div class="s-narrow e-form"><div class="wide-only"><h1 class="s-title">Notification settings</h1></div>
+      <div class="s-narrow e-form"><div class="wide-only">${webBack}<h1 class="s-title">Notification settings</h1></div>
         <div class="e-group"><span class="m-label">Tell me about</span>${NSET.map(x => nswitch(st, x)).join('')}</div></div>`;
   }
 
@@ -3563,7 +3571,7 @@ const KAPP = (() => {
     const split = [['loved', 'loved it'], ['fine', 'it was fine'], ['no', 'not for me']];
     return `${topbar('Your stats', { back: true })}
       <div class="st">
-        <div class="s-head"><h1 class="s-title wide-only">Your stats</h1><p class="s-sub">From your ${total} rankings</p></div>
+        <div class="s-head"><div class="wide-only">${webBack}</div><h1 class="s-title wide-only">Your stats</h1><p class="s-sub">From your ${total} rankings</p></div>
         <div class="st-grid">
           ${card('Your year in films', `${year} films ranked in the last 12 months`, `<div class="st-bars" role="img" aria-label="Films ranked each month, most in October">${YEAR.map(([m, v], i) => `<span class="st-bar${i === YEAR.length - 1 ? ' is-now' : ''}"><i style="height:${Math.round((v + (i === YEAR.length - 1 ? Object.keys(st.ranked).length : 0)) / max * 100)}%"></i><span>${m}</span></span>`).join('')}</div>`, 'st-card--wide')}
           ${card('How you score', 'Your average is 8.1', `<div class="st-split">${split.map(([id]) => `<i class="st-split__${id}" style="flex:${feelCount(st, id)}"></i>`).join('')}</div>
@@ -3586,7 +3594,7 @@ const KAPP = (() => {
     const theme = st.theme || 'device';
     return `${topbar('Settings', { back: true })}
       <div class="s-narrow e-form set">
-        <div class="wide-only"><h1 class="s-title">Settings</h1></div>
+        <div class="wide-only">${webBack}<h1 class="s-title">Settings</h1></div>
         <button class="set-me" data-go="#/me">${avatar('you', 'lg')}<span class="e-row__body"><b>Dani Cho</b><span class="sub">@dani.watches</span><span class="sub">dani@example.com</span></span>${ic('caret-right')}</button>
         <div class="e-group"><span class="m-label">You</span>
           ${row(ic('pencil-simple'), 'Edit profile', 'Photo, name, username and bio', 'data-go="#/me/edit"')}
@@ -3628,7 +3636,7 @@ const KAPP = (() => {
   function invites(st) {
     return `${topbar('Invites', { back: true })}
       <div class="s-narrow e-form inv">
-        <div class="wide-only"><h1 class="s-title">Invites</h1></div>
+        <div class="wide-only">${webBack}<h1 class="s-title">Invites</h1></div>
         <div class="m-card inv-card">${cluster(['maya', 'jo', 'ari', 'sam'], 56)}<h2 class="kino-display-m">Bring your people</h2><p class="s-sub">Kino gets better with the friends you watch with. You have 3 invites left.</p>
           <div class="inv-link"><span>kino.app/i/dani</span><button class="k-btn k-btn--ghost k-btn--sm" data-act="copy">${ic(st.copied ? 'check' : 'copy')}${st.copied ? 'Copied' : 'Copy'}</button></div>
           <button class="k-btn k-btn--accent k-btn--block">${ic('share-network')}Share your invite</button></div>
@@ -3932,7 +3940,7 @@ const KAPP = (() => {
   const peopleTabs = st => `<div class="m-seg" role="tablist">${PTABS.map(([id, l, n]) => `<button role="tab" aria-selected="${(st.pplTab || 'friends') === id}" data-act="pptab" data-t="${id}">${l} ${n}</button>`).join('')}</div>`;
   function people(st) {
     return `${topbar('People', { back: true })}
-      <div class="s-narrow pp"><div class="wide-only"><h1 class="s-title">People</h1></div>${peopleTabs(st)}
+      <div class="s-narrow pp"><div class="wide-only">${webBack}<h1 class="s-title">People</h1></div>${peopleTabs(st)}
         <label class="k-search">${ic('magnifying-glass')}<input type="search" placeholder="Search people" aria-label="Search people" data-input="pq" value="${st.pq || ''}"></label>
         <div class="pp-list">${peopleRows(st)}</div>
         <section class="m-card pp-find"><div class="m-section-head"><h3>Find your people</h3><button class="k-btn k-btn--ghost k-btn--sm" data-go="#/invites">${ic('link-simple')}Invite</button></div>
@@ -4367,7 +4375,7 @@ const KAPP = (() => {
       // Inner scrollers (the web side column, the people row) keep their place through an in-place re-render
       const kept = keepScroll ? [...root.querySelectorAll('[data-keep]')].map(el => [el.dataset.keep, el.scrollTop, el.scrollLeft]) : [];
       const rail = st.webNav === 'rail';
-      root.classList.toggle('app--tight', !!st.webNav); root.classList.toggle('app--rail', rail); root.classList.toggle('app--bare', /^#\/(signin|join|welcome|invite|lock)/.test(st.route)); root.classList.toggle('app--calm', calm()); root.classList.toggle('app--score-badge', st.scoreStyle === 'badge');
+      root.classList.toggle('app--tight', !!st.webNav); root.classList.toggle('app--rail', rail); root.classList.toggle('app--bare', /^#\/(signin|join|welcome|invite|lock)(\/|$)/.test(st.route)); // whole names only: #/invites (yours) keeps the rail and tab bar, #/invite (a friend's) doesn't root.classList.toggle('app--calm', calm()); root.classList.toggle('app--score-badge', st.scoreStyle === 'badge');
       root.classList.toggle('app--text-large', st.textSize === 'large'); root.classList.toggle('app--text-xl', st.textSize === 'xl');
       root.classList.toggle('app--offline', !!st.offline);
       const enter = keepScroll ? 'app__page--still' : 'app__page--' + (st.nav || 'tab'); st.nav = null;

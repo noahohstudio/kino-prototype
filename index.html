@@ -3204,7 +3204,7 @@ const KAPP = (() => {
   // On the web the top bar is hidden, so pages reached from a menu get their own Back above the title (data-act back: wherever you came from)
   /* Where Back sits on the web (2026-10-12, the choice sheet film-back-1). Noah loves the film page's sticky card but not its Back, alone over
      the backdrop, and wants the card first at the top of the screen so it sticks straight away. st.webBack: 'band' (as published in 09efae8),
-     'rail' (in the rail, beside the wordmark), 'card' (the card's own top row), 'art' (over the backdrop, beside the card) or 'bar' (a top bar,
+     'card' (the card's own top row: live), 'rail' (in the rail, beside the wordmark), 'art' (over the backdrop, beside the card) or 'bar' (a top bar,
      like iPhone's). st.backTo: 'back' says Back, 'name' says where it goes. st.backAll: every page you push into does what the film page does. */
   const pageName = (st, r) => { const [, a, b] = (r || '#/home').split('/'), g = a === 'group' && [...(st.newGroups || []), ...GROUPS].find(x => x.id === b), l = a === 'list' && allLists(st).find(x => x.id === b);
     return a === 'film' && F[b] ? F[b][0] : a === 'profile' && P[b] ? P[b].n : g ? g.name : l ? l.name : a === 'me' ? ({ ranked: 'My films', stats: 'Your stats', edit: 'Edit profile' })[b] || 'Your profile'
@@ -3212,7 +3212,7 @@ const KAPP = (() => {
   const backTo = st => { const n = st.backTo === 'name' && pageName(st, st.hist[st.hist.length - 1]); return n && n.length <= 12 ? n : 'Back'; }; // a long name (Thursday film club) says Back, so it always fits
   const webBack = (st, cls = '') => `<button class="k-btn k-btn--ghost k-btn--sm s-back ${cls}" data-act="back">${ic('caret-left')}${backTo(st)}</button>`;
   const pushedRoute = r => /^#\/(film|group|profile|list)\//.test(r) || /^#\/(notifications|settings|invites|people)(\/|$)/.test(r) || r === '#/me/stats';
-  const wbk = st => st.webBack === 'rail' && st.webNav !== 'rail' ? 'card' : st.webBack || 'band'; // the top-bar web has no rail: the card's row stands in
+  const wbk = st => st.webBack === 'rail' && st.webNav !== 'rail' ? 'card' : st.webBack || 'card'; // 'card' is live since Noah's note (2026-10-12: "too much space between the movie card and the back button"); the top-bar web has no rail, so the card's row stands in there
   const backHere = st => pushedRoute(st.route) && (st.backAll !== false || st.route.startsWith('#/film/'));
   const webBar = st => wbk(st) === 'bar' && backHere(st) ? `<div class="wide-only s-webbar">${webBack(st, 's-back--bar')}<b class="s-webbar__t">${pageName(st, st.route)}</b><span class="s-webbar__end">${st.route.startsWith('#/film/') ? `<button class="k-iconbtn k-iconbtn--ghost k-iconbtn--sm" aria-label="Share">${ic('share-network')}</button>` : ''}</span></div>` : '';
   const topbar = (title = '', o = {}) => `<div class="m-topbar narrow-only">${o.back ? `<button class="k-iconbtn k-iconbtn--ghost k-iconbtn--sm" data-act="back" aria-label="Back">${ic('caret-left')}</button>` : '<span style="width:36px"></span>'}<span class="m-topbar__title">${title}</span><div class="m-topbar__end">${o.end || '<span style="width:36px"></span>'}</div></div>`;

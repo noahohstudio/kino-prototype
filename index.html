@@ -2697,6 +2697,19 @@ button.s-wm { background: none; border: 0; padding: 0; cursor: pointer; -webkit-
 .m-seg { overflow-x: auto; scrollbar-width: none; max-width: 100%; } /* no wider than its column, even when it sizes to its tabs (My films) */
 .m-seg::-webkit-scrollbar { display: none; }
 .m-seg button, .m-seg a { flex-shrink: 0; }
+
+/* ===== Premium, in the rail (Noah, 2026-10-12: "when the profile on the bottom left is fully stretched out... it'd be fun to have the premium
+   membership visible - ie the crown - on the right side") The same crown as Settings' Membership, in cream, at the end of your row; it tips
+   its hat when you point at the row. Only in the full rail: the compact rail has no room for names, so no crown either. ===== */
+.app__rail-crown { display: none; }
+@container app (min-width: 1200px) {
+  .app__rail-me { align-self: stretch; } /* the row spans the rail, so the crown sits at its right end */
+  .app__rail-crown { display: inline-flex; margin-left: auto; padding-right: var(--kino-space-4); color: var(--kino-text-primary); --k-icon-size: 20px; flex: none; }
+  .app__rail-crown .k-icon { transform-origin: 50% 90%; transition: transform var(--kino-motion-base) cubic-bezier(.3,1.35,.5,1); }
+  .app__rail-me:hover .app__rail-crown .k-icon { transform: rotate(-14deg) translateY(-1px); }
+  .app--calm .app__rail-me:hover .app__rail-crown .k-icon { transform: none; }
+}
+@media (prefers-reduced-motion: reduce) { .app__rail-me:hover .app__rail-crown .k-icon { transform: none; } }
 </style>
 <script>/* your choice if you've made one, otherwise your phone's light or dark setting */
 try{const t=localStorage.getItem('kino-ds-theme')||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');document.documentElement.dataset.theme=t;}catch(e){}</script>
@@ -4364,7 +4377,7 @@ const KAPP = (() => {
       <div class="app__rail-nav">${RAIL.map(([l, n, h]) => `<button class="app__rail-item" data-go="${h}" title="${l}" ${here(h) ? 'aria-current="page"' : ''}>${ic(n, 'k-icon--off')}${ic(n + '-fill', 'k-icon--on')}<span>${l}</span></button>`).join('')}
         <button class="app__rail-item n-bell" data-act="bell" title="Notifications" aria-expanded="${!!st.bell}" aria-label="Notifications${st.notesSeen ? '' : `, ${unreadNotes(st)} new`}">${ic('bell')}<span>Notifications</span>${st.notesSeen ? '' : '<span class="n-bell__dot"></span>'}</button></div>
       <button class="k-btn k-btn--primary k-btn--sm app__rail-rank" data-act="rpick" title="Rank a film">${ic('plus')}Rank a film</button>
-      <button class="app__rail-me" data-act="ymenu" title="You" aria-haspopup="menu" aria-expanded="${!!st.ymenu}" ${me ? 'aria-current="page"' : ''}>${avatar('you')}<span class="app__rail-me__text"><b>Dani Cho</b><span>@dani.watches</span></span></button>
+      <button class="app__rail-me" data-act="ymenu" title="You" aria-haspopup="menu" aria-expanded="${!!st.ymenu}" ${me ? 'aria-current="page"' : ''}>${avatar('you')}<span class="app__rail-me__text"><b>Dani Cho</b><span>@dani.watches</span></span><span class="app__rail-crown" role="img" aria-label="Premium" title="Premium">${ic('crown-simple')}</span></button>
       ${st.bell ? bellPop(st) : ''}${st.ymenu ? youPop(st) : ''}</nav>`;
   }
   const NAV = [['Home', 'house', '#/home'], ['Explore', 'magnifying-glass', '#/explore'], ['Rank', 'film-slate', 'rank'], ['Groups', 'users-three', '#/groups'], ['Profile', 'user', '#/me']];

@@ -780,7 +780,7 @@
 .s-sub { font: 400 15px/22px var(--kino-font-ui); color: var(--kino-text-secondary); }
 .s-head { display: flex; flex-direction: column; gap: var(--kino-space-4); }
 .s-section { display: flex; flex-direction: column; gap: var(--kino-space-12); }
-.s-split { display: grid; grid-template-columns: 1fr; gap: var(--kino-space-24); }
+.s-split { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--kino-space-24); } /* minmax, not 1fr: a wide row in the feed (people to follow) could hold the column open past the screen */
 .s-split > aside { order: -1; }
 .s-split[data-profile] > aside { order: 0; }
 .s-split > div, .s-split > aside { display: flex; flex-direction: column; gap: var(--kino-space-24); min-width: 0; }

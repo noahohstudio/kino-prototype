@@ -2610,6 +2610,16 @@ button.s-wm { background: none; border: 0; padding: 0; cursor: pointer; -webkit-
    2 Pages reached from a menu (Invites, Settings, Your stats, People, Notification settings) get a Back above the title on the web. */
 @container app (min-width: 900px) { .mf--profile .ls-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--kino-space-40); row-gap: var(--kino-space-32); } }
 .s-back { margin: 0 0 var(--kino-space-12) calc(-1 * var(--kino-space-12)); padding: 0 var(--kino-space-12); }
+/* 3 My films' podium, on the web: bolder, and it grows with the window (Noah, 2026-10-11: "could be bolder, very small currently.
+     Responsive to window size too?"). It scales with the app's width (cqi): 460 wide at 900, 640 at 1280, 740 at 1480 and up. */
+@container app (min-width: 900px) {
+  .mf-podium { padding: var(--kino-space-16) 0 var(--kino-space-24); }
+  .mf-podium .o-top3 { max-width: clamp(460px, 50cqi, 740px); gap: clamp(12px, 1.6cqi, 28px); }
+  .mf-podium .o-top3__n { font-size: clamp(46px, 4.6cqi, 72px); }
+  .mf-podium .o-top3__item--1 .o-top3__n { font-size: clamp(76px, 7.5cqi, 116px); }
+  .mf-podium .o-top3__title { min-height: 40px; font: 500 15px/20px var(--kino-font-ui); }
+  .mf-podium .o-top3__item--1 .o-top3__title { min-height: 44px; font: 600 17px/22px var(--kino-font-ui); }
+}
 </style>
 <script>/* your choice if you've made one, otherwise your phone's light or dark setting */
 try{const t=localStorage.getItem('kino-ds-theme')||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');document.documentElement.dataset.theme=t;}catch(e){}</script>
